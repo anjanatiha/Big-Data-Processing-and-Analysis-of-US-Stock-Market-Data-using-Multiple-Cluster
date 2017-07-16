@@ -7,7 +7,7 @@ public class TAQConverterSparkMainFN {
     private TAQ2010Spec fieldObject2010;
     private TAQJune2015Spec fieldObject2015;
     private TAQConverterSparkFN TAQConverterSparkFNObject;
-    private TAQConverterZipExtract2 TAQConverterZipObject;
+    private TAQConverterZipExtractFN TAQConverterZipObject;
     private TAQConverterUnziped TAQConverterUnzipedObject;
     private IFieldType[] fieldTypes;
     private String outputFileName;
@@ -55,9 +55,9 @@ public class TAQConverterSparkMainFN {
                 break;
             case "z":
                 if (args[4].equals("n"))
-                    TAQConverterZipObject = new TAQConverterZipExtract2(args[2], outputFileName, fieldTypes, start);
+                    TAQConverterZipObject = new TAQConverterZipExtractFN(args[2], outputFileName, fieldTypes, start);
                 else
-                    TAQConverterZipObject = new TAQConverterZipExtract2(args[2], outputFileName, fieldTypes, args[4],args[5], start);
+                    TAQConverterZipObject = new TAQConverterZipExtractFN(args[2], outputFileName, fieldTypes, args[4],args[5], start);
                 break;
             case "u":
                 TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName,73, fieldTypes,1024*73);
