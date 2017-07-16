@@ -67,22 +67,19 @@ public class TAQConverterZipExtract2 {
                     br.readLine();
                     line = br.readLine();
                     while(line!= null) {
-                        System.out.println(line);
                         StringBuilder tempLine = new StringBuilder();
                         for (int i = 0; i < fieldType.length-1; i++) {
                             String tempStr = fieldType[i].convertFromBinary(line, start);
                             if(startTime!=null & endTime!=null){
                                 if(i==0){
                                     time = Integer.parseInt(tempStr);
-                                    if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime)))
+                                    if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime))) {
                                         inRange = 1;
-                                    else if(time>Integer.parseInt(endTime)) {
-                                        inRange = 0;
-                                        break;
                                     }
-                                    else if((time<=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime)))
-                                        inRange = -1;
-                                    break;
+                                    else {
+                                        inRange=0;
+                                    }
+
                                 }
                             }
                             tempLine.append(tempStr);
@@ -98,17 +95,18 @@ public class TAQConverterZipExtract2 {
                         }
                         if(startTime!=null & endTime!=null) {
                             if (inRange == 1) {
+                                System.out.println("added : "+ tempLine);
                                 outputStream.print(tempLine);
                                 outputStream.flush();
                                 tempLine.setLength(0);
                                 line = br.readLine();
                                 start = 0;
                             }
-                            else if (inRange == -1) {
-                                continue;
+                            else {
+                                line = br.readLine();
+                                start = 0;
+
                             }
-                            else if (inRange==0)
-                                break;
                         }
                         else {
                             outputStream.print(tempLine);
