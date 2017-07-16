@@ -35,7 +35,6 @@ public class TAQConverterSparkFN implements Serializable {
         SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");;
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
-//        List<String> convertedObject = text_file.map(line -> convertLine(line, fieldType)).collect();
         JavaRDD<String> convertedObject = text_file.map(line -> convertLine(line, fieldType));
         convertedObject.saveAsTextFile (outputFileName);
 

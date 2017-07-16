@@ -18,8 +18,6 @@ public class TAQConverterSparkLW implements Serializable {
     private IFieldType[] fieldType;
     private int recordLength;
 
-//    private String inputFileName;
-//    private File inputFile;
     private String inputFileName, outputFileName;
     private File inputFile, outputFile;
     PrintStream outputStream;

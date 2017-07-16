@@ -22,11 +22,6 @@ public class TAQ2010Spec implements Serializable {
                 new TextField(4), new NumericField(9), new NumericField(11, 4),
                 new TextField(1), new NumericField(2, 'p'), new NumericField(16, 'p'),
                 new TextField(1), new TextField(1), new TextField(2)};
-//    public IFieldType[] getTradeFields(){
-//        IFieldType[] tradeFileFields = {new TimeField(9), new TextField(1), new TextField(16),
-//                new TextField(4), new NumericField(9), new NumericField(11, 4),
-//                new TextField(1), new NumericField(2, 'p'), new NumericField(16, 'p'),
-//                new TextField(1), new TextField(1)};
         return tradeFileFields;
     }
 
