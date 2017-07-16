@@ -1,6 +1,7 @@
 package Analysis; /**
  * Created by Anjana on 5/29/2017.
  */
+
 import DataFieldType.IFieldType;
 import DataFieldType.StockExchanges;
 
@@ -19,12 +20,12 @@ public class TAQConverterZipExtract2Count2 {
     private int startOffset;
     private BufferedReader br;
     private long bufferSize;
-    private String startTime=null, endTime=null;
+    private String startTime = null, endTime = null;
     private BufferedWriter bw = null;
     private FileWriter fw = null;
 
 
-    TAQConverterZipExtract2Count2(String zipfile, String outputFileName, String startTime, String endTime){
+    TAQConverterZipExtract2Count2(String zipfile, String outputFileName, String startTime, String endTime) {
         try {
             this.zf = new ZipFile(zipfile);
             this.outputFile = new File(outputFileName);
@@ -37,7 +38,8 @@ public class TAQConverterZipExtract2Count2 {
             e.printStackTrace();
         }
     }
-    TAQConverterZipExtract2Count2(String zipfile, String outputFileName){
+
+    TAQConverterZipExtract2Count2(String zipfile, String outputFileName) {
         try {
             this.zf = new ZipFile(zipfile);
             this.outputFile = new File(outputFileName);
@@ -46,48 +48,51 @@ public class TAQConverterZipExtract2Count2 {
             e.printStackTrace();
         }
     }
-    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize){
-        this.startOffset=startOffset;
+
+    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize) {
+        this.startOffset = startOffset;
         this.fieldType = fieldType;
         this.bufferSize = bufferSize;
     }
-    public int getIndex(String time){
-        int index = (Integer.parseInt(time.substring(0,2)))*3600+(Integer.parseInt(time.substring(2,4)))*60 + (Integer.parseInt(time.substring(4,6)));
-        return index-1;
+
+    public int getIndex(String time) {
+        int index = (Integer.parseInt(time.substring(0, 2))) * 3600 + (Integer.parseInt(time.substring(2, 4))) * 60 + (Integer.parseInt(time.substring(4, 6)));
+        return index - 1;
     }
 
 
-    public void printObject(BigInteger[][] list, int len){
-        for(int m=0; m<len;m++){
-            for(int n=0; n<2;n++){
+    public void printObject(BigInteger[][] list, int len) {
+        for (int m = 0; m < len; m++) {
+            for (int n = 0; n < 2; n++) {
                 System.out.print(list[m][n] + " ");
             }
             System.out.print("\n");
         }
     }
 
-    public void printInt(int[][] list_arr, int start, int end){
-        for(int m=0; m<list_arr.length;m++){
-            for(int n=0; n<list_arr[m].length;n++){
+    public void printInt(int[][] list_arr, int start, int end) {
+        for (int m = 0; m < list_arr.length; m++) {
+            for (int n = 0; n < list_arr[m].length; n++) {
                 System.out.print(list_arr[m][n] + " ");
             }
             System.out.print("\n");
         }
     }
 
-    private int[][] initArr(int[][] list){
-        for(int m=0; m<list.length;m++){
-            for(int n=0; n<list[m].length;n++){
-                list[m][n]=0;
+    private int[][] initArr(int[][] list) {
+        for (int m = 0; m < list.length; m++) {
+            for (int n = 0; n < list[m].length; n++) {
+                list[m][n] = 0;
             }
         }
         return list;
     }
-    private void writeHeader(StockExchanges exchangesObj){
+
+    private void writeHeader(StockExchanges exchangesObj) {
         String[] headers = exchangesObj.getExchangeNames();
         StringBuilder tempLine = new StringBuilder();
         outputStream.print("Time,");
-        for(int m=0; m<headers.length;m++){
+        for (int m = 0; m < headers.length; m++) {
             tempLine.append(headers[m]);
             tempLine.append(",");
         }
@@ -97,11 +102,11 @@ public class TAQConverterZipExtract2Count2 {
         tempLine.setLength(0);
     }
 
-    public void writeFile(int[][] time_series_arr, StockExchanges exchangesObj){
+    public void writeFile(int[][] time_series_arr, StockExchanges exchangesObj) {
         writeHeader(exchangesObj);
         StringBuilder tempLine = new StringBuilder();
-        for(int m=0; m<time_series_arr.length;m++){
-            for(int n=0; n<time_series_arr[m].length;n++){
+        for (int m = 0; m < time_series_arr.length; m++) {
+            for (int n = 0; n < time_series_arr[m].length; n++) {
                 tempLine.append(time_series_arr[m][n]);
                 tempLine.append(",");
             }
@@ -134,32 +139,32 @@ public class TAQConverterZipExtract2Count2 {
                         br.readLine();
                         line = br.readLine();
                         int k = 0;
-                        int start_ind=0, end_ind=0;
+                        int start_ind = 0, end_ind = 0;
                         int[][] time_series_arr = new int[86400][20];
                         time_series_arr = initArr(time_series_arr);
                         String time_s = "";
-                        int exchange=-1;
-                        String exchange_s="";
-                        int index_i=-1;
+                        int exchange = -1;
+                        String exchange_s = "";
+                        int index_i = -1;
                         while (line != null) {
-                            int start=0;
+                            int start = 0;
                             for (int i = 0; i < fieldType.length - 1; i++) {
                                 String tempStr = fieldType[i].convertFromBinary(line, start);
                                 if (i == 0) {
                                     time_s = tempStr;
                                     index_i = getIndex(time_s);
-                                    if(k==0){
+                                    if (k == 0) {
                                         start_ind = getIndex(tempStr);
                                     }
                                 }
-                                if(i==1){
+                                if (i == 1) {
                                     exchange_s = tempStr;
                                     exchange = exchanges.get(exchange_s);
                                     time_series_arr[index_i][1] = exchange;
                                 }
                                 if (i == 4) {
                                     time_series_arr[index_i][0] = Integer.parseInt(time_s);
-                                    time_series_arr[index_i][exchange] = time_series_arr[index_i][exchange]+ Integer.parseInt(tempStr);
+                                    time_series_arr[index_i][exchange] = time_series_arr[index_i][exchange] + Integer.parseInt(tempStr);
 //                                    System.out.println(time_s + " " + time_series_arr[index_i][0] + " "+ time_series_arr[index_i][1]);
                                 }
 
@@ -179,8 +184,8 @@ public class TAQConverterZipExtract2Count2 {
                 }
             }
             closeStream();
-        }catch (Exception e){
-            System.out.println("Error: "+e);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
             closeStream();
         }
     }

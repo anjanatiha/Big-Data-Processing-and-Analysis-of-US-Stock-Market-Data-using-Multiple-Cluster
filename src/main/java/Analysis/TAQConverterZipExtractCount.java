@@ -1,6 +1,7 @@
 package Analysis; /**
  * Created by Anjana on 5/29/2017.
  */
+
 import DataFieldType.IFieldType;
 
 import java.io.*;
@@ -19,10 +20,10 @@ public class TAQConverterZipExtractCount {
     private int startOffset;
     private BufferedReader br;
     private long bufferSize;
-    private String startTime=null, endTime=null;
+    private String startTime = null, endTime = null;
     private BigInteger tradeVolumeActual;
 
-    TAQConverterZipExtractCount(String zipfile, String outputFileName, String startTime, String endTime){
+    TAQConverterZipExtractCount(String zipfile, String outputFileName, String startTime, String endTime) {
         try {
             this.inputFileName = zipfile;
             this.zf = new ZipFile(zipfile);
@@ -36,7 +37,8 @@ public class TAQConverterZipExtractCount {
             e.printStackTrace();
         }
     }
-    TAQConverterZipExtractCount(String zipfile, String outputFileName){
+
+    TAQConverterZipExtractCount(String zipfile, String outputFileName) {
         try {
             this.zf = new ZipFile(zipfile);
             this.outputFile = new File(outputFileName);
@@ -46,8 +48,9 @@ public class TAQConverterZipExtractCount {
         }
 
     }
-    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize){
-        this.startOffset=startOffset;
+
+    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize) {
+        this.startOffset = startOffset;
         this.fieldType = fieldType;
         this.bufferSize = bufferSize;
     }
@@ -55,13 +58,14 @@ public class TAQConverterZipExtractCount {
     public void print(String str) {
         System.out.print(str);
     }
+
     public void print(String[] str) {
         for (int i = 0; i < str.length; i++) {
             System.out.print(str[i] + " ");
         }
     }
 
-    public void print(Integer str){
+    public void print(Integer str) {
         System.out.print(str);
     }
 
@@ -71,9 +75,10 @@ public class TAQConverterZipExtractCount {
         }
     }
 
-    private int toInt(String str){
+    private int toInt(String str) {
         return Integer.parseInt(str);
     }
+
     private String inRange(String time, String startTime, String endTime) {
         int hr = toInt(time.substring(0, 2));
         int min = toInt(time.substring(2, 4));
@@ -84,24 +89,25 @@ public class TAQConverterZipExtractCount {
         int ehr = toInt(endTime.substring(0, 2));
         int emin = toInt(endTime.substring(2, 4));
         int esec = toInt(endTime.substring(4, 6));
-        if(hr>ehr)
+        if (hr > ehr)
             return "None";
-        else if((hr==ehr) & (min>emin))
+        else if ((hr == ehr) & (min > emin))
             return "None";
-        else{
-            if(hr<shr)
+        else {
+            if (hr < shr)
                 return "Continue";
-            else if((hr==shr) & (min<smin))
+            else if ((hr == shr) & (min < smin))
                 return "Continue";
-            else if((hr==shr) & (min>=smin))
+            else if ((hr == shr) & (min >= smin))
                 return "Append";
             else
                 return "Append";
         }
     }
+
     public Integer[] toInt(String[] str) {
         Integer[] newInt = new Integer[str.length];
-        for (int i = 0; i < str.length; i++){
+        for (int i = 0; i < str.length; i++) {
             newInt[i] = Integer.parseInt(str[i]);
         }
         return newInt;
@@ -110,11 +116,11 @@ public class TAQConverterZipExtractCount {
     public void convertFile() throws IOException {
         try {
             HashMap<String, Integer> countMap = new HashMap<>();
-            int start=0;
+            int start = 0;
             StringBuilder strBuilder = new StringBuilder();
             Enumeration entries = zf.entries();
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-            int l=0;
+            int l = 0;
             while (entries.hasMoreElements()) {
                 ZipEntry ze = (ZipEntry) entries.nextElement();
                 System.out.println("Read " + ze.getName() + "?");
@@ -130,20 +136,20 @@ public class TAQConverterZipExtractCount {
                         br.readLine();
                         line = br.readLine();
 
-                        while(line!= null) {
+                        while (line != null) {
                             StringBuilder tempLine = new StringBuilder();
-                            for (int i = 0; i < fieldType.length-1; i++) {
+                            for (int i = 0; i < fieldType.length - 1; i++) {
                                 String tempStr = fieldType[i].convertFromBinary(line, start);
-                                if(startTime!=null & endTime!=null){
-                                    if(i==0){
+                                if (startTime != null & endTime != null) {
+                                    if (i == 0) {
                                         time = tempStr;
                                         inRange = inRange(time, startTime, endTime);
                                     }
                                 }
 //                                tempLine.append(tempStr);
-                                if(i==4){
+                                if (i == 4) {
                                     BigInteger tradeVolumeNew = new BigInteger(tempStr);
-                                    if(tradeVolumeActual==null)
+                                    if (tradeVolumeActual == null)
                                         tradeVolumeActual = tradeVolumeNew;
                                     else
                                         tradeVolumeActual = tradeVolumeActual.add(tradeVolumeNew);
@@ -161,7 +167,7 @@ public class TAQConverterZipExtractCount {
 
 
                             }
-                            if(startTime!=null & endTime!=null) {
+                            if (startTime != null & endTime != null) {
                                 if (inRange.equals("None")) {
                                     break;
                                 } else if (inRange.equals("Append")) {
@@ -176,19 +182,18 @@ public class TAQConverterZipExtractCount {
                                     start = 0;
                                     continue;
                                 }
-                            }
-                            else {
+                            } else {
 //                                    outputStream.print(tempLine);
 //                                    outputStream.flush();
-                                    tempLine.setLength(0);
-                                    line = br.readLine();
-                                    start = 0;
-                                }
+                                tempLine.setLength(0);
+                                line = br.readLine();
+                                start = 0;
+                            }
                             l++;
 
                         }
-                                    outputStream.print(inputFileName + ": " + tradeVolumeActual);
-                                    outputStream.flush();
+                        outputStream.print(inputFileName + ": " + tradeVolumeActual);
+                        outputStream.flush();
                         System.out.println(tradeVolumeActual);
                     }
                 }
@@ -203,8 +208,8 @@ public class TAQConverterZipExtractCount {
 //
 //            }
             closeStream();
-        }catch (Exception e){
-            System.out.println("Error: "+e);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
             closeStream();
         }
     }

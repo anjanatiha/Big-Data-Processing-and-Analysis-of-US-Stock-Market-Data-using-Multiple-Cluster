@@ -1,6 +1,7 @@
 package Analysis; /**
  * Created by Anjana on 5/29/2017.
  */
+
 import DataFieldType.IFieldType;
 import DataFieldType.StockExchanges;
 
@@ -20,9 +21,9 @@ public class NBBOAnalysis {
     private int startOffset;
     private BufferedReader br;
     private long bufferSize;
-    private String startTime=null, endTime=null;
+    private String startTime = null, endTime = null;
 
-    NBBOAnalysis(String zipfile, String outputFileName, String startTime, String endTime){
+    NBBOAnalysis(String zipfile, String outputFileName, String startTime, String endTime) {
         try {
             this.zf = new ZipFile(zipfile);
             this.outputFile = new File(outputFileName);
@@ -33,7 +34,8 @@ public class NBBOAnalysis {
             e.printStackTrace();
         }
     }
-    NBBOAnalysis(String zipfile, String outputFileName){
+
+    NBBOAnalysis(String zipfile, String outputFileName) {
         try {
             this.zf = new ZipFile(zipfile);
             this.outputFile = new File(outputFileName);
@@ -42,23 +44,26 @@ public class NBBOAnalysis {
             e.printStackTrace();
         }
     }
-    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize){
-        this.startOffset=startOffset;
+
+    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize) {
+        this.startOffset = startOffset;
         this.fieldType = fieldType;
         this.bufferSize = bufferSize;
     }
-    private int getIndexSec(String time){
-        int index = (Integer.parseInt(time.substring(0,2)))*3600+(Integer.parseInt(time.substring(2,4)))*60 + (Integer.parseInt(time.substring(4,6)));
-        return index-1;
-    }
-    public int getIndexMin(String time){
-        int index = (Integer.parseInt(time.substring(0,2)))*3600+(Integer.parseInt(time.substring(2,4)))*60;
-        return index-1;
+
+    private int getIndexSec(String time) {
+        int index = (Integer.parseInt(time.substring(0, 2))) * 3600 + (Integer.parseInt(time.substring(2, 4))) * 60 + (Integer.parseInt(time.substring(4, 6)));
+        return index - 1;
     }
 
-    public void printBigInt(BigInteger[][] list_arr, int start, int end){
-        for(int m=0; m<list_arr.length;m++){
-            for(int n=0; n<list_arr[m].length;n++){
+    public int getIndexMin(String time) {
+        int index = (Integer.parseInt(time.substring(0, 2))) * 3600 + (Integer.parseInt(time.substring(2, 4))) * 60;
+        return index - 1;
+    }
+
+    public void printBigInt(BigInteger[][] list_arr, int start, int end) {
+        for (int m = 0; m < list_arr.length; m++) {
+            for (int n = 0; n < list_arr[m].length; n++) {
                 if (list_arr[m][0].equals(BigInteger.ZERO))
                     break;
                 System.out.print(list_arr[m][n] + " ");
@@ -66,9 +71,10 @@ public class NBBOAnalysis {
             System.out.print("\n");
         }
     }
-    private void printBigDecimal(BigDecimal[][] list_arr, int start, int end){
-        for(int m=0; m<list_arr.length;m++){
-            for(int n=0; n<list_arr[m].length;n++){
+
+    private void printBigDecimal(BigDecimal[][] list_arr, int start, int end) {
+        for (int m = 0; m < list_arr.length; m++) {
+            for (int n = 0; n < list_arr[m].length; n++) {
                 if (list_arr[m][0].equals(BigDecimal.ZERO))
                     break;
                 System.out.print(list_arr[m][n] + " ");
@@ -77,28 +83,29 @@ public class NBBOAnalysis {
         }
     }
 
-    public BigInteger[][] initArr(BigInteger[][] list){
-        for(int m=0; m<list.length;m++){
-            for(int n=0; n<list[m].length;n++){
-                list[m][n]= BigInteger.ZERO;
-            }
-        }
-        return list;
-    }
-    private BigDecimal[][] initArr(BigDecimal[][] list){
-        for(int m=0; m<list.length;m++){
-            for(int n=0; n<list[m].length;n++){
-                list[m][n]= BigDecimal.ZERO;
+    public BigInteger[][] initArr(BigInteger[][] list) {
+        for (int m = 0; m < list.length; m++) {
+            for (int n = 0; n < list[m].length; n++) {
+                list[m][n] = BigInteger.ZERO;
             }
         }
         return list;
     }
 
-    private void writeHeaderNBBO(){
-        String[] headers = {"Bid Time", "Ask Time", "Bid Exchange", "Ask Exchange","Bid Price", "Bid Volume", "Ask Price", "Ask Volume"};
+    private BigDecimal[][] initArr(BigDecimal[][] list) {
+        for (int m = 0; m < list.length; m++) {
+            for (int n = 0; n < list[m].length; n++) {
+                list[m][n] = BigDecimal.ZERO;
+            }
+        }
+        return list;
+    }
+
+    private void writeHeaderNBBO() {
+        String[] headers = {"Bid Time", "Ask Time", "Bid Exchange", "Ask Exchange", "Bid Price", "Bid Volume", "Ask Price", "Ask Volume"};
         StringBuilder tempLine = new StringBuilder();
         outputStream.print("Time,");
-        for(int m=0; m<headers.length;m++){
+        for (int m = 0; m < headers.length; m++) {
             tempLine.append(headers[m]);
             tempLine.append(",");
         }
@@ -108,27 +115,11 @@ public class NBBOAnalysis {
         tempLine.setLength(0);
     }
 
-    public void writeFileBigInteger(BigInteger[][] time_series_arr, StockExchanges exchangesObj){
+    public void writeFileBigInteger(BigInteger[][] time_series_arr, StockExchanges exchangesObj) {
         writeHeaderNBBO();
         StringBuilder tempLine = new StringBuilder();
-        for(int m=0; m<time_series_arr.length;m++){
-            for(int n=0; n<time_series_arr[m].length;n++){
-                tempLine.append(time_series_arr[m][n]);
-                tempLine.append(",");
-            }
-            tempLine.append("\n");
-            outputStream.print(tempLine);
-            outputStream.flush();
-            tempLine.setLength(0);
-
-        }
-        outputStream.close();
-    }
-    private void writeFileBigDecimal(BigDecimal[][] time_series_arr, StockExchanges exchangesObj){
-        writeHeaderNBBO();
-        StringBuilder tempLine = new StringBuilder();
-        for(int m=0; m<time_series_arr.length;m++){
-            for(int n=0; n<time_series_arr[m].length;n++){
+        for (int m = 0; m < time_series_arr.length; m++) {
+            for (int n = 0; n < time_series_arr[m].length; n++) {
                 tempLine.append(time_series_arr[m][n]);
                 tempLine.append(",");
             }
@@ -141,7 +132,24 @@ public class NBBOAnalysis {
         outputStream.close();
     }
 
-    public void NBBOAnalyzer(){
+    private void writeFileBigDecimal(BigDecimal[][] time_series_arr, StockExchanges exchangesObj) {
+        writeHeaderNBBO();
+        StringBuilder tempLine = new StringBuilder();
+        for (int m = 0; m < time_series_arr.length; m++) {
+            for (int n = 0; n < time_series_arr[m].length; n++) {
+                tempLine.append(time_series_arr[m][n]);
+                tempLine.append(",");
+            }
+            tempLine.append("\n");
+            outputStream.print(tempLine);
+            outputStream.flush();
+            tempLine.setLength(0);
+
+        }
+        outputStream.close();
+    }
+
+    public void NBBOAnalyzer() {
         try {
             Enumeration entries = zf.entries();
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -158,7 +166,7 @@ public class NBBOAnalysis {
                     br.readLine();
                     line = br.readLine();
                     int k = 0;
-                    int start_ind=0, end_ind=0;
+                    int start_ind = 0, end_ind = 0;
                     BigDecimal[][] time_series_arr = new BigDecimal[86400][8];
                     time_series_arr = initArr(time_series_arr);
                     int time_index = -1;
@@ -171,7 +179,7 @@ public class NBBOAnalysis {
                     int ask_exchange = -1;
 
                     while (line != null) {
-                        int start=0;
+                        int start = 0;
                         for (int i = 0; i < fieldType.length - 1; i++) {
                             String tempStr = fieldType[i].convertFromBinary(line, start);
                             if (i == 0) {
@@ -202,8 +210,8 @@ public class NBBOAnalysis {
                                 ask_exchange = exchanges.get(tempStr);
                                 time_series_arr[time_index][1] = new BigDecimal(String.valueOf(time));
                                 time_series_arr[time_index][3] = new BigDecimal(String.valueOf(ask_exchange));
-                                time_series_arr[time_index][6]= time_series_arr[time_index][6].add(ask_price.multiply(ask_size));
-                                time_series_arr[time_index][7]= time_series_arr[time_index][7].add(ask_size);
+                                time_series_arr[time_index][6] = time_series_arr[time_index][6].add(ask_price.multiply(ask_size));
+                                time_series_arr[time_index][7] = time_series_arr[time_index][7].add(ask_size);
                             }
 
                             start = start + fieldType[i].getLength();
@@ -219,13 +227,13 @@ public class NBBOAnalysis {
                 }
             }
             closeStream();
-        }catch (Exception e){
-            System.out.println("Error: "+e);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
             closeStream();
         }
     }
 
-    private void closeStream(){
+    private void closeStream() {
         try {
             br.close();
             zf.close();

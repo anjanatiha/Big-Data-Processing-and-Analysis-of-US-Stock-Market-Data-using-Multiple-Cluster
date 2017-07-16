@@ -23,7 +23,7 @@ public class TAQAnalysis {
         int year = Integer.parseInt(args[1]);
         int start = 1;
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-        String outputFileName = args[2].substring(0,args[2].length()-4)+"_Analysis_"+args[0]+"_"+timeStamp+".txt";
+        String outputFileName = args[2].substring(0, args[2].length() - 4) + "_Analysis_" + args[0] + "_" + timeStamp + ".txt";
         if (year == 2015) {
             TAQJune2015Spec fieldObject2015 = new TAQJune2015Spec();
             switch (type) {
@@ -57,8 +57,7 @@ public class TAQAnalysis {
                     QuoteNBBOPerStockObject.QuoteNBBOPerStockAnalyzer();
                     break;
             }
-        }
-        else if (year == 2010) {
+        } else if (year == 2010) {
 
             TAQ2010Spec fieldObject2010 = new TAQ2010Spec();
             switch (type) {
@@ -93,16 +92,18 @@ public class TAQAnalysis {
             }
         }
     }
-    private static void printTime(){
+
+    private static void printTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy hh.mm.ss.S aa");
         String formattedDate = dateFormat.format(new Date()).toString();
         System.out.println(formattedDate);
     }
-    private static void printElapsedTime(long startTime, long endTime){
+
+    private static void printElapsedTime(long startTime, long endTime) {
         long totalTime = endTime - startTime;
         int seconds = (int) ((totalTime / 1000) % 60);
         int minutes = (int) ((totalTime / 1000) / 60);
-        System.out.println("\n\nTotal Time: "+ minutes+":"+seconds);
+        System.out.println("\n\nTotal Time: " + minutes + ":" + seconds);
     }
 
     public static void main(String[] args) throws IOException {
@@ -110,7 +111,7 @@ public class TAQAnalysis {
         printTime();
         TAQAnalysis TAQAnalysisObject = new TAQAnalysis(args);
         printTime();
-        long endTime   = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime);
     }
 }

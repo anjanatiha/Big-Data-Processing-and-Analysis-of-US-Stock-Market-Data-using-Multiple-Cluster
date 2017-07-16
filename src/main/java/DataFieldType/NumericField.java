@@ -5,35 +5,35 @@ import java.io.Serializable;
 /**
  * Created by Anjana on 5/29/2017.
  */
-public class NumericField implements IFieldType,Serializable {
+public class NumericField implements IFieldType, Serializable {
     private int length;
-    private int numberOfDecimalDigits=0;
+    private int numberOfDecimalDigits = 0;
     private char type;
 
-    public int getLength(){
+    public int getLength() {
         return length;
     }
-    NumericField(int length){
-        this.length=length;
+
+    NumericField(int length) {
+        this.length = length;
     }
 
-    NumericField(int length, int numberOfDecimalDigits){
-        this.length=length;
-        this.numberOfDecimalDigits=numberOfDecimalDigits;
+    NumericField(int length, int numberOfDecimalDigits) {
+        this.length = length;
+        this.numberOfDecimalDigits = numberOfDecimalDigits;
     }
-    public String convertFromBinary(byte[] buffer, int offset){
+
+    public String convertFromBinary(byte[] buffer, int offset) {
         long number = 0;
-        if(type=='p'){
+        if (type == 'p') {
             StringBuilder stringBuilder = new StringBuilder();
-            for(int i=offset;i<offset+length;i++){
+            for (int i = offset; i < offset + length; i++) {
                 stringBuilder.append((char) (buffer[i] & 0x00ff));
             }
             return stringBuilder.toString();
-        }
-        else if(type=='b') {
+        } else if (type == 'b') {
             return "";
-        }
-        else{
+        } else {
             for (int i = offset; i < offset + length; i++) {
                 number = 10 * number + (buffer[i] & 0x00ff) - '0';
             }
@@ -46,10 +46,11 @@ public class NumericField implements IFieldType,Serializable {
         }
 
     }
-    public String convertFromBinary(String line, int offset){
-        char[] buffer = line. toCharArray();
+
+    public String convertFromBinary(String line, int offset) {
+        char[] buffer = line.toCharArray();
         long number = 0;
-        if(type!='p') {
+        if (type != 'p') {
             for (int i = offset; i < offset + length; i++) {
                 number = 10 * number + (buffer[i] & 0x00ff) - '0';
             }
@@ -59,10 +60,9 @@ public class NumericField implements IFieldType,Serializable {
 //            System.out.println("number ->" + String.valueOf(temp) + " offset " + offset);
 
             return String.valueOf(temp);
-        }
-        else{
+        } else {
             StringBuilder stringBuilder = new StringBuilder();
-            for(int i=offset;i<offset+length;i++){
+            for (int i = offset; i < offset + length; i++) {
                 stringBuilder.append((char) (buffer[i] & 0x00ff));
             }
 //            System.out.println("number ->" + stringBuilder.toString() + " offset " + offset);
@@ -70,8 +70,8 @@ public class NumericField implements IFieldType,Serializable {
         }
     }
 
-    NumericField(int length, char type){
-        this.length=length;
-        this.type=type;
+    NumericField(int length, char type) {
+        this.length = length;
+        this.type = type;
     }
 }

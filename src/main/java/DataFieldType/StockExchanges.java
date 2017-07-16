@@ -8,12 +8,13 @@ import java.util.HashMap;
  */
 public class StockExchanges implements Serializable {
     private static HashMap<String, Integer> exchanges_map = new HashMap<>();
-    private static String[] exchange_names = {"NYSE AMEX(A)","NASDAQ OMX BX(B)", "National(C)",
-            "FINRA(D)", "International Securities(I)", "Direct Edge A(J)","Direct Edge X(K)",
-            "Chicago(M)", "New York(N)","NASDAQ OMX(T)", "NYSE Arca SM(P)",
-            "Consolidated Tape(S)","NASDAQ(Q)", "CBOE(W)", "NASDAQ OMX PSX(X)",
+    private static String[] exchange_names = {"NYSE AMEX(A)", "NASDAQ OMX BX(B)", "National(C)",
+            "FINRA(D)", "International Securities(I)", "Direct Edge A(J)", "Direct Edge X(K)",
+            "Chicago(M)", "New York(N)", "NASDAQ OMX(T)", "NYSE Arca SM(P)",
+            "Consolidated Tape(S)", "NASDAQ(Q)", "CBOE(W)", "NASDAQ OMX PSX(X)",
             "BATS Y(Y)", "BATS Z(Z)"};
-    public StockExchanges(){
+
+    public StockExchanges() {
         exchanges_map.put("A", 1);
         exchanges_map.put("B", 2);
         exchanges_map.put("C", 3);
@@ -45,10 +46,11 @@ public class StockExchanges implements Serializable {
 //                'X' : "NASDAQ OMX PSX Stock Exchange(X)", 'Y' : "BATS Y-Exchange(Y)", 'Z' : "BATS Exchange(Z)"}
     }
 
-    public HashMap<String, Integer> getExchanges_map(){
+    public HashMap<String, Integer> getExchanges_map() {
         return exchanges_map;
     }
-    public String[]  getExchangeNames(){
+
+    public String[] getExchangeNames() {
         return exchange_names;
     }
 

@@ -21,11 +21,11 @@ public class TAQConverterZipExtractCountMain {
         taqFileObject.setAttributes(start, taqFieldObject.getNBBOFields(), bufferSize);
         taqFileObject.convertFile();
 
-        long endTime   = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         int seconds = (int) ((totalTime / 1000) % 60);
         int minutes = (int) ((totalTime / 1000) / 60);
-        System.out.println("\n\nTotal Time: "+ minutes+":"+seconds);
+        System.out.println("\n\nTotal Time: " + minutes + ":" + seconds);
 
         dateFormat = new SimpleDateFormat("dd-MMM-yy hh.mm.ss.S aa");
         formattedDate = dateFormat.format(new Date()).toString();

@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public interface IFieldType extends Serializable {
     public String convertFromBinary(byte[] lineBuffer, int offset);
+
     public String convertFromBinary(String line, int offset);
+
     public int getLength();
 }

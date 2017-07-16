@@ -9,19 +9,23 @@ public class TAQJune2015Spec implements Serializable {
     private int tradeFileEntryLength = 108;
     private int QuoteFileEntryLength = 133;
     private int NBBOFileEntryLength = 182;
-    public TAQJune2015Spec(){}
 
-    public int getTradeFieldsLength(){
+    public TAQJune2015Spec() {
+    }
+
+    public int getTradeFieldsLength() {
         return tradeFileEntryLength;
     }
-    public int getQuoteFieldsLength(){
+
+    public int getQuoteFieldsLength() {
         return QuoteFileEntryLength;
     }
-    public int getNBBOFieldsLength(){
+
+    public int getNBBOFieldsLength() {
         return NBBOFileEntryLength;
     }
 
-    public IFieldType[] getTradeFields(){
+    public IFieldType[] getTradeFields() {
         IFieldType[] tradeFileFields = {new TimeField(12), new TextField(1), new TextField(16),
                 new TextField(4), new NumericField(9), new NumericField(11, 4),
                 new TextField(1), new NumericField(2, 'p'), new NumericField(16, 'p'),
@@ -30,30 +34,30 @@ public class TAQJune2015Spec implements Serializable {
         return tradeFileFields;
     }
 
-    public IFieldType[] getNBBOFields(){
+    public IFieldType[] getNBBOFields() {
         IFieldType[] NBBOFileFields = {new TimeField(12), new TextField(1), new TextField(16),
-                new NumericField(11,4), new NumericField(7),
-                new NumericField(11,4), new NumericField(7),new TextField(1),
+                new NumericField(11, 4), new NumericField(7),
+                new NumericField(11, 4), new NumericField(7), new TextField(1),
                 new NumericField(4, 'b'), new TextField(1), new TextField(1), new NumericField(16, 'p'),
-                new NumericField(1),new NumericField(1), new TextField(1), new TextField(1),
-                new TextField(1),new TextField(1), new NumericField(11, 4),
+                new NumericField(1), new NumericField(1), new TextField(1), new TextField(1),
+                new TextField(1), new TextField(1), new NumericField(11, 4),
                 new NumericField(7), new TextField(4), new TextField(2), new TextField(1),
-                new TextField(1), new NumericField(11, 4),new NumericField(7),
-                new TextField(4), new TextField(2),new TextField(1), new TextField(1),
-                new TextField(1),new TextField(1),new TimeField(12), new TextField(8),
+                new TextField(1), new NumericField(11, 4), new NumericField(7),
+                new TextField(4), new TextField(2), new TextField(1), new TextField(1),
+                new TextField(1), new TextField(1), new TimeField(12), new TextField(8),
                 new TimeField(12), new TextField(2)};
         return NBBOFileFields;
     }
 
-    public IFieldType[] getQuoteFields(){
+    public IFieldType[] getQuoteFields() {
         IFieldType[] quoteFileFields = {new TimeField(12), new TextField(1),
                 new TextField(16), new NumericField(11, 4), new NumericField(7),
                 new NumericField(11, 4), new NumericField(7), new TextField(1),
                 new NumericField(4),
-                new TextField(1),new TextField(1),new NumericField(16,'p'),new NumericField(1),
-                new NumericField(1), new TextField(1),  new TextField(1), new TextField(1),
+                new TextField(1), new TextField(1), new NumericField(16, 'p'), new NumericField(1),
+                new NumericField(1), new TextField(1), new TextField(1), new TextField(1),
                 new TextField(1), new TextField(1),
-                new TextField(1),new TextField(1),new TextField(1),
+                new TextField(1), new TextField(1), new TextField(1),
                 new TextField(1),
                 new TimeField(12), new TextField(8), new TimeField(12),
                 new TextField(2)};
