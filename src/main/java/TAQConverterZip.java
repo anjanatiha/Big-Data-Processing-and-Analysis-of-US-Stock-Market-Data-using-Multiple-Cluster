@@ -41,9 +41,9 @@ public class TAQConverterZip {
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             while (entries.hasMoreElements()) {
                 ZipEntry ze = (ZipEntry) entries.nextElement();
-                System.out.println("Read " + ze.getName() + "?");
-                String inputLine = input.readLine();
-                if (inputLine.equalsIgnoreCase("yes")) {
+//                System.out.println("Read " + ze.getName() + "?");
+//                String inputLine = input.readLine();
+//                if (inputLine.equalsIgnoreCase("yes")) {
                     long size = ze.getSize();
                     if (size > 0) {
                         System.out.println("Length is " + size);
@@ -77,7 +77,7 @@ public class TAQConverterZip {
                             k++;
                         }
                     }
-                }
+//                }
                 closeStream();
             }
         }catch (Exception e){

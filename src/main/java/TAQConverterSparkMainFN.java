@@ -7,7 +7,7 @@ public class TAQConverterSparkMainFN {
     private TAQ2010Spec fieldObject2010;
     private TAQJune2015Spec fieldObject2015;
     private TAQConverterSparkFN TAQConverterSparkFNObject;
-    private TAQConverterZip TAQConverterZipObject;
+    private TAQConverterZipExtract2 TAQConverterZipObject;
     private TAQConverterUnziped TAQConverterUnzipedObject;
     private IFieldType[] fieldTypes;
     private String outputFileName;
@@ -18,6 +18,7 @@ public class TAQConverterSparkMainFN {
         int year = Integer.parseInt(args[1]);
         int start = 1;
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+        outputFileName =args[2]+"_SparkConverted_"+timeStamp+".txt";
         if (year == 2015) {
             TAQJune2015Spec fieldObject2015 = new TAQJune2015Spec();
             switch (type) {
@@ -53,12 +54,13 @@ public class TAQConverterSparkMainFN {
                 TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
                 break;
             case "z":
-                TAQConverterZipObject = new TAQConverterZip(args[2], fieldTypes, start);
+                if (args[4].equals("n"))
+                    TAQConverterZipObject = new TAQConverterZipExtract2(args[2], outputFileName, fieldTypes, start);
+                else
+                    TAQConverterZipObject = new TAQConverterZipExtract2(args[2], outputFileName, fieldTypes, args[4],args[5], start);
                 break;
             case "u":
-                outputFileName =args[2]+"_SparkConverted_"+timeStamp+".txt";
                 TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName,73, fieldTypes,1024*73);
-
         }
     }
     public static void printTime(){
