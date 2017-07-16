@@ -2,6 +2,8 @@
  * Created by Anjana on 5/29/2017.
  */
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -9,28 +11,26 @@ import java.util.zip.ZipFile;
 public class TAQConverterZip {
     private ZipFile zf;
     private PrintStream outputStream;
+    private String outputFileName;
     private File outputFile;
     private IFieldType[] fieldType;
     private int startOffset;
     BufferedReader br;
-    private long bufferSize;
 
-    TAQConverterZip(String zipfile, String outputFileName){
+    TAQConverterZip(String zipfile,IFieldType[] fieldType, int startOffset){
         try {
             this.zf = new ZipFile(zipfile);
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+            outputFileName =zipfile.substring(0,zipfile.length()-4)+"_SparkConverted_"+timeStamp+".txt";
             outputFile = new File(outputFileName);
             outputStream = new PrintStream(outputFile);
-
+            this.startOffset=startOffset;
+            this.fieldType = fieldType;
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
-    public void setAttributes(int startOffset, IFieldType[] fieldType, long bufferSize){
-        this.startOffset=startOffset;
-        this.fieldType = fieldType;
-        this.bufferSize = bufferSize;
     }
 
     public void convertFile() throws IOException {
@@ -53,6 +53,7 @@ public class TAQConverterZip {
                         line = br.readLine();
                         int  k = 0;
                         while(line!= null) {
+                            System.out.println("ew");
                             for (int i = 0; i < fieldType.length-1; i++) {
                                 String tempStr = fieldType[i].convertFromBinary(line, start);
                                 strBuilder.append(tempStr);
@@ -66,7 +67,7 @@ public class TAQConverterZip {
                             }
 
                             strBuilder.append("\r\n");
-                            if(k>bufferSize){
+                            if(k>100){
                                 outputStream.print(strBuilder);
                                 outputStream.flush();
                                 strBuilder.setLength(0);

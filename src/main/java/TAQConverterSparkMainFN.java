@@ -7,7 +7,10 @@ public class TAQConverterSparkMainFN {
     private TAQ2010Spec fieldObject2010;
     private TAQJune2015Spec fieldObject2015;
     private TAQConverterSparkFN TAQConverterSparkFNObject;
+    private TAQConverterZip TAQConverterZipObject;
+    private TAQConverterUnziped TAQConverterUnzipedObject;
     private IFieldType[] fieldTypes;
+    private String outputFileName;
 
 
     TAQConverterSparkMainFN(String[] args) {
@@ -45,7 +48,18 @@ public class TAQConverterSparkMainFN {
                     break;
             }
         }
-        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes,start);
+        switch (args[3]) {
+            case "sparku":
+                TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
+                break;
+            case "z":
+                TAQConverterZipObject = new TAQConverterZip(args[2], fieldTypes, start);
+                break;
+            case "u":
+                outputFileName =args[2]+"_SparkConverted_"+timeStamp+".txt";
+                TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName,73, fieldTypes,1024*73);
+
+        }
     }
     public static void printTime(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy hh.mm.ss.S aa");

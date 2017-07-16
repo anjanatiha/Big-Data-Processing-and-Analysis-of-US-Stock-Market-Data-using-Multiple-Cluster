@@ -13,7 +13,7 @@ public class TAQConverterUnziped {
     private int recordLength;
     private int bufferSize;
 
-    TAQConverterUnziped(String inputFileName, String outputFileName){
+    TAQConverterUnziped(String inputFileName, String outputFileName, int startOffset, IFieldType[] fieldType, int bufferSize){
         inputFile = new File(inputFileName);
         outputFile = new File(outputFileName);
         try {
@@ -23,15 +23,17 @@ public class TAQConverterUnziped {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-    }
-    public void setAttributes(int startOffset, IFieldType[] fieldType, int bufferSize){
         this.startOffset=startOffset;
         this.fieldType = fieldType;
         recordLength = getRecordLength();
         this.bufferSize = bufferSize;
-    }
+        try {
+            convertFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+    }
 
     public void convertFile() throws IOException {
 
