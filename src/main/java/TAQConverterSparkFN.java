@@ -44,6 +44,16 @@ public class TAQConverterSparkFN implements Serializable {
         convertFile();
 
     }
+//    public void convertFileZip(){
+//        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");;
+//        JavaSparkContext sc = new JavaSparkContext(conf);
+//        JavaPairRDD<String, PortableDataStream> text_file = sc.binaryFiles(inputFileName);
+////        JavaRDD<String> convertedObject = text_file.map(line -> convertLine(line, fieldType));
+//        JavaRDD<String> convertedObject = text_file.map(line -> convertLineExtract(line, fieldType, startTime, endTime));
+//
+//        convertedObject.saveAsTextFile (outputFileName);
+//
+//    }
 
 
     public void convertFile(){
