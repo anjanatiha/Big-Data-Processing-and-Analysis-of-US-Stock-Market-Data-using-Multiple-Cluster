@@ -51,8 +51,14 @@ public class TAQConverterMainFN {
             }
         }
         switch (args[3]) {
-            case "sparku":
-                TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
+            case "su":
+                if (args[4].equals("n"))
+                    TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
+                else {
+
+                    TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
+
+                }
                 break;
             case "z":
                 if (args[4].equals("n"))
@@ -63,6 +69,7 @@ public class TAQConverterMainFN {
             case "u":
                 TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName,73, fieldTypes,1024*73);
                 break;
+//            new addition
             case "r":
                 fileReadObject= new FileRead(args[2], args[4]);
                 break;
