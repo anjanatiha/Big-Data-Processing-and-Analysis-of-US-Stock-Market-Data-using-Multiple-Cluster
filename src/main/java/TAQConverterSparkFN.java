@@ -95,47 +95,7 @@ public class TAQConverterSparkFN implements Serializable {
             return str;
         return "";
     }
-//    public String convertLineExtract(String line, IFieldType[] fieldType, String startTime, String endTime){
-//        String str = "";
-//        int start = 0;
-//        int time;
-//        int inRange = -1;
-//        if (line.trim().length()<15)
-//            return "";
-//        for(int i=0; i<fieldType.length-1; i++) {
-//            String tempStr=fieldType[i].convertFromBinary(line, start);
-//            if(startTime!=null & endTime!=null){
-//                if(i==0){
-//                    time = Integer.parseInt(tempStr);
-//                    if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime))) {
-//                        inRange = 1;
-//                    }
-//                    else {
-//                        return "";
-//                    }
-//                }
-//            }
-//            str = str+tempStr;
-//            start = start +fieldType[i].getLength();
-//            if (i < fieldType.length-2)
-//                str =str+",";
-//        }
-//        str = str+"\n";
-//
-//        if(startTime!=null & endTime!=null) {
-//            if (inRange == 1) {
-//                System.out.println(str);
-//                return str;
-//            }
-//            else {
-//                return "";
-//            }
-//        }
-//        else {
-//            return str;
-//        }
-//
-//    }
+
     public int getlength(){
         int recordLength=0;
         for(int i=0;i<fieldType.length;i++){
