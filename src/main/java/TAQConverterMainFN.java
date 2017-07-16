@@ -8,7 +8,9 @@ import Misc.FileClass;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
+import static DataFieldType.TickerSymbols.getTickers;
 import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
 
@@ -22,6 +24,7 @@ public class TAQConverterMainFN {
     private FileClass fileReadObject;
     private IFieldType[] fieldTypes;
     private String outputFileName;
+    private List<String> tickerSymbols;
 
 
     TAQConverterMainFN(String[] args) {
@@ -30,8 +33,7 @@ public class TAQConverterMainFN {
         int start = 1;
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         outputFileName = args[2] + "_SparkConverted_" + timeStamp + ".txt";
-
-        String[] tickerSymbols = {"AA"};
+        tickerSymbols = getTickers();
 
         if (year == 2015) {
             TAQJune2015Spec fieldObject2015 = new TAQJune2015Spec();
@@ -74,7 +76,6 @@ public class TAQConverterMainFN {
                     if (args[6].equals("n")) {
                         TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
                     } else {
-
                         TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start, tickerSymbols);
                     }
                 }
