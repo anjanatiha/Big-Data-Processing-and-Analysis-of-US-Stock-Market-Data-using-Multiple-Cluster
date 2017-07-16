@@ -2,6 +2,7 @@
  * Created by Anjana on 5/29/2017.
  */
 
+import DataFieldType.IFieldType;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -11,7 +12,7 @@ import org.apache.spark.input.PortableDataStream;
 import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.*;
 
 import static Misc.Debug.debug;
 
@@ -25,12 +26,22 @@ public class TAQConverterSparkFN implements Serializable {
     private String outputFileName;
     private String startTime;
     private String endTime;
-    private String[] ticker;
+    private List<String> tickerSymbols =new ArrayList();
     private int[] fieldset;
     private String fileType;
 
     TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, int startOffset){
         setMainObjects(inputFileName, fieldType, startOffset );
+        if (!fileType.trim().equals("zip")) {
+            convertFile();
+        }
+        else {
+            convertFileZip();
+        }
+    }
+    TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, int startOffset, String[] tickerSymbols){
+        setMainObjects(inputFileName, fieldType, startOffset );
+        this.tickerSymbols = Arrays.asList(tickerSymbols);
         if (!fileType.trim().equals("zip")) {
             convertFile();
         }
@@ -45,7 +56,7 @@ public class TAQConverterSparkFN implements Serializable {
         convertFile();
 
     }
-    public void setMainObjects(String inputFileName, IFieldType[] fieldType, int startOffset ){
+    private void setMainObjects(String inputFileName, IFieldType[] fieldType, int startOffset ){
         this.inputFileName = inputFileName;
         this.fieldType = fieldType;
         this.startOffset=startOffset;
@@ -56,8 +67,8 @@ public class TAQConverterSparkFN implements Serializable {
 
     }
 
-    public void convertFile(){
-        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");;
+    private void convertFile(){
+        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
@@ -65,22 +76,32 @@ public class TAQConverterSparkFN implements Serializable {
         convertedObject.saveAsTextFile (outputFileName);
 
     }
-    public String convertLine(String line){
+    private String convertLine(String line){
         String str = "";
         int start = 0;
         int time;
-        int inRange=-1;
+        boolean inTime=false;
+        boolean inTicker=false;
         if (line.trim().length()<15)
             return "";
         for(int i=0; i<fieldType.length-1; i++) {
             String tempStr=fieldType[i].convertFromBinary(line, start);
-            if(i==0){
-                time = Integer.parseInt(tempStr);
-                if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime))) {
-                    inRange = 1;
+            if (!startTime.equals("n")) {
+                if (i == 0) {
+                    time = Integer.parseInt(tempStr);
+                    if ((time >= Integer.parseInt(startTime)) && (time <= Integer.parseInt(endTime))) {
+                        inTime = true;
+                    } else
+                        return "";
                 }
-                else {
-                    return "";
+            }
+            if (!tickerSymbols.isEmpty()){
+                if (i == 2) {
+                    if (tickerSymbols.contains(tempStr)){
+                        inTicker = true;
+                    }
+                    else
+                        return "";
                 }
             }
             str = str+tempStr;
@@ -89,11 +110,23 @@ public class TAQConverterSparkFN implements Serializable {
                 str =str+",";
         }
         str = str+"\n";
-        if (startTime.equals("n"))
+        if (startTime.equals("n") && tickerSymbols.isEmpty()) {
             return str;
-        else if (inRange==1)
-            return str;
+        }
+        else {
+            if (!startTime.equals("n") && !tickerSymbols.isEmpty()) {
+                if (inTime && inTicker)
+                    return str;
+            } else if (!startTime.equals("n") && tickerSymbols.isEmpty()) {
+                if (inTime)
+                    return str;
+            } else if (startTime.equals("n") && !tickerSymbols.isEmpty()) {
+                if (inTicker)
+                    return str;
+            }
+        }
         return "";
+
     }
 
     public int getlength(){
@@ -105,8 +138,8 @@ public class TAQConverterSparkFN implements Serializable {
     }
 
     //work on
-    public void convertFileZip(){
-        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");;
+    private void convertFileZip(){
+        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaPairRDD<String, PortableDataStream> text_file = sc.binaryFiles(inputFileName);
         debug(5);
@@ -115,7 +148,7 @@ public class TAQConverterSparkFN implements Serializable {
 
     }
     //work on
-    public String convertLineZip(String line, IFieldType[] fieldType){
+    private String convertLineZip(String line, IFieldType[] fieldType){
         String str = "";
         int start = 0;
         if (line.trim().length()<15)

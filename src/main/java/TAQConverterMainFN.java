@@ -1,9 +1,16 @@
+import BasicImplementation.TAQConverterUnziped;
+import BasicImplementation.TAQConverterZipExtractFN;
+import DataFieldType.IFieldType;
+import DataFieldType.TAQ2010Spec;
+import DataFieldType.TAQJune2015Spec;
 import Misc.FileRead;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+
+import static Misc.Time.printElapsedTime;
+import static Misc.Time.printTime;
 
 public class TAQConverterMainFN {
     private TAQ2010Spec fieldObject2010;
@@ -59,7 +66,6 @@ public class TAQConverterMainFN {
                 else {
 
                     TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
-
                 }
                 break;
             case "z":
@@ -76,19 +82,6 @@ public class TAQConverterMainFN {
                 fileReadObject= new FileRead(args[2], args[4]);
                 break;
         }
-    }
-
-
-    public static void printTime(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy hh.mm.ss.S aa");
-        String formattedDate = dateFormat.format(new Date()).toString();
-        System.out.println(formattedDate);
-    }
-    public static void printElapsedTime(long startTime, long endTime){
-        long totalTime = endTime - startTime;
-        int seconds = (int) ((totalTime / 1000) % 60);
-        int minutes = (int) ((totalTime / 1000) / 60);
-        System.out.println("\n\nTotal Time: "+ minutes+":"+seconds);
     }
 
     public static void main(String[] args) throws IOException {

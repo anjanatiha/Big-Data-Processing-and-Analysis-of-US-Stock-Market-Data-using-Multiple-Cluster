@@ -1,6 +1,8 @@
-/**
+package BasicImplementation; /**
  * Created by Anjana on 5/29/2017.
  */
+import DataFieldType.IFieldType;
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -15,7 +17,7 @@ public class TAQConverterZipExtractFN {
     private String startTime=null, endTime=null;
     private BufferedReader br;
 
-    TAQConverterZipExtractFN(String zipfile, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset){
+    public TAQConverterZipExtractFN(String zipfile, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset){
         try {
             setMainObject(zipfile, outputFileName, fieldType, startOffset);
             setTime(startTime, endTime);
@@ -24,7 +26,7 @@ public class TAQConverterZipExtractFN {
             e.printStackTrace();
         }
     }
-    TAQConverterZipExtractFN(String zipfile, String outputFileName, IFieldType[] fieldType, int startOffset){
+    public TAQConverterZipExtractFN(String zipfile, String outputFileName, IFieldType[] fieldType, int startOffset){
         try {
             setMainObject(zipfile, outputFileName, fieldType, startOffset);
             convertFile();
@@ -32,7 +34,7 @@ public class TAQConverterZipExtractFN {
             e.printStackTrace();
         }
     }
-    public void setMainObject(String zipfile, String outputFileName,IFieldType[] fieldType, int startOffset){
+    private void setMainObject(String zipfile, String outputFileName,IFieldType[] fieldType, int startOffset){
         try {
             this.zf = new ZipFile(zipfile);
             this.outputFile = new File(outputFileName);
@@ -44,7 +46,7 @@ public class TAQConverterZipExtractFN {
             e.printStackTrace();
         }
     }
-    public void setTime(String startTime, String endTime){
+    private void setTime(String startTime, String endTime){
         this.startTime = startTime;
         this.endTime = endTime;
     }
