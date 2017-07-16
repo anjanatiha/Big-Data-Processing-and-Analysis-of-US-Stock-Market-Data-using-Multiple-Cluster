@@ -60,45 +60,27 @@ public class TAQConverterSparkFN implements Serializable {
         SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory","1g");;
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
-//        JavaRDD<String> convertedObject = text_file.map(line -> convertLine(line, fieldType));
-        JavaRDD<String> convertedObject = text_file.map(line -> convertLineExtract(line, fieldType, startTime, endTime));
-
+        JavaRDD<String> convertedObject;
+        convertedObject = text_file.map(line -> convertLine(line));
         convertedObject.saveAsTextFile (outputFileName);
 
     }
-    public String convertLine(String line, IFieldType[] fieldType){
-        String str = "";
-        int start = 0;
-        if (line.trim().length()<15)
-            return "";
-        for(int i=0; i<fieldType.length-1; i++) {
-            String tempStr=fieldType[i].convertFromBinary(line, start);
-            str = str+tempStr;
-            start = start +fieldType[i].getLength();
-            if (i < fieldType.length-2)
-                str =str+",";
-        }
-        str = str+"\n";
-        return str;
-    }
-    public String convertLineExtract(String line, IFieldType[] fieldType, String startTime, String endTime){
+    public String convertLine(String line){
         String str = "";
         int start = 0;
         int time;
-        int inRange = -1;
+        int inRange=-1;
         if (line.trim().length()<15)
             return "";
         for(int i=0; i<fieldType.length-1; i++) {
             String tempStr=fieldType[i].convertFromBinary(line, start);
-            if(startTime!=null & endTime!=null){
-                if(i==0){
-                    time = Integer.parseInt(tempStr);
-                    if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime))) {
-                        inRange = 1;
-                    }
-                    else {
-                        return "";
-                    }
+            if(i==0){
+                time = Integer.parseInt(tempStr);
+                if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime))) {
+                    inRange = 1;
+                }
+                else {
+                    return "";
                 }
             }
             str = str+tempStr;
@@ -107,21 +89,53 @@ public class TAQConverterSparkFN implements Serializable {
                 str =str+",";
         }
         str = str+"\n";
-
-        if(startTime!=null & endTime!=null) {
-            if (inRange == 1) {
-                System.out.println(str);
-                return str;
-            }
-            else {
-                return "";
-            }
-        }
-        else {
+        if (startTime.equals("n"))
             return str;
-        }
-
+        else if (inRange==1)
+            return str;
+        return "";
     }
+//    public String convertLineExtract(String line, IFieldType[] fieldType, String startTime, String endTime){
+//        String str = "";
+//        int start = 0;
+//        int time;
+//        int inRange = -1;
+//        if (line.trim().length()<15)
+//            return "";
+//        for(int i=0; i<fieldType.length-1; i++) {
+//            String tempStr=fieldType[i].convertFromBinary(line, start);
+//            if(startTime!=null & endTime!=null){
+//                if(i==0){
+//                    time = Integer.parseInt(tempStr);
+//                    if((time>=Integer.parseInt(startTime)) && (time<=Integer.parseInt(endTime))) {
+//                        inRange = 1;
+//                    }
+//                    else {
+//                        return "";
+//                    }
+//                }
+//            }
+//            str = str+tempStr;
+//            start = start +fieldType[i].getLength();
+//            if (i < fieldType.length-2)
+//                str =str+",";
+//        }
+//        str = str+"\n";
+//
+//        if(startTime!=null & endTime!=null) {
+//            if (inRange == 1) {
+//                System.out.println(str);
+//                return str;
+//            }
+//            else {
+//                return "";
+//            }
+//        }
+//        else {
+//            return str;
+//        }
+//
+//    }
     public int getlength(){
         int recordLength=0;
         for(int i=0;i<fieldType.length;i++){
