@@ -5,8 +5,8 @@ public class FileRead {
     private String outputFileName;
     private File outputFile;
     private PrintStream outputStream;
-//    private String path;
-    FileRead(String inputFileName){
+    private int count;
+    FileRead(String inputFileName, String count){
         this.inputFileName = inputFileName;
         String outputFileName = inputFileName+"_sample"+".txt";
         outputFile = new File(outputFileName);
@@ -15,8 +15,11 @@ public class FileRead {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-//        this.path = path;
+        try {
+            printFileLine(Integer.parseInt(count));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public void printFile(int start, int end) throws IOException {
         File inputFile = new File(inputFileName);
@@ -50,18 +53,6 @@ public class FileRead {
         br.close();
         outputStream.append(str);
         outputStream.close();
-    }
-
-    public static void main(String[] args){
-
-        FileRead fileReadObject = new FileRead(args[0]);
-        try {
-            fileReadObject.printFileLine(50);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
 }

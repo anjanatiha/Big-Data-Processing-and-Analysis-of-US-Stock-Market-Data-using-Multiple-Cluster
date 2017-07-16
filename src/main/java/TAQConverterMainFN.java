@@ -9,6 +9,7 @@ public class TAQConverterMainFN {
     private TAQConverterSparkFN TAQConverterSparkFNObject;
     private TAQConverterZipExtractFN TAQConverterZipObject;
     private TAQConverterUnziped TAQConverterUnzipedObject;
+    private FileRead fileReadObject;
     private IFieldType[] fieldTypes;
     private String outputFileName;
 
@@ -61,8 +62,14 @@ public class TAQConverterMainFN {
                 break;
             case "u":
                 TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName,73, fieldTypes,1024*73);
+                break;
+            case "r":
+                fileReadObject= new FileRead(args[2], args[4]);
+                break;
         }
     }
+
+
     public static void printTime(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy hh.mm.ss.S aa");
         String formattedDate = dateFormat.format(new Date()).toString();
