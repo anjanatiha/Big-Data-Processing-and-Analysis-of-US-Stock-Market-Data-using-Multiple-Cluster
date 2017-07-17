@@ -30,6 +30,8 @@ public class TAQConverterSparkFN implements Serializable {
     private List<String> tickerSymbols;
     private int[] fieldset;
     private String fileType;
+    private SparkConf conf;
+    private JavaSparkContext sc;
 
     TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, int startOffset) {
         setMainObjects(inputFileName, fieldType, startOffset);
@@ -75,11 +77,13 @@ public class TAQConverterSparkFN implements Serializable {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         this.outputFileName = inputFileName + "_SparkConverted_" + timeStamp + ".txt";
         this.fileType = inputFileName.substring(inputFileName.length() - 3, inputFileName.length());
+        conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
+        sc = new JavaSparkContext(conf);
     }
 
     private void convertFile() {
-        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory", "1g");
-        JavaSparkContext sc = new JavaSparkContext(conf);
+//        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
         convertedObject = text_file.map(line -> convertLine(line));
@@ -155,8 +159,8 @@ public class TAQConverterSparkFN implements Serializable {
 
     //work on
     private void convertFileZip() {
-        SparkConf conf = new SparkConf().setAppName("SOME APP NAME").setMaster("local[2]").set("spark.executor.memory", "1g");
-        JavaSparkContext sc = new JavaSparkContext(conf);
+//        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
         JavaPairRDD<String, PortableDataStream> text_file = sc.binaryFiles(inputFileName);
         JavaRDD<String> convertedObject = text_file.map(line -> convertLineZip(String.valueOf(line), fieldType));
         convertedObject.saveAsTextFile(outputFileName);
