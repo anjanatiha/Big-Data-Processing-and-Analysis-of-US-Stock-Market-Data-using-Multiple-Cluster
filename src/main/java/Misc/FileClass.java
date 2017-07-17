@@ -73,25 +73,60 @@ public class FileClass {
 
     }
 
-    public static void printFileLine(int lineCount) throws IOException {
-        FileInputStream fstream = new FileInputStream(inputFileName);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-        String strLine;
-        int k = 0;
-        StringBuilder str = new StringBuilder();
-        while ((strLine = br.readLine()) != null) {
-            if (k > 0) {
-                System.out.println(strLine);
-                str.append(strLine + "\n");
-                lineCount--;
-                if (lineCount < 0)
-                    break;
+    public static void printFileLine(String inputFileName, int lineCount){
+        FileInputStream fstream = null;
+        try {
+            fstream = new FileInputStream(inputFileName);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            String strLine;
+            int k = 0;
+            StringBuilder str = new StringBuilder();
+            while ((strLine = br.readLine()) != null) {
+                if (k >= 0) {
+                    System.out.println(strLine);
+                    str.append(strLine + "\n");
+                    lineCount--;
+                    if (lineCount < 0)
+                        break;
+                }
+                k++;
             }
-            k++;
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        br.close();
+    }
+    public static File[] readDirectory(String directory){
 
+        File folder = new File(directory);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                System.out.println("File " + listOfFiles[i].getName());
+            } else if (listOfFiles[i].isDirectory()) {
+                System.out.println("Directory " + listOfFiles[i].getName());
+            }
+        }
+        return listOfFiles;
     }
 
+    public static String fileType(String directory){
+
+        if ((directory.substring(directory.length()-5, directory.length()-1))=="NBBO"){
+            return "NBBO";
+        }
+
+        else if ((directory.substring(directory.length()-6, directory.length()))=="Quote"){
+            return "Quote";
+        }
+
+        else if ((directory.substring(directory.length()-6, directory.length()))=="Trade"){
+            return "Trade";
+        }
+        else return "None";
+    }
 }
