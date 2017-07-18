@@ -1,5 +1,5 @@
-import BasicImplementation.TAQConverterUnziped;
-import BasicImplementation.TAQConverterZipExtractFN;
+package Analysis;
+
 import DataFieldType.IFieldType;
 import DataFieldType.TAQ2010Spec;
 import DataFieldType.TAQJune2015Spec;
@@ -22,19 +22,17 @@ import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
 
 
-public class TAQConverterMainFN {
+public class TAQAnalyzerSparkMain {
     private TAQ2010Spec fieldObject2010;
     private TAQJune2015Spec fieldObject2015;
-    private TAQConverterSparkFN TAQConverterSparkFNObject;
-    private TAQConverterZipExtractFN TAQConverterZipObject;
-    private TAQConverterUnziped TAQConverterUnzipedObject;
+    private TAQAnalyzerSpark TAQConverterSparkFNObject;
     private FileClass fileReadObject;
     private IFieldType[] fieldTypes;
     private String outputFileName;
     private List<String> tickerSymbols;
 
 
-    TAQConverterMainFN(String[] args) {
+    TAQAnalyzerSparkMain(String[] args) {
         String type = args[0];
         int year = Integer.parseInt(args[1]);
         int start = 1;
@@ -74,24 +72,18 @@ public class TAQConverterMainFN {
             case "su":
                 if (args[4].equals("n")) {
                     if (args[5].equals("n")) {
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
+                        TAQConverterSparkFNObject = new TAQAnalyzerSpark(args[2], fieldTypes, start);
                     } else {
 
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start, tickerSymbols);
+                        TAQConverterSparkFNObject = new TAQAnalyzerSpark(args[2], fieldTypes, start, tickerSymbols);
                     }
                 } else {
                     if (args[6].equals("n")) {
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
+                        TAQConverterSparkFNObject = new TAQAnalyzerSpark(args[2], fieldTypes, args[4], args[5], start);
                     } else {
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start, tickerSymbols);
+                        TAQConverterSparkFNObject = new TAQAnalyzerSpark(args[2], fieldTypes, args[4], args[5], start, tickerSymbols);
                     }
                 }
-                break;
-            case "z":
-                if (args[4].equals("n"))
-                    TAQConverterZipObject = new TAQConverterZipExtractFN(args[2], outputFileName, fieldTypes, start);
-                else
-                    TAQConverterZipObject = new TAQConverterZipExtractFN(args[2], outputFileName, fieldTypes, args[4], args[5], start);
                 break;
             case "zu":
                 UnZip unZip = new UnZip();
@@ -100,10 +92,10 @@ public class TAQConverterMainFN {
                 unZip.unZipIt(args[2],folderName);
                 File dir = new File(folderName);
                 String[] inputFileName =  dir.list();
-//                if (args[4].equals("n"))
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(inputFileName[0], fieldTypes, start);
-//                else
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(inputFileName[0], fieldTypes, args[4], args[5], start);
+                    if (args[4].equals("n"))
+                        TAQConverterSparkFNObject = new TAQAnalyzerSpark(inputFileName[0], fieldTypes, start);
+                    else
+                        TAQConverterSparkFNObject = new TAQAnalyzerSpark(inputFileName[0], fieldTypes, args[4], args[5], start);
                 try {
                     TimeUnit.MINUTES.sleep(5);
                     Path path = Paths.get(folderName);
@@ -114,21 +106,13 @@ public class TAQConverterMainFN {
                     e.printStackTrace();
                 }
                 break;
-//                if (args[4].equals("n"))
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
-//                else
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
-//                break;
-            case "u":
-                TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName, 73, fieldTypes, 1024 * 73);
-                break;
         }
     }
 
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         printTime();
-        TAQConverterMainFN TAQAnalysisObject = new TAQConverterMainFN(args);
+        TAQAnalyzerSparkMain TAQAnalysisObject = new TAQAnalyzerSparkMain(args);
         printTime();
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime);
