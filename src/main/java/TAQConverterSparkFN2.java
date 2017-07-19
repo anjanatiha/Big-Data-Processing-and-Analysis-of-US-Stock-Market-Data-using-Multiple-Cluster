@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import static Misc.Debug.debug;
-import static Misc.Print.print;
 
 
 public class TAQConverterSparkFN2 implements Serializable {
@@ -42,7 +41,6 @@ public class TAQConverterSparkFN2 implements Serializable {
         this.tickerSymbols = tickerSymbols;
         this.tickerListExists=true;
         convertFile();
-
     }
 
     TAQConverterSparkFN2(String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
@@ -55,37 +53,31 @@ public class TAQConverterSparkFN2 implements Serializable {
 
     TAQConverterSparkFN2(String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset) {
         setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
-        this.tickerSymbols =tickerSymbols;
-        this.tickerListExists=true;
+        this.timeRange = true;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.timeRange =true;
-        System.out.println(tickerSymbols);
+        this.tickerListExists = true;
+        this.tickerSymbols = tickerSymbols;
         convertFile();
     }
 
     private void setMainObjects(String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
         this.inputFileName = inputFileName;
+        this.outputFileName = outputFileName;
         this.fieldType = fieldType;
         this.startOffset = startOffset;
         this.recordLength = getlength();
-        this.outputFileName = outputFileName;
-        this.outputFileName = outputFileName;
     }
 
     private void convertFile() {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
         JavaSparkContext sc = new JavaSparkContext(conf);
-        System.out.println("Input File: " +inputFileName);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
         convertedObject = text_file.map(line -> convertLine(line));
         convertedObject = convertedObject.filter(line -> !line.equals("\r"));
-
-        print("Output File: "+ outputFileName);
         convertedObject.saveAsTextFile(outputFileName);
     }
-
 
     private String convertLine(String line) {
         String str = "";
@@ -95,7 +87,6 @@ public class TAQConverterSparkFN2 implements Serializable {
         boolean inTicker = false;
         if (line.trim().length() < 15)
             return "\r";
-
         for (int i = 0; i < fieldType.length - 1; i++) {
             String tempStr = fieldType[i].convertFromBinary(line, start);
             if (timeRange==true) {

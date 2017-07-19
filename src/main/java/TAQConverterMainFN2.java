@@ -35,40 +35,53 @@ public class TAQConverterMainFN2 {
         }
         return outputFileName;
     }
-    public String inputFileType(String inputFileName){
-        if(inputFileName.substring(inputFileName.length()-3, inputFileName.length())=="zip")
-            return "zip";
-        else
+    public String getInputFileType(String inputFileName) {
+        if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")){
+        return "zip";
+    }else
             return "txt";
     }
     TAQConverterMainFN2(String[] args) {
+
         this.TAQFileType = args[0];
         this.fileYear = Integer.parseInt(args[1]);
         this.inputFileName = args[2];
-        if (!args[4].equals("n"))
+        if (!args[3].equals("n")) {
             this.timeFilter = true;
             this.startTime = args[4];
             this.endTime = args[5];
-        if (!args[6].equals("n"))
+        }
+        if (!args[5].equals("n")){
+            this.tickerSymbols = getTickers();
             this.tickerFilter=true;
+        }
         this.start = 1;
-        this.tickerSymbols = getTickers();
+        this.inputFileType = getInputFileType(inputFileName);
         this.outputFileName = getOutputFileName(inputFileName);
+
+
         switch (fileYear){
             case 2010:
                 ITAQSpecObject = new TAQ102010Spec();
+                break;
             case 2012:
                 ITAQSpecObject = new TAQ072012Spec();
+                break;
             case 2013:
                 ITAQSpecObject = new TAQ082013Spec();
+                break;
             case 2015:
                 ITAQSpecObject = new TAQ062015Spec();
+                break;
             case 2016:
                 ITAQSpecObject = new TAQ062016Spec();
+                break;
+
         }
         switch (TAQFileType) {
             case "trade":
                 fieldTypes = ITAQSpecObject.getTradeFields();
+
                 break;
             case "nbbo":
                 fieldTypes = ITAQSpecObject.getNBBOFields();
@@ -77,12 +90,13 @@ public class TAQConverterMainFN2 {
                 fieldTypes = ITAQSpecObject.getQuoteFields();
                 break;
         }
-        if(inputFileType.equals("zip")){
+        if(inputFileType.equals("zip")) {
             UnZip unZip = new UnZip();
             unZip.unZipIt(inputFileName, outputFileName);
             print("unzipping complete");
             inputFileName = outputFileName;
             outputFileName = getOutputFileName(inputFileName);
+        }
         if (!timeFilter) {
             if(!tickerFilter)
                 TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes, start);
@@ -96,19 +110,7 @@ public class TAQConverterMainFN2 {
             else
                 TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
         }
-//                try {
-//                    TimeUnit.MINUTES.sleep(1);
-//
-//                    Path path = Paths.get(folderName);
-//                    deleteFileOrFolder(path);
-//                    print("folder deleted");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
 
-}
     }
 
     public static void main(String[] args) throws IOException {
