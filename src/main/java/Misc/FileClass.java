@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static Misc.Debug.debug;
 import static Misc.Print.print;
@@ -195,5 +198,35 @@ public class FileClass {
         }
         return firstLine;
     }
+    public static String printFirstLineZip(String inputZipFileName){
+        String line = "";
+        BufferedReader br = null;
+        try {
+            ZipFile zf = new ZipFile(inputZipFileName);
+            Enumeration entries = zf.entries();
 
+            while (entries.hasMoreElements()) {
+                ZipEntry ze = (ZipEntry) entries.nextElement();
+                long size = ze.getSize();
+                if (size > 0) {
+                    System.out.println("Length is " + size);
+                    br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
+                    line = br.readLine();
+
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            if(br!=null)
+                try {
+                    br.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+        }
+        return line;
+
+    }
 }

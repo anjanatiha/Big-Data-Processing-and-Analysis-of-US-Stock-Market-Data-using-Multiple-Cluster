@@ -5,12 +5,14 @@ import java.io.Serializable;
 /**
  * Created by Anjana on 6/21/2017.
  */
-public class TAQ2010Spec implements Serializable {
+public class TAQ082013Spec implements Serializable {
     private int tradeFileEntryLength = 73;
     private int QuoteFileEntryLength = 91;
     private int NBBOFileEntryLength = 144;
+    private String activeStartDate = "04102013";
+    private String activeEndDate = "None";
 
-    public TAQ2010Spec() {
+    public TAQ082013Spec() {
     }
 
     public int getTradeFieldsLength() {
@@ -38,8 +40,10 @@ public class TAQ2010Spec implements Serializable {
                 new TextField(16), new NumericField(11, 4), new NumericField(7),
                 new NumericField(11, 4), new NumericField(7), new TextField(1),
                 new NumericField(4, 'p'), new TextField(1), new TextField(1),
-                new TextField(4), new NumericField(16, 'p'), new NumericField(1),
-                new TextField(1), new TextField(1), new TextField(2)};
+                new NumericField(16,'p'), new NumericField(1), new NumericField(1), new TextField(1),
+                new TextField(1),new TextField(1),new TextField(1),
+                new TextField(1),new TextField(1),new TextField(1),
+                new TextField(1),new TextField(2)};
         return quoteFileFields;
     }
 
@@ -52,7 +56,8 @@ public class TAQ2010Spec implements Serializable {
                 new TextField(1), new TextField(1), new NumericField(11, 4),
                 new NumericField(7), new TextField(4), new TextField(2), new TextField(1),
                 new TextField(1), new NumericField(11, 4), new NumericField(7),
-                new TextField(4), new TextField(2), new TextField(1), new TextField(2)};
+                new TextField(4), new TextField(2), new TextField(1), new TextField(1),new TextField(1),
+                new TextField(2)};
         return NBBOFileFields;
     }
 

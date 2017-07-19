@@ -5,12 +5,12 @@ import java.io.Serializable;
 /**
  * Created by Anjana on 6/21/2017.
  */
-public class TAQJUL2012Spec implements Serializable {
+public class TAQ072012Spec implements Serializable {
     private int tradeFileEntryLength = 73;
     private int QuoteFileEntryLength = 91;
     private int NBBOFileEntryLength = 144;
 
-    public TAQJUL2012Spec() {
+    public TAQ072012Spec() {
     }
 
     public int getTradeFieldsLength() {

@@ -5,12 +5,14 @@ import java.io.Serializable;
 /**
  * Created by Anjana on 6/21/2017.
  */
-public class TAQJune2015Spec implements Serializable {
+public class TAQJ062015Spec implements Serializable {
     private int tradeFileEntryLength = 108;
     private int QuoteFileEntryLength = 133;
     private int NBBOFileEntryLength = 182;
+    private String activeStartDate = "01062015";
+    private String activeEndDate = "None";
 
-    public TAQJune2015Spec() {
+    public TAQJ062015Spec() {
     }
 
     public int getTradeFieldsLength() {

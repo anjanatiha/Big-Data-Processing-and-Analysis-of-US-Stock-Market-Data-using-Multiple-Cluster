@@ -19,4 +19,9 @@ public class Time {
         int minutes = (int) ((totalTime / 1000) / 60);
         System.out.println("\n\nTotal Time: " + minutes + ":" + seconds);
     }
+    public static void decipherTime(String time){
+        String year=time.substring(time.length()-4, time.length());
+        String month=time.substring(time.length()-6, time.length()-4);
+
+    }
 }
