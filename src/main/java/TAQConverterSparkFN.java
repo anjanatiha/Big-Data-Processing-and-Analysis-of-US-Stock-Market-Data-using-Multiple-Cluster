@@ -11,8 +11,6 @@ import org.apache.spark.input.PortableDataStream;
 
 import java.io.File;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 import static Misc.Debug.debug;
@@ -31,66 +29,61 @@ public class TAQConverterSparkFN implements Serializable {
     private List<String> tickerSymbols;
     private int[] fieldset;
     private String fileType;
+    private boolean tickerListExists=false;
+    private boolean timeRange=false;
 
 
-    TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, int startOffset) {
-        setMainObjects(inputFileName, fieldType, startOffset);
-
-        if (!fileType.trim().equals("zip")) {
-
-            convertFile();
-        } else {
-
-            convertFileZip();
-        }
-    }
-
-    TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, int startOffset, List<String> tickerSymbols) {
-        setMainObjects(inputFileName, fieldType, startOffset);
-        this.tickerSymbols = tickerSymbols;
-
-        if (!fileType.trim().equals("zip")) {
-
-            convertFile();
-        } else {
-            convertFileZip();
-        }
-    }
-
-    TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
-        setMainObjects(inputFileName, fieldType, startOffset);
-        this.startTime = startTime;
-        this.endTime = endTime;
+    TAQConverterSparkFN(String inputFileName, String outputFileName,IFieldType[] fieldType, int startOffset) {
+        setMainObjects(inputFileName, outputFileName,fieldType, startOffset);
         convertFile();
     }
 
-    TAQConverterSparkFN(String inputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset, List<String> tickerSymbols) {
-        setMainObjects(inputFileName, fieldType, startOffset);
-        this.tickerSymbols =tickerSymbols;
+    TAQConverterSparkFN(String inputFileName,String outputFileName, IFieldType[] fieldType, int startOffset, List<String> tickerSymbols) {
+        setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
+        this.tickerSymbols = tickerSymbols;
+        this.tickerListExists=true;
+        convertFile();
+
+    }
+
+    TAQConverterSparkFN(String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
+        setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
         this.startTime = startTime;
         this.endTime = endTime;
+        this.timeRange =true;
+        convertFile();
+    }
+
+    TAQConverterSparkFN(String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset, List<String> tickerSymbols) {
+        setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
+        this.tickerSymbols =tickerSymbols;
+        this.tickerListExists=true;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.timeRange =true;
         System.out.println(tickerSymbols);
         convertFile();
     }
 
-    private void setMainObjects(String inputFileName, IFieldType[] fieldType, int startOffset) {
+    private void setMainObjects(String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
         this.inputFileName = inputFileName;
         this.fieldType = fieldType;
         this.startOffset = startOffset;
         this.recordLength = getlength();
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-        this.outputFileName = inputFileName + "_SparkConverted_" + timeStamp + ".txt";
-        this.fileType = inputFileName.substring(inputFileName.length() - 3, inputFileName.length());
-
+        this.outputFileName = outputFileName;
+        this.outputFileName = outputFileName;
     }
 
     private void convertFile() {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
         JavaSparkContext sc = new JavaSparkContext(conf);
+        System.out.println("Input File: " +inputFileName);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
         convertedObject = text_file.map(line -> convertLine(line));
         convertedObject = convertedObject.filter(line -> !line.equals("\r"));
+
+        print("Output File: "+ outputFileName);
         convertedObject.saveAsTextFile(outputFileName);
     }
 
@@ -106,8 +99,7 @@ public class TAQConverterSparkFN implements Serializable {
 
         for (int i = 0; i < fieldType.length - 1; i++) {
             String tempStr = fieldType[i].convertFromBinary(line, start);
-            if (!startTime.equals("n")) {
-
+            if (timeRange==true) {
                 if (i == 0) {
                     time = Integer.parseInt(tempStr);
                     if ((time >= Integer.parseInt(startTime)) && (time <= Integer.parseInt(endTime))) {
@@ -116,8 +108,7 @@ public class TAQConverterSparkFN implements Serializable {
                         return "\r";
                 }
             }
-            if (!tickerSymbols.isEmpty()) {
-
+            if (tickerListExists==true) {
                 if (i == 2) {
                     if (tickerSymbols.contains(tempStr)) {
                         inTicker = true;
@@ -131,20 +122,20 @@ public class TAQConverterSparkFN implements Serializable {
                 str = str + ",";
         }
         str = str + "\n";
-        if (startTime.equals("n") && tickerSymbols.isEmpty()) {
-
+        if (!timeRange && !tickerListExists) {
             return str;
         } else {
 
-            if (!startTime.equals("n") && !tickerSymbols.isEmpty()) {
+            if (timeRange && tickerListExists) {
                 if (inTime && inTicker) {
-                    print(str);
                     return str;
                 }
-            } else if (!startTime.equals("n") && tickerSymbols.isEmpty()) {
+
+            } else if (timeRange && !tickerListExists) {
                 if (inTime)
                     return str;
-            } else if (startTime.equals("n") && !tickerSymbols.isEmpty()) {
+
+            } else if (!timeRange && tickerListExists) {
                 if (inTicker)
                     return str;
             }

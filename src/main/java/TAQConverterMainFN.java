@@ -6,23 +6,20 @@ import DataFieldType.TAQJune2015Spec;
 import Misc.FileClass;
 import Misc.UnZip;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static DataFieldType.TickerSymbols.getTickers;
-import static Misc.FileClass.deleteFileOrFolder;
+import static Misc.Debug.debug;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
 
 
 public class TAQConverterMainFN {
+    private String inputFileName;
     private TAQ2010Spec fieldObject2010;
     private TAQJune2015Spec fieldObject2015;
     private TAQConverterSparkFN TAQConverterSparkFNObject;
@@ -35,11 +32,17 @@ public class TAQConverterMainFN {
 
 
     TAQConverterMainFN(String[] args) {
+        this.inputFileName = args[2];
         String type = args[0];
         int year = Integer.parseInt(args[1]);
         int start = 1;
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-        outputFileName = args[2] + "_SparkConverted_" + timeStamp + ".txt";
+        if (args[2].substring(args[2].length()-3,args[2].length()).equals("zip")) {
+            outputFileName = args[2].substring(0,args[2].length()-4) + "_converted";
+        } else {
+            outputFileName = args[2] + "_converted";
+        }
+
         tickerSymbols = getTickers();
 
         if (year == 2015) {
@@ -74,16 +77,16 @@ public class TAQConverterMainFN {
             case "su":
                 if (args[4].equals("n")) {
                     if (args[5].equals("n")) {
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
+                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], outputFileName, fieldTypes, start);
                     } else {
 
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start, tickerSymbols);
+                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], outputFileName, fieldTypes, start, tickerSymbols);
                     }
                 } else {
                     if (args[6].equals("n")) {
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
+                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], outputFileName, fieldTypes, args[4], args[5], start);
                     } else {
-                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start, tickerSymbols);
+                        TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], outputFileName, fieldTypes, args[4], args[5], start, tickerSymbols);
                     }
                 }
                 break;
@@ -95,31 +98,31 @@ public class TAQConverterMainFN {
                 break;
             case "zu":
                 UnZip unZip = new UnZip();
-                String folderName = args[2].substring( 0, args[2].length()-4);
-                print("asd"+folderName);
-                unZip.unZipIt(args[2],folderName);
-                File dir = new File(folderName);
-                String[] inputFileName =  dir.list();
-//                if (args[4].equals("n"))
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(inputFileName[0], fieldTypes, start);
-//                else
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(inputFileName[0], fieldTypes, args[4], args[5], start);
-                try {
-                    TimeUnit.MINUTES.sleep(5);
-                    Path path = Paths.get(folderName);
-                    deleteFileOrFolder(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                String outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "converted";
+                unZip.unZipIt(inputFileName, outputFileName);
+                print("unzipping complete");
+                inputFileName = outputFileName;
+                outputFileName = inputFileName.substring(0, inputFileName.length()-4)+"_spark";
+                if (args[4].equals("n")) {
+                    debug(5);
+                    TAQConverterSparkFNObject = new TAQConverterSparkFN(inputFileName, outputFileName, fieldTypes, start);
+                }else {
+                    TAQConverterSparkFNObject = new TAQConverterSparkFN(inputFileName, outputFileName, fieldTypes, args[4], args[5], start);
                 }
+//                try {
+//                    TimeUnit.MINUTES.sleep(1);
+//
+//                    Path path = Paths.get(folderName);
+//                    deleteFileOrFolder(path);
+//                    print("folder deleted");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 break;
-//                if (args[4].equals("n"))
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, start);
-//                else
-//                    TAQConverterSparkFNObject = new TAQConverterSparkFN(args[2], fieldTypes, args[4], args[5], start);
-//                break;
             case "u":
+                outputFileName = inputFileName+"_converted.txt";
                 TAQConverterUnzipedObject = new TAQConverterUnziped(args[2], outputFileName, 73, fieldTypes, 1024 * 73);
                 break;
         }
