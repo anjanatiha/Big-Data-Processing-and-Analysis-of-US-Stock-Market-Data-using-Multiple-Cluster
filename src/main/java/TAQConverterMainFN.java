@@ -2,7 +2,7 @@ import BasicImplementation.TAQConverterUnziped;
 import BasicImplementation.TAQConverterZipExtractFN;
 import DataFieldType.IFieldType;
 import DataFieldType.TAQ102010Spec;
-import DataFieldType.TAQJ062015Spec;
+import DataFieldType.TAQ062015Spec;
 import Misc.FileClass;
 import Misc.UnZip;
 
@@ -21,7 +21,7 @@ import static Misc.Time.printTime;
 public class TAQConverterMainFN {
     private String inputFileName;
     private TAQ102010Spec fieldObject2010;
-    private TAQJ062015Spec fieldObject2015;
+    private TAQ062015Spec fieldObject2015;
     private TAQConverterSparkFN TAQConverterSparkFNObject;
     private TAQConverterZipExtractFN TAQConverterZipObject;
     private TAQConverterUnziped TAQConverterUnzipedObject;
@@ -46,7 +46,7 @@ public class TAQConverterMainFN {
         tickerSymbols = getTickers();
 
         if (year == 2015) {
-            TAQJ062015Spec fieldObject2015 = new TAQJ062015Spec();
+            TAQ062015Spec fieldObject2015 = new TAQ062015Spec();
             switch (type) {
                 case "trade":
                     fieldTypes = fieldObject2015.getTradeFields();
