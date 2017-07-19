@@ -67,18 +67,18 @@ public class FileClass {
     }
 
 
-    public static void printFile(int start, int end) throws IOException {
-        File inputFile = new File(inputFileName);
-        byte[] inputBuffer = new byte[end + 1];
-        InputStream inputStream = new FileInputStream(inputFile);
-        int bytesRead = inputStream.read(inputBuffer);
-        String str = "";
-        for (int i = start; i <= end; i++) {
-            System.out.println(inputBuffer[i]);
-        }
-        System.out.println(str);
-
-    }
+//    public static void printFile(int start, int end) throws IOException {
+//        File inputFile = new File(inputFileName);
+//        byte[] inputBuffer = new byte[end + 1];
+//        InputStream inputStream = new FileInputStream(inputFile);
+//        int bytesRead = inputStream.read(inputBuffer);
+//        String str = "";
+//        for (int i = start; i <= end; i++) {
+//            System.out.println(inputBuffer[i]);
+//        }
+//        System.out.println(str);
+//
+//    }
 
     public static void printFileLine(String inputFileName, int lineCount){
         FileInputStream fstream = null;
@@ -180,4 +180,20 @@ public class FileClass {
         System.out.println("deleted directory");
         return(directory.delete());
     }
+    public static String getFirstLine(String inputFileName){
+        FileInputStream fstream = null;
+        String firstLine="";
+        try {
+            fstream = new FileInputStream(inputFileName);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            firstLine = br.readLine();
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return firstLine;
+    }
+
 }
