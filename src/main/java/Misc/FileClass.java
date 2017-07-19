@@ -124,18 +124,18 @@ public class FileClass {
         return listOfFiles;
     }
 
-    public static String fileType(String directory){
+    public static String getFileType(String directory){
 
         if ((directory.substring(directory.length()-5, directory.length()-1))=="NBBO"){
-            return "NBBO";
+            return "nbbo";
         }
 
         else if ((directory.substring(directory.length()-6, directory.length()))=="Quote"){
-            return "Quote";
+            return "quote";
         }
 
         else if ((directory.substring(directory.length()-6, directory.length()))=="Trade"){
-            return "Trade";
+            return "trade";
         }
         else return "None";
     }
@@ -227,6 +227,38 @@ public class FileClass {
 
         }
         return line;
+
+    }
+    public static String getYear(String inputZipFileName){
+        String year = "";
+        BufferedReader br = null;
+        try {
+            ZipFile zf = new ZipFile(inputZipFileName);
+            Enumeration entries = zf.entries();
+
+            while (entries.hasMoreElements()) {
+                ZipEntry ze = (ZipEntry) entries.nextElement();
+                long size = ze.getSize();
+                if (size > 0) {
+                    System.out.println("Length is " + size);
+                    br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
+                    String line = br.readLine();
+                    year = line.substring(6,10);
+
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            if(br!=null)
+                try {
+                    br.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+        }
+        return year;
 
     }
 }

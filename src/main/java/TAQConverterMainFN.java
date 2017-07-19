@@ -128,9 +128,11 @@ public class TAQConverterMainFN {
         }
     }
 
+
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         printTime();
+
         TAQConverterMainFN TAQAnalysisObject = new TAQConverterMainFN(args);
         printTime();
         long endTime = System.currentTimeMillis();

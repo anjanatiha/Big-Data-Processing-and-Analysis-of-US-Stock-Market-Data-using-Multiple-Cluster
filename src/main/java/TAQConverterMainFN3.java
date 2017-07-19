@@ -1,18 +1,13 @@
 import DataFieldType.*;
 import Misc.UnZip;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static DataFieldType.TickerSymbols.getTickers;
-import static Misc.FileClass.getYear;
 import static Misc.Print.print;
-import static Misc.Time.printElapsedTime;
-import static Misc.Time.printTime;
 
 
-public class TAQConverterMainFN2 {
+public class TAQConverterMainFN3 {
     private TAQConverterSparkFN2 TAQConverterSparkFNObject;
     private String inputFileName;
     private String outputFileName;
@@ -25,7 +20,7 @@ public class TAQConverterMainFN2 {
     private String inputFileType="";
     private boolean tickerFilter=false;
     private boolean timeFilter=false;
-    private int fileYear;
+    private String fileYear;
     private int start=0;
 
     public String getOutputFileName(String inputFileName){
@@ -43,10 +38,10 @@ public class TAQConverterMainFN2 {
     }else
             return "txt";
     }
-    TAQConverterMainFN2(String[] args) {
+    TAQConverterMainFN3(String[] args, String fileYear) {
 
         this.TAQFileType = args[0];
-        this.fileYear = Integer.parseInt(args[1]);
+        this.fileYear = fileYear;
         this.inputFileName = args[2];
         if (!args[3].equals("n")) {
             this.timeFilter = true;
@@ -63,19 +58,19 @@ public class TAQConverterMainFN2 {
 
 
         switch (fileYear){
-            case 2010:
+            case "2010":
                 ITAQSpecObject = new TAQ102010Spec();
                 break;
-            case 2012:
+            case "2012":
                 ITAQSpecObject = new TAQ072012Spec();
                 break;
-            case 2013:
+            case "2013":
                 ITAQSpecObject = new TAQ082013Spec();
                 break;
-            case 2015:
+            case "2015":
                 ITAQSpecObject = new TAQ062015Spec();
                 break;
-            case 2016:
+            case "2016":
                 ITAQSpecObject = new TAQ062016Spec();
                 break;
 
@@ -113,30 +108,6 @@ public class TAQConverterMainFN2 {
                 TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
         }
 
-    }
-
-    public static void convertDirectory(String directory){
-        File folder = new File(directory);
-        File[] listOfFiles = folder.listFiles();
-
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-                System.out.println("File " + listOfFiles[i].getName());
-                String year = getYear(directory+listOfFiles[i].getName());
-
-            } else if (listOfFiles[i].isDirectory()) {
-                System.out.println("Directory " + listOfFiles[i].getName());
-            }
-        }
-    }
-    public static void main(String[] args) throws IOException {
-        long startTime = System.currentTimeMillis();
-        printTime();
-        convertDirectory("/home/anjana/Downloads/DATA/");
-//        TAQConverterMainFN2 TAQAnalysisObject = new TAQConverterMainFN2(args);
-        printTime();
-        long endTime = System.currentTimeMillis();
-        printElapsedTime(startTime, endTime);
     }
 
 }
