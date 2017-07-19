@@ -1,8 +1,8 @@
 import BasicImplementation.TAQConverterUnziped;
 import BasicImplementation.TAQConverterZipExtractFN;
 import DataFieldType.IFieldType;
-import DataFieldType.TAQ102010Spec;
 import DataFieldType.TAQ062015Spec;
+import DataFieldType.TAQ102010Spec;
 import Misc.FileClass;
 import Misc.UnZip;
 

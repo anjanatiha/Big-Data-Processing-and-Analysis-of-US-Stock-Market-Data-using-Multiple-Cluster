@@ -1,6 +1,7 @@
 package Analysis;
+
 import static Misc.FileClass.printFirstLineZip;
-import static Misc.Print.*;
+import static Misc.Print.print;
 
 public class Test{
     public static void main(String[] args){

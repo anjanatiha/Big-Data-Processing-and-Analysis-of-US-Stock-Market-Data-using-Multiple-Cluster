@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Anjana on 6/21/2017.
  */
-public class TAQ082013Spec implements Serializable {
+public class TAQ082013Spec implements ITAQSpec, Serializable {
     private int tradeFileEntryLength = 73;
     private int QuoteFileEntryLength = 91;
     private int NBBOFileEntryLength = 144;
