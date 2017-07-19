@@ -198,7 +198,7 @@ public class FileClass {
         }
         return firstLine;
     }
-    public static String printFirstLineZip(String inputZipFileName){
+    public static String getFirstLineZip(String inputZipFileName){
         String line = "";
         BufferedReader br = null;
         try {
@@ -233,7 +233,9 @@ public class FileClass {
         String year = "";
         BufferedReader br = null;
         try {
+
             ZipFile zf = new ZipFile(inputZipFileName);
+
             Enumeration entries = zf.entries();
 
             while (entries.hasMoreElements()) {
@@ -243,8 +245,7 @@ public class FileClass {
                     System.out.println("Length is " + size);
                     br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
                     String line = br.readLine();
-                    year = line.substring(6,10);
-
+                    year = line.substring(2,10);
                 }
             }
             br.close();
@@ -258,6 +259,7 @@ public class FileClass {
                 }
 
         }
+        print(year);
         return year;
 
     }

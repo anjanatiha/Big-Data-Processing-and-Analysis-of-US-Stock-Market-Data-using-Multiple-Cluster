@@ -91,7 +91,7 @@ public class UnZip
                             outputStream.print(strBuilder);
                             outputStream.flush();
                             strBuilder.setLength(0);
-                            print(k+ " Left: " + (size-k));
+                            print("Reached Line: "+k);
                         }
                         k++;
                         line = br.readLine();

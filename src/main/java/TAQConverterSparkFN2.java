@@ -3,7 +3,6 @@
  */
 
 import DataFieldType.IFieldType;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -30,29 +29,29 @@ public class TAQConverterSparkFN2 implements Serializable {
     private int recordLength;
     private int[] fieldset;
     private String fileType;
-
-    TAQConverterSparkFN2(String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
-        setMainObjects(inputFileName, outputFileName,fieldType, startOffset);
+    private static JavaSparkContext sc;
+    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName,fieldType, startOffset);
         convertFile();
     }
 
-    TAQConverterSparkFN2(String inputFileName, String outputFileName, IFieldType[] fieldType, List<String> tickerSymbols, int startOffset) {
-        setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
+    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, List<String> tickerSymbols, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
         this.tickerSymbols = tickerSymbols;
         this.tickerListExists=true;
         convertFile();
     }
 
-    TAQConverterSparkFN2(String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
-        setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
+    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
         this.startTime = startTime;
         this.endTime = endTime;
         this.timeRange =true;
         convertFile();
     }
 
-    TAQConverterSparkFN2(String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset) {
-        setMainObjects(inputFileName, outputFileName, fieldType, startOffset);
+    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
         this.timeRange = true;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -61,17 +60,18 @@ public class TAQConverterSparkFN2 implements Serializable {
         convertFile();
     }
 
-    private void setMainObjects(String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
+    private void setMainObjects(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
         this.inputFileName = inputFileName;
         this.outputFileName = outputFileName;
         this.fieldType = fieldType;
         this.startOffset = startOffset;
         this.recordLength = getlength();
+        this.sc = sc;
     }
 
     private void convertFile() {
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
-        JavaSparkContext sc = new JavaSparkContext(conf);
+//        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
         convertedObject = text_file.map(line -> convertLine(line));
@@ -143,9 +143,6 @@ public class TAQConverterSparkFN2 implements Serializable {
 
     //work on
     private void convertFileZip() {
-
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
-        JavaSparkContext sc = new JavaSparkContext(conf);
         JavaPairRDD<String, PortableDataStream> text_file = sc.binaryFiles(inputFileName);
         JavaRDD<String> convertedObject = text_file.map(line -> convertLineZip(String.valueOf(line), fieldType));
         convertedObject.saveAsTextFile(outputFileName);

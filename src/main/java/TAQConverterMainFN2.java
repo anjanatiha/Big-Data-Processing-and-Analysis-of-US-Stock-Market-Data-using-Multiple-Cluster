@@ -1,5 +1,6 @@
 import DataFieldType.*;
 import Misc.UnZip;
+import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class TAQConverterMainFN2 {
     private boolean timeFilter=false;
     private int fileYear;
     private int start=0;
+    public static JavaSparkContext sc;
 
     public String getOutputFileName(String inputFileName){
         String outputFileName;
@@ -45,6 +47,7 @@ public class TAQConverterMainFN2 {
     }
     TAQConverterMainFN2(String[] args) {
 
+
         this.TAQFileType = args[0];
         this.fileYear = Integer.parseInt(args[1]);
         this.inputFileName = args[2];
@@ -60,7 +63,7 @@ public class TAQConverterMainFN2 {
         this.start = 1;
         this.inputFileType = getInputFileType(inputFileName);
         this.outputFileName = getOutputFileName(inputFileName);
-
+        this.sc = sc;
 
         switch (fileYear){
             case 2010:
@@ -101,16 +104,16 @@ public class TAQConverterMainFN2 {
         }
         if (!timeFilter) {
             if(!tickerFilter)
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes, start);
+                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes, start);
             else
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes, tickerSymbols, start);
+                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes, tickerSymbols, start);
         }
         else
         {
             if (!tickerFilter)
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes, startTime, endTime, start);
+                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes, startTime, endTime, start);
             else
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
+                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
         }
 
     }
