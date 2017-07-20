@@ -4,7 +4,6 @@ import DataFieldType.IFieldType;
 import DataFieldType.TAQ062015Spec;
 import DataFieldType.TAQ102010Spec;
 import Misc.FileClass;
-import Misc.UnZip;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -13,6 +12,7 @@ import java.util.List;
 
 import static DataFieldType.TickerSymbols.getTickers;
 import static Misc.Debug.debug;
+import static Misc.FileClass.unZip;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
@@ -97,9 +97,8 @@ public class TAQConverterMainFN {
                     TAQConverterZipObject = new TAQConverterZipExtractFN(args[2], outputFileName, fieldTypes, args[4], args[5], start);
                 break;
             case "zu":
-                UnZip unZip = new UnZip();
                 String outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "converted";
-                unZip.unZipIt(inputFileName, outputFileName);
+                unZip(inputFileName, outputFileName);
                 print("unzipping complete");
                 inputFileName = outputFileName;
                 outputFileName = inputFileName.substring(0, inputFileName.length()-4)+"_spark";

@@ -1,5 +1,4 @@
 import DataFieldType.*;
-import Misc.UnZip;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.File;
@@ -7,7 +6,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static DataFieldType.TickerSymbols.getTickers;
-import static Misc.FileClass.getYear;
+import static Misc.FileClass.unZip;
+import static Misc.FileProperties.extractYear;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
@@ -81,12 +81,10 @@ public class TAQConverterMainFN2 {
             case 2016:
                 ITAQSpecObject = new TAQ062016Spec();
                 break;
-
         }
         switch (TAQFileType) {
             case "trade":
                 fieldTypes = ITAQSpecObject.getTradeFields();
-
                 break;
             case "nbbo":
                 fieldTypes = ITAQSpecObject.getNBBOFields();
@@ -96,9 +94,8 @@ public class TAQConverterMainFN2 {
                 break;
         }
         if(inputFileType.equals("zip")) {
-            UnZip unZip = new UnZip();
-            unZip.unZipIt(inputFileName, outputFileName);
-            print("unzipping complete");
+            unZip(inputFileName, outputFileName);
+            print("Completed Unzipping: "+ inputFileName + outputFileName);
             inputFileName = outputFileName;
             outputFileName = getOutputFileName(inputFileName);
         }
@@ -125,7 +122,7 @@ public class TAQConverterMainFN2 {
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
                 System.out.println("File " + listOfFiles[i].getName());
-                String year = getYear(directory+listOfFiles[i].getName());
+                String year = extractYear(directory+listOfFiles[i].getName());
 
             } else if (listOfFiles[i].isDirectory()) {
                 System.out.println("Directory " + listOfFiles[i].getName());
@@ -135,8 +132,7 @@ public class TAQConverterMainFN2 {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         printTime();
-        convertDirectory("/home/anjana/Downloads/DATA/");
-//        TAQConverterMainFN2 TAQAnalysisObject = new TAQConverterMainFN2(args);
+        TAQConverterMainFN2 TAQAnalysisObject = new TAQConverterMainFN2(args);
         printTime();
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime);

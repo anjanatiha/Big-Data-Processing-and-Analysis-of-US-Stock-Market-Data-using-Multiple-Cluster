@@ -1,10 +1,11 @@
 import DataFieldType.*;
-import Misc.UnZip;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.List;
 
 import static DataFieldType.TickerSymbols.getTickers;
+import static Misc.FileClass.*;
+import static Misc.FileProperties.*;
 import static Misc.Print.print;
 
 
@@ -25,26 +26,11 @@ public class TAQConverterMainFN3 {
     private int start=0;
     public static JavaSparkContext sc;
 
-    public String getOutputFileName(String inputFileName){
-        String outputFileName;
-        if (inputFileName.substring(inputFileName.length()-3,inputFileName.length()).equals("zip")) {
-            outputFileName = inputFileName.substring(0,inputFileName.length()-4) + "_extracted";
-        } else {
-            outputFileName = inputFileName + "_converted";
-        }
-        return outputFileName;
-    }
-    public String getInputFileType(String inputFileName) {
-        if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")){
-        return "zip";
-    }else
-            return "txt";
-    }
+
     TAQConverterMainFN3(JavaSparkContext sc, String[] args, String inputFileName) {
         this.TAQFileType = args[0];
         this.inputFileName = inputFileName;
-//        this.fileYear = getYear(inputFileName);
-        this.fileYear = "2015";
+        this.fileYear = extractYear(inputFileName);
         if (!args[3].equals("n")) {
             this.timeFilter = true;
             this.startTime = args[4];
@@ -59,7 +45,6 @@ public class TAQConverterMainFN3 {
         this.outputFileName = getOutputFileName(inputFileName);
         this.sc = sc;
         print("fileYear: "+fileYear);
-
         switch (fileYear){
             case "2010":
                 print("hi 2010 "+ inputFileName);
@@ -82,7 +67,6 @@ public class TAQConverterMainFN3 {
         switch (TAQFileType) {
             case "trade":
                 fieldTypes = ITAQSpecObject.getTradeFields();
-
                 break;
             case "nbbo":
                 fieldTypes = ITAQSpecObject.getNBBOFields();
@@ -92,8 +76,7 @@ public class TAQConverterMainFN3 {
                 break;
         }
         if(inputFileType.equals("zip")) {
-            UnZip unZip = new UnZip();
-            unZip.unZipIt(inputFileName, outputFileName);
+            unZip(inputFileName, outputFileName);
             print("unzipping complete");
             inputFileName = outputFileName;
             outputFileName = getOutputFileName(inputFileName);

@@ -21,8 +21,6 @@ public class TextField implements IFieldType, Serializable {
         for (int i = offset; i < offset + length; i++) {
             stringBuilder.append((char) (buffer[i] & 0x00ff));
         }
-//        System.out.println("text ->" +stringBuilder.toString().trim() + " offset " + offset);
-
         return stringBuilder.toString().trim();
     }
 
@@ -32,7 +30,6 @@ public class TextField implements IFieldType, Serializable {
         for (int i = offset; i < offset + length; i++) {
             stringBuilder.append((char) (buffer[i] & 0x00ff));
         }
-//        System.out.println("text ->" + stringBuilder.toString().trim() + " offset " + offset);
         return stringBuilder.toString().trim();
     }
 }

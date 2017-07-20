@@ -40,8 +40,6 @@ public class NumericField implements IFieldType, Serializable {
             if (numberOfDecimalDigits == 0)
                 return String.valueOf(number);
             double temp = (double) number / Math.pow(10, numberOfDecimalDigits);
-//            System.out.println("number blank -> " + String.valueOf(temp) + " offset " + offset);
-
             return String.valueOf(temp);
         }
 
@@ -57,7 +55,6 @@ public class NumericField implements IFieldType, Serializable {
             if (numberOfDecimalDigits == 0)
                 return String.valueOf(number);
             double temp = (double) number / Math.pow(10, numberOfDecimalDigits);
-//            System.out.println("number ->" + String.valueOf(temp) + " offset " + offset);
 
             return String.valueOf(temp);
         } else {
@@ -65,7 +62,6 @@ public class NumericField implements IFieldType, Serializable {
             for (int i = offset; i < offset + length; i++) {
                 stringBuilder.append((char) (buffer[i] & 0x00ff));
             }
-//            System.out.println("number ->" + stringBuilder.toString() + " offset " + offset);
             return stringBuilder.toString();
         }
     }

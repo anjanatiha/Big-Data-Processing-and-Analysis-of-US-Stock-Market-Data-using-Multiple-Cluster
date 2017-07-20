@@ -9,6 +9,8 @@ public class TAQ072012Spec implements ITAQSpec, Serializable {
     private int tradeFileEntryLength = 73;
     private int QuoteFileEntryLength = 91;
     private int NBBOFileEntryLength = 144;
+    private String activeStartDate = "01082012";
+    private String activeEndDate = "02022013";
 
     public TAQ072012Spec() {
     }
