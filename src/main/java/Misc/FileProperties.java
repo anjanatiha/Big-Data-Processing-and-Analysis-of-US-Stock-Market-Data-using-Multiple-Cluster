@@ -54,25 +54,24 @@ public class FileProperties {
 
         }
         return date;
-
     }
     public static String extractYear(String inputFileName){
         String date = getDate(inputFileName);
         String year = date.substring(4,8);
         String month = date.substring(2,4);
-        int dateNumber=Integer.parseInt(year+month);
+        int dateNumber = Integer.parseInt(year+month);
         return analyzeYear(dateNumber);
     }
     public static String analyzeYear(int date){
-        if (date>=201006 && date<=201207)
+        if (date >= 201006 && date <= 201207)
             return "2010";
-        if (date>=201208 && date<=201302)
+        if (date >= 201208 && date <= 201302)
             return "2012";
-        if (date>=201305 && date<=201312)
+        if (date >= 201305 && date <= 201312)
             return "2013";
-        if (date>=201506 && date<=201607)
+        if (date >= 201506 && date <= 201607)
             return "2015";
-        if (date>=201607 && date<=201707)
+        if (date >= 201607 && date <= 201707)
             return "2016";
         else
             return "None";

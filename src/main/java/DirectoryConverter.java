@@ -1,36 +1,52 @@
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-
 import java.io.File;
 import java.io.IOException;
-
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
 
+
+//argument 1= filetype (taq file type trade, nbbo or quote)
+//argument 2= type "n"
+//argument 3= file or direcotory location
+//argument 4= start time
+//argument 5= end time
+//argument 6= stock symbols
+
 public class DirectoryConverter {
-    private String directory;
-    private File folder;
+    private String fileOrDirectoryName;
+    private File fileOrDirectory;
     public static JavaSparkContext sc;
     DirectoryConverter(String[] args,JavaSparkContext sc){
-        directory = args[2];
-        folder = new File(directory);
+        fileOrDirectoryName = args[2];
+        fileOrDirectory = new File(fileOrDirectoryName);
         this.sc = sc;
-        convertDirectory(sc, args);
+        int fileOrDirectoryNameLengh = fileOrDirectoryName.length();
+        if (fileOrDirectoryName.substring(fileOrDirectoryNameLengh-1, fileOrDirectoryNameLengh).equals("/"))
+            convertDirectory(sc, args);
+        else
+            convertSingleFile(sc, args);
 
     }
     public void convertDirectory(JavaSparkContext sc, String[] args){
-        File[] listOfFiles = folder.listFiles();
+        File[] listOfFiles = fileOrDirectory.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
                 System.out.println("Converting File : " + listOfFiles[i].getName());
-                String inputFileName = directory+listOfFiles[i].getName();
+                String inputFileName = fileOrDirectoryName+listOfFiles[i].getName();
                 TAQConverterMainFN3 TAQAnalysisObject = new TAQConverterMainFN3(sc, args, inputFileName);
                 print("Conversion completed of : "+ inputFileName);
             } else if (listOfFiles[i].isDirectory()) {
                 System.out.println("Directory " + listOfFiles[i].getName());
             }
         }
+    }
+
+    public void convertSingleFile(JavaSparkContext sc, String[] args){
+        String inputFileName = args[2];
+        TAQConverterMainFN3 TAQAnalysisObject = new TAQConverterMainFN3(sc, args, inputFileName);
+        print("Conversion completed of : "+ inputFileName);
     }
     public static void main(String[] args) throws IOException {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
