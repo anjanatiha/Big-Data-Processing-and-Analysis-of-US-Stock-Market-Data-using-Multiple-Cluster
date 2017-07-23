@@ -19,6 +19,18 @@ public class Time {
         int minutes = (int) ((totalTime / 1000) / 60);
         System.out.println("\n\nTotal Time: " + minutes + ":" + seconds);
     }
+    public static String printElapsedTime(long startTime, long endTime, String str) {
+        long totalTime = endTime - startTime;
+        int seconds = (int) ((totalTime / 1000) % 60);
+        int minutes = (int) ((totalTime / 1000) / 60);
+        String min = String.valueOf(minutes);
+        String sec = String.valueOf(seconds);
+        if(sec.length()==1)
+            sec = "0"+sec;
+        String strTime = "\n\nTotal Time for "+str+ " : " + minutes + ":" + seconds;
+        System.out.println(strTime);
+        return strTime;
+    }
     public static void decipherTime(String time){
         String year=time.substring(time.length()-4, time.length());
         String month=time.substring(time.length()-6, time.length()-4);

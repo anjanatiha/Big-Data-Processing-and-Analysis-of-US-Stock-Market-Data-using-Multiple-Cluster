@@ -4,9 +4,11 @@ import org.apache.spark.api.java.JavaSparkContext;
 import java.util.List;
 
 import static DataFieldType.TickerSymbols.getTickers;
-import static Misc.FileClass.*;
+import static Misc.FileClass.deleteFileorDir;
+import static Misc.FileClass.unZip;
 import static Misc.FileProperties.*;
 import static Misc.Print.print;
+import static Misc.Time.printElapsedTime;
 
 
 public class TAQConverterSingle {
@@ -78,8 +80,12 @@ public class TAQConverterSingle {
         }
 
         if(inputFileType.equals("zip")) {
+            print("Unzipping Started for + "+ inputFileName);
+            long startTime = System.currentTimeMillis();
             unZip(inputFileName, outputFileName);
-            print("unzipping complete");
+            print("Unzipping Completed for + "+ inputFileName);
+            long endTime = System.currentTimeMillis();
+            printElapsedTime(startTime, endTime, " unzipping ");
             inputFileName = outputFileName;
             outputFileName = getOutputFileName(inputFileName);
         }
@@ -96,7 +102,7 @@ public class TAQConverterSingle {
             else
                 TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
         }
-        deleteFileOrDir(outputFileName_unzip);
+        deleteFileorDir(outputFileName_unzip);
 
     }
 

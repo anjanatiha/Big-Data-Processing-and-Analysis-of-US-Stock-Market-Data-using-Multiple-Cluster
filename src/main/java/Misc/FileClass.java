@@ -1,6 +1,7 @@
 package Misc;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -71,6 +72,32 @@ public class FileClass {
         }
         System.out.println("deleted directory");
         return(directory.delete());
+    }
+
+    public static void deleteFileorDir(String fileOrDirStr) {
+        File fileOrDir = new File(fileOrDirStr);
+        if(fileOrDir.exists()){
+            if (fileOrDirStr.substring(fileOrDirStr.length()-1, fileOrDirStr.length()).equals("/")) {
+                File[] files = fileOrDir.listFiles();
+                if (files != null) {
+                    for (int i = 0; i < files.length; i++) {
+                        if (files[i].isDirectory()) {
+                            deleteFileorDir(files[i].getAbsolutePath());
+                            System.out.println("Deleted Directory : "+ files[i].getAbsolutePath());
+
+                        } else {
+                            files[i].delete();
+                            System.out.println("Deleted File : "+ files[i].getAbsolutePath());
+
+                        }
+                    }
+                }
+            }
+            else {
+                fileOrDir.delete();
+                System.out.println("Deleted Single File : "+ fileOrDirStr);
+            }
+        }
     }
 
     public static String getFirstLineUnzipped(String inputFileName){
@@ -197,11 +224,13 @@ public class FileClass {
             System.out.println("failed trying to create the directory");
         }
     }
-    public static void unZip(String zipFile, String outputFileName){
+    public static void unZip(String zipFile, String outputFileName) {
+        BufferedReader br = null;
+        PrintWriter outputStream = null;
         try {
-            ZipFile zf=new ZipFile(zipFile);
+            ZipFile zf = new ZipFile(zipFile);
             File outputFile = new File(outputFileName);
-            PrintWriter outputStream = new PrintWriter(outputFile);
+            outputStream = new PrintWriter(outputFile);
             StringBuilder strBuilder = new StringBuilder();
             Enumeration entries = zf.entries();
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -210,20 +239,20 @@ public class FileClass {
                 long size = ze.getSize();
                 if (size > 0) {
                     System.out.println("Length is " + size);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
+                    br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
                     String line;
-                    int k = 0;
+                    int k = 1;
                     line = br.readLine();
                     line = br.readLine();
                     print("Extracting zip file...");
                     while (line != null) {
                         strBuilder.append(line);
                         strBuilder.append("\r\n");
-                        if (k % 10000000==0) {
+                        if (k % 10000000 == 0) {
                             outputStream.print(strBuilder);
                             outputStream.flush();
                             strBuilder.setLength(0);
-                            print("On Line: "+k);
+                            print("On Line: " + k);
                         }
                         k++;
                         line = br.readLine();
@@ -231,7 +260,7 @@ public class FileClass {
                     outputStream.print(strBuilder);
                     outputStream.flush();
                     strBuilder.setLength(0);
-                    print("ends: line: "+k);
+                    print("Total Lines : " + k);
                     br.close();
                     outputStream.close();
 
@@ -239,10 +268,32 @@ public class FileClass {
             }
 
         } catch (FileNotFoundException e) {
+            try {
+                br.close();
+                outputStream.close();
+
+            }catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
             e.printStackTrace();
         } catch (IOException e) {
+            try {
+                br.close();
+                outputStream.close();
+
+            }catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
+    }
+
+    public static String readableFileSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
     public static void main(String[] args){
         deleteFileOrDir("/home/anjana/Downloads/DATA/a");
