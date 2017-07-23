@@ -27,6 +27,8 @@ public class TAQConverterSingle {
     private String fileYear;
     private int start=0;
     public static JavaSparkContext sc;
+    private String sizeStr="";
+
 
 
     TAQConverterSingle(JavaSparkContext sc, String[] args, String inputFileName) {
@@ -82,7 +84,7 @@ public class TAQConverterSingle {
         if(inputFileType.equals("zip")) {
             print("Unzipping Started for + "+ inputFileName);
             long startTime = System.currentTimeMillis();
-            unZip(inputFileName, outputFileName);
+            this.sizeStr = unZip(inputFileName, outputFileName);
             print("Unzipping Completed for + "+ inputFileName);
             long endTime = System.currentTimeMillis();
             printElapsedTime(startTime, endTime, " unzipping ");
@@ -104,6 +106,9 @@ public class TAQConverterSingle {
         }
         deleteFileorDir(outputFileName_unzip);
 
+    }
+    public String getSize(){
+        return sizeStr;
     }
 
 }

@@ -27,8 +27,8 @@ public class Time {
         String sec = String.valueOf(seconds);
         if(sec.length()==1)
             sec = "0"+sec;
-        String strTime = "\n\nTotal Time for "+str+ " : " + minutes + ":" + seconds;
-        System.out.println(strTime);
+        String strTime = minutes + ":" + seconds;
+        System.out.println("\n\nTotal Time for "+str+ " : " + minutes + ":" + seconds);
         return strTime;
     }
     public static void decipherTime(String time){

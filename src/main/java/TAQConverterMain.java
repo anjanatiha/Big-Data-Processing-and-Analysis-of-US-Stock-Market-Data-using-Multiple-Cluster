@@ -34,8 +34,8 @@ public class TAQConverterMain {
     }
     public void convertDirectory(JavaSparkContext sc, String[] args){
         File[] listOfFiles = fileOrDirectory.listFiles();
-        List<String> strTimeList = new ArrayList<String>();
-        int i=0;
+        List<String> strTimeList = new ArrayList<>();
+        int i;
         for (i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
                 long startTime = System.currentTimeMillis();
@@ -44,17 +44,25 @@ public class TAQConverterMain {
                 TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
                 long endTime = System.currentTimeMillis();
                 print("Conversion completed for file : "+ inputFileName);
-                strTimeList.add(printElapsedTime(startTime, endTime , "converting single file"));
+                String tempStr = printElapsedTime(startTime, endTime , "converting single file");
+                tempStr = "Total Size is : " + TAQConverterSingleObject.getSize()+"\nConvertion Time : "+tempStr;
+                strTimeList.add(tempStr);
 
             }
-            for (String p : strTimeList)
-                System.out.println(p);
         }
+        for (String p : strTimeList)
+            System.out.println(p);
     }
 
     public void convertSingleFile(JavaSparkContext sc, String[] args){
         String inputFileName = args[2];
+        long startTime = System.currentTimeMillis();
         TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
+        long endTime = System.currentTimeMillis();
+        print("Conversion completed for file : "+ inputFileName);
+        String tempStr = printElapsedTime(startTime, endTime , "converting single file");
+        tempStr = "Total Size is : " + TAQConverterSingleObject.getSize()+"\nConvertsion Time : "+tempStr;
+        print(tempStr);
     }
     public static void main(String[] args) throws IOException {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");

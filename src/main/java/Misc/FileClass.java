@@ -52,28 +52,6 @@ public class FileClass {
         }
         return listOfFiles;
     }
-    public static void deleteFileOrDir(String path){
-        File file = new File(path);
-        file.delete();
-    }
-    public static boolean deleteDirectory(File directory) {
-        if(directory.exists()){
-            File[] files = directory.listFiles();
-            if(null!=files){
-                for(int i=0; i<files.length; i++) {
-                    if(files[i].isDirectory()) {
-                        deleteDirectory(files[i]);
-                    }
-                    else {
-                        files[i].delete();
-                    }
-                }
-            }
-        }
-        System.out.println("deleted directory");
-        return(directory.delete());
-    }
-
     public static void deleteFileorDir(String fileOrDirStr) {
         File fileOrDir = new File(fileOrDirStr);
         if(fileOrDir.exists()){
@@ -197,15 +175,15 @@ public class FileClass {
     }
     public static String getFileType(String directory){
 
-        if ((directory.substring(directory.length()-5, directory.length()-1))=="NBBO"){
+        if ((directory.substring(directory.length()-5, directory.length()-1)).equals("NBBO")){
             return "nbbo";
         }
 
-        else if ((directory.substring(directory.length()-6, directory.length()))=="Quote"){
+        else if ((directory.substring(directory.length()-6, directory.length())).equals("Quote")){
             return "quote";
         }
 
-        else if ((directory.substring(directory.length()-6, directory.length()))=="Trade"){
+        else if ((directory.substring(directory.length()-6, directory.length())).equals("Trade")){
             return "trade";
         }
         else return "None";
@@ -224,9 +202,10 @@ public class FileClass {
             System.out.println("failed trying to create the directory");
         }
     }
-    public static void unZip(String zipFile, String outputFileName) {
+    public static String unZip(String zipFile, String outputFileName) {
         BufferedReader br = null;
         PrintWriter outputStream = null;
+        String sizeStr = "";
         try {
             ZipFile zf = new ZipFile(zipFile);
             File outputFile = new File(outputFileName);
@@ -235,16 +214,16 @@ public class FileClass {
             outputStream = new PrintWriter(outputFile);
             StringBuilder strBuilder = new StringBuilder();
             Enumeration entries = zf.entries();
-            BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             while (entries.hasMoreElements()) {
                 ZipEntry ze = (ZipEntry) entries.nextElement();
                 long size = ze.getSize();
+                sizeStr = readableFileSize(size);
                 if (size > 0) {
-                    System.out.println("Length is " + size);
+//                    System.out.println("Length is " + size);
                     br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
                     String line;
                     int k = 1;
-                    line = br.readLine();
+                    br.readLine();
                     line = br.readLine();
                     print("Extracting zip file...");
                     while (line != null) {
@@ -289,6 +268,7 @@ public class FileClass {
             }
             e.printStackTrace();
         }
+        return sizeStr;
     }
 
     public static String readableFileSize(long size) {
@@ -296,8 +276,5 @@ public class FileClass {
         final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
         int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
-    }
-    public static void main(String[] args){
-        deleteFileOrDir("/home/anjana/Downloads/DATA/a");
     }
 }
