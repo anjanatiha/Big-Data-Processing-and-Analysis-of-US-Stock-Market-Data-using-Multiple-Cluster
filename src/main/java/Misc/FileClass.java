@@ -1,19 +1,12 @@
 package Misc;
 
 import java.io.*;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static Misc.Debug.debug;
 import static Misc.Print.print;
-import static java.nio.file.FileVisitResult.CONTINUE;
-import static java.nio.file.FileVisitResult.TERMINATE;
 
 public class FileClass {
 
@@ -58,30 +51,39 @@ public class FileClass {
         }
         return listOfFiles;
     }
-    public static void deleteFileOrFolder(final Path path) throws IOException {
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
-            @Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
-                    throws IOException {
-                Files.delete(file);
-                return CONTINUE;
-            }
-
-            @Override public FileVisitResult visitFileFailed(final Path file, final IOException e) {
-                return handleException(e);
-            }
-
-            private FileVisitResult handleException(final IOException e) {
-                e.printStackTrace();
-                return TERMINATE;
-            }
-
-            @Override public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
-                    throws IOException {
-                if(e!=null)return handleException(e);
-                Files.delete(dir);
-                return CONTINUE;
-            }
-        });
+//    public static void deleteFileOrFolder(String pathStr) throws IOException {
+//        Path path = Paths.get(pathStr);
+//        Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
+//            @Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs){
+//                try {
+//                    Files.delete(file);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                return CONTINUE;
+//            }
+//
+//            @Override public FileVisitResult visitFileFailed(final Path file, final IOException e) {
+//                Path path = Paths.get(pathStr);
+//                return handleException(e);
+//            }
+//
+//            private FileVisitResult handleException(final IOException e) {
+//                e.printStackTrace();
+//                return TERMINATE;
+//            }
+//
+//            @Override public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
+//                    throws IOException {
+//                if(e!=null)return handleException(e);
+//                Files.delete(dir);
+//                return CONTINUE;
+//            }
+//        });
+//    }
+    public static void deleteFileOrDir(String path){
+        File file = new File(path);
+        file.delete();
     }
     public static boolean deleteDirectory(File directory) {
         if(directory.exists()){
@@ -271,5 +273,8 @@ public class FileClass {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public static void main(String[] args){
+        deleteFileOrDir("/home/anjana/Downloads/DATA/a");
     }
 }

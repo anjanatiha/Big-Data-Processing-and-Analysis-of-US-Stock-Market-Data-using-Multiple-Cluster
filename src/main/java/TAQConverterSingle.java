@@ -10,7 +10,7 @@ import static Misc.Print.print;
 
 
 public class TAQConverterSingle {
-    private TAQConverterSparkFN2 TAQConverterSparkFNObject;
+    private TAQConverterSparkFinal TAQConverterSparkFinalObject;
     private String inputFileName;
     private String outputFileName;
     private ITAQSpec ITAQSpecObject;
@@ -43,6 +43,7 @@ public class TAQConverterSingle {
         this.start = 1;
         this.inputFileType = getInputFileType(inputFileName);
         this.outputFileName = getOutputFileName(inputFileName);
+        String outputFileName_unzip = outputFileName;
         this.sc = sc;
         print("fileYear: "+fileYear);
         switch (fileYear){
@@ -75,6 +76,7 @@ public class TAQConverterSingle {
                 fieldTypes = ITAQSpecObject.getQuoteFields();
                 break;
         }
+
         if(inputFileType.equals("zip")) {
             unZip(inputFileName, outputFileName);
             print("unzipping complete");
@@ -83,17 +85,18 @@ public class TAQConverterSingle {
         }
         if (!timeFilter) {
             if(!tickerFilter)
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes, start);
+                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes, start);
             else
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes, tickerSymbols, start);
+                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes, tickerSymbols, start);
         }
         else
         {
             if (!tickerFilter)
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes, startTime, endTime, start);
+                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes, startTime, endTime, start);
             else
-                TAQConverterSparkFNObject = new TAQConverterSparkFN2(sc, inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
+                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
         }
+        deleteFileOrDir(outputFileName_unzip);
 
     }
 

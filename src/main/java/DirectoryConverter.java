@@ -30,6 +30,7 @@ public class DirectoryConverter {
 
     }
     public void convertDirectory(JavaSparkContext sc, String[] args){
+        long startTime = System.currentTimeMillis();
         File[] listOfFiles = fileOrDirectory.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
@@ -41,12 +42,18 @@ public class DirectoryConverter {
                 System.out.println("Directory " + listOfFiles[i].getName());
             }
         }
+        long endTime = System.currentTimeMillis();
+        printElapsedTime(startTime, endTime);
     }
 
     public void convertSingleFile(JavaSparkContext sc, String[] args){
+        long startTime = System.currentTimeMillis();
         String inputFileName = args[2];
         TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
+        long endTime = System.currentTimeMillis();
+        printElapsedTime(startTime, endTime);
         print("Conversion completed of : "+ inputFileName);
+
     }
     public static void main(String[] args) throws IOException {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");

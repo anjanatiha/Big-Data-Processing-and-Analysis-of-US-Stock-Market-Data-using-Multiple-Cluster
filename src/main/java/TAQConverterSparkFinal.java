@@ -15,7 +15,7 @@ import java.util.List;
 import static Misc.Debug.debug;
 
 
-public class TAQConverterSparkFN2 implements Serializable {
+public class TAQConverterSparkFinal implements Serializable {
     private String inputFileName;
     private String outputFileName;
     private File inputFile;
@@ -30,19 +30,19 @@ public class TAQConverterSparkFN2 implements Serializable {
     private int[] fieldset;
     private String fileType;
     private static JavaSparkContext sc;
-    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
+    TAQConverterSparkFinal(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
         setMainObjects(sc, inputFileName, outputFileName,fieldType, startOffset);
         convertFile();
     }
 
-    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, List<String> tickerSymbols, int startOffset) {
+    TAQConverterSparkFinal(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, List<String> tickerSymbols, int startOffset) {
         setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
         this.tickerSymbols = tickerSymbols;
         this.tickerListExists=true;
         convertFile();
     }
 
-    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
+    TAQConverterSparkFinal(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
         setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
         this.startTime = startTime;
         this.endTime = endTime;
@@ -50,7 +50,7 @@ public class TAQConverterSparkFN2 implements Serializable {
         convertFile();
     }
 
-    TAQConverterSparkFN2(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset) {
+    TAQConverterSparkFinal(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset) {
         setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
         this.timeRange = true;
         this.startTime = startTime;
