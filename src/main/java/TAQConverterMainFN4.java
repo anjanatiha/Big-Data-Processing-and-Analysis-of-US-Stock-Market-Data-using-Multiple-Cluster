@@ -18,7 +18,7 @@ import static Misc.Time.printElapsedTime;
 import static Misc.Time.printTime;
 
 
-public class TAQConverterMainFN {
+public class TAQConverterMainFN4 {
     private String inputFileName;
     private TAQ102010Spec fieldObject2010;
     private TAQ062015Spec fieldObject2015;
@@ -31,7 +31,7 @@ public class TAQConverterMainFN {
     private List<String> tickerSymbols;
 
 
-    TAQConverterMainFN(String[] args) {
+    TAQConverterMainFN4(String[] args) {
         this.inputFileName = args[2];
         String type = args[0];
         int year = Integer.parseInt(args[1]);
@@ -132,7 +132,7 @@ public class TAQConverterMainFN {
         long startTime = System.currentTimeMillis();
         printTime();
 
-        TAQConverterMainFN TAQAnalysisObject = new TAQConverterMainFN(args);
+        TAQConverterMainFN4 TAQAnalysisObject = new TAQConverterMainFN4(args);
         printTime();
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime);

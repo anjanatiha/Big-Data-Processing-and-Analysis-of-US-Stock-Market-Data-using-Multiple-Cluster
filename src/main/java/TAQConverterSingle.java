@@ -9,7 +9,7 @@ import static Misc.FileProperties.*;
 import static Misc.Print.print;
 
 
-public class TAQConverterMainFN3 {
+public class TAQConverterSingle {
     private TAQConverterSparkFN2 TAQConverterSparkFNObject;
     private String inputFileName;
     private String outputFileName;
@@ -27,7 +27,7 @@ public class TAQConverterMainFN3 {
     public static JavaSparkContext sc;
 
 
-    TAQConverterMainFN3(JavaSparkContext sc, String[] args, String inputFileName) {
+    TAQConverterSingle(JavaSparkContext sc, String[] args, String inputFileName) {
         this.TAQFileType = args[0];
         this.inputFileName = inputFileName;
         this.fileYear = extractYear(inputFileName);

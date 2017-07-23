@@ -35,7 +35,7 @@ public class DirectoryConverter {
             if (listOfFiles[i].isFile()) {
                 System.out.println("Converting File : " + listOfFiles[i].getName());
                 String inputFileName = fileOrDirectoryName+listOfFiles[i].getName();
-                TAQConverterMainFN3 TAQAnalysisObject = new TAQConverterMainFN3(sc, args, inputFileName);
+                TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
                 print("Conversion completed of : "+ inputFileName);
             } else if (listOfFiles[i].isDirectory()) {
                 System.out.println("Directory " + listOfFiles[i].getName());
@@ -45,7 +45,7 @@ public class DirectoryConverter {
 
     public void convertSingleFile(JavaSparkContext sc, String[] args){
         String inputFileName = args[2];
-        TAQConverterMainFN3 TAQAnalysisObject = new TAQConverterMainFN3(sc, args, inputFileName);
+        TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
         print("Conversion completed of : "+ inputFileName);
     }
     public static void main(String[] args) throws IOException {
@@ -53,7 +53,7 @@ public class DirectoryConverter {
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
         printTime();
-        DirectoryConverter TAQAnalysisObject = new DirectoryConverter(args, sc);
+        DirectoryConverter DirectoryConverterObject = new DirectoryConverter(args, sc);
         printTime();
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime);
