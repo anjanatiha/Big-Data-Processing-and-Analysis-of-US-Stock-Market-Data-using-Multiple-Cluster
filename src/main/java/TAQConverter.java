@@ -1,67 +1,172 @@
-import org.apache.spark.SparkConf;
+/**
+ * Created by Anjana on 5/29/2017.
+ */
+
+import DataFieldType.IFieldType;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.input.PortableDataStream;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
-import static Misc.Print.print;
-import static Misc.Time.printElapsedTime;
+import static Misc.Debug.debug;
+import static Misc.FileClass.deleteFileorDir;
 
 
-//argument 1= filetype (taq file type trade, nbbo or quote)
-//argument 2= type "n"
-//argument 3= file or direcotory location
-//argument 4= start time
-//argument 5= end time
-//argument 6= stock symbols
+public class TAQConverter implements Serializable {
+    private String inputFileName;
+    private String outputFileName;
+    private File inputFile;
+    private IFieldType[] fieldType;
+    private String startTime;
+    private String endTime;
+    private List<String> tickerSymbols;
+    private boolean tickerListExists=false;
+    private boolean timeRange=false;
+    private int startOffset;
+    private int recordLength;
+    private int[] fieldset;
+    private String fileType;
+    private static JavaSparkContext sc;
+    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName,fieldType, startOffset);
+        convertFile();
+    }
 
-public class TAQConverter {
-    private String fileOrDirectoryName;
-    private File fileOrDirectory;
-    public static JavaSparkContext sc;
-    TAQConverter(String[] args,JavaSparkContext sc){
-        fileOrDirectoryName = args[2];
-        fileOrDirectory = new File(fileOrDirectoryName);
+    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, List<String> tickerSymbols, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
+        this.tickerSymbols = tickerSymbols;
+        this.tickerListExists=true;
+        convertFile();
+    }
+
+    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.timeRange =true;
+        convertFile();
+    }
+
+    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset) {
+        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset);
+        this.timeRange = true;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.tickerListExists = true;
+        this.tickerSymbols = tickerSymbols;
+        convertFile();
+    }
+
+    private void setMainObjects(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset) {
+        this.inputFileName = inputFileName;
+        this.outputFileName = outputFileName;
+        this.fieldType = fieldType;
+        this.startOffset = startOffset;
+        this.recordLength = getlength();
         this.sc = sc;
-        int fileOrDirectoryNameLengh = fileOrDirectoryName.length();
-        if (fileOrDirectoryName.substring(fileOrDirectoryNameLengh-1, fileOrDirectoryNameLengh).equals("/"))
-            convertDirectory(sc, args);
-        else
-            convertSingleFile(sc, args);
-
     }
-    public void convertDirectory(JavaSparkContext sc, String[] args){
-        File[] listOfFiles = fileOrDirectory.listFiles();
-        List<String> strTimeList = new ArrayList<String>();
-        int i=0;
-        for (i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-                long startTime = System.currentTimeMillis();
-                System.out.println("Converting File : " + listOfFiles[i].getName());
-                String inputFileName = fileOrDirectoryName+listOfFiles[i].getName();
-                TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
-                long endTime = System.currentTimeMillis();
-                print("Conversion completed for file : "+ inputFileName);
-                strTimeList.add(printElapsedTime(startTime, endTime , "converting single file"));
 
+    private void convertFile() {
+        JavaRDD<String> text_file = sc.textFile(inputFileName);
+        JavaRDD<String> convertedObject;
+        convertedObject = text_file.map(line -> convertLine(line));
+        convertedObject = convertedObject.filter(line -> !line.equals("\r"));
+        if (new File(outputFileName).exists())
+            deleteFileorDir(outputFileName);
+        convertedObject.saveAsTextFile(outputFileName);
+    }
+
+    private String convertLine(String line) {
+        String str = "";
+        int start = 0;
+        int time;
+        boolean inTime = false;
+        boolean inTicker = false;
+        if (line.trim().length() < 15)
+            return "\r";
+        for (int i = 0; i < fieldType.length - 1; i++) {
+            String tempStr = fieldType[i].convertFromBinary(line, start);
+            if (timeRange==true) {
+                if (i == 0) {
+                    time = Integer.parseInt(tempStr);
+                    if ((time >= Integer.parseInt(startTime)) && (time <= Integer.parseInt(endTime))) {
+                        inTime = true;
+                    } else
+                        return "\r";
+                }
             }
-            for (String p : strTimeList)
-                System.out.println(p);
+            if (tickerListExists==true) {
+                if (i == 2) {
+                    if (tickerSymbols.contains(tempStr)) {
+                        inTicker = true;
+                    } else
+                        return "\r";
+                }
+            }
+            str = str + tempStr;
+            start = start + fieldType[i].getLength();
+            if (i < fieldType.length - 2)
+                str = str + ",";
         }
+        str = str + "\n";
+        if (!timeRange && !tickerListExists) {
+            return str;
+        } else {
+
+            if (timeRange && tickerListExists) {
+                if (inTime && inTicker) {
+                    return str;
+                }
+
+            } else if (timeRange && !tickerListExists) {
+                if (inTime)
+                    return str;
+
+            } else if (!timeRange && tickerListExists) {
+                if (inTicker)
+                    return str;
+            }
+        }
+        return "\r";
     }
 
-    public void convertSingleFile(JavaSparkContext sc, String[] args){
-        String inputFileName = args[2];
-        TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
+    public int getlength() {
+        int recordLength = 0;
+        for (int i = 0; i < fieldType.length; i++) {
+            recordLength += fieldType[i].getLength();
+        }
+        return recordLength;
     }
-    public static void main(String[] args) throws IOException {
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        long startTime = System.currentTimeMillis();
-        TAQConverter DirectoryConverterObject = new TAQConverter(args, sc);
-        long endTime = System.currentTimeMillis();
-        printElapsedTime(startTime, endTime, "complete conversion");
+
+    //work on
+    private void convertFileZip() {
+        JavaPairRDD<String, PortableDataStream> text_file = sc.binaryFiles(inputFileName);
+        JavaRDD<String> convertedObject = text_file.map(line -> convertLineZip(String.valueOf(line), fieldType));
+        if (new File(outputFileName).exists())
+            deleteFileorDir(outputFileName);
+        convertedObject.saveAsTextFile(outputFileName);
+
+    }
+
+    //work on
+    private String convertLineZip(String line, IFieldType[] fieldType) {
+        String str = "";
+        int start = 0;
+        debug(line);
+        if (line.trim().length() < 15)
+            return "";
+        for (int i = 0; i < fieldType.length - 1; i++) {
+            String tempStr = fieldType[i].convertFromBinary(line, start);
+            str = str + tempStr;
+            start = start + fieldType[i].getLength();
+            if (i < fieldType.length - 2)
+                str = str + ",";
+        }
+        str = str + "\n";
+        return str;
     }
 }

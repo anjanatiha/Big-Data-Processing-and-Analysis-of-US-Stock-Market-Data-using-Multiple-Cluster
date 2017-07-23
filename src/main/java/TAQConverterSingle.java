@@ -12,7 +12,7 @@ import static Misc.Time.printElapsedTime;
 
 
 public class TAQConverterSingle {
-    private TAQConverterSparkFinal TAQConverterSparkFinalObject;
+    private TAQConverter TAQConverterSparkFinalObject;
     private String inputFileName;
     private String outputFileName;
     private ITAQSpec ITAQSpecObject;
@@ -91,16 +91,16 @@ public class TAQConverterSingle {
         }
         if (!timeFilter) {
             if(!tickerFilter)
-                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes, start);
+                TAQConverterSparkFinalObject = new TAQConverter(sc, inputFileName, outputFileName, fieldTypes, start);
             else
-                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes, tickerSymbols, start);
+                TAQConverterSparkFinalObject = new TAQConverter(sc, inputFileName, outputFileName, fieldTypes, tickerSymbols, start);
         }
         else
         {
             if (!tickerFilter)
-                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes, startTime, endTime, start);
+                TAQConverterSparkFinalObject = new TAQConverter(sc, inputFileName, outputFileName, fieldTypes, startTime, endTime, start);
             else
-                TAQConverterSparkFinalObject = new TAQConverterSparkFinal(sc, inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
+                TAQConverterSparkFinalObject = new TAQConverter(sc, inputFileName, outputFileName, fieldTypes,startTime,endTime, tickerSymbols, start);
         }
         deleteFileorDir(outputFileName_unzip);
 

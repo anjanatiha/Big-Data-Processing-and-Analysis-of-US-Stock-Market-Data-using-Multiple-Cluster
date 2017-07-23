@@ -230,6 +230,8 @@ public class FileClass {
         try {
             ZipFile zf = new ZipFile(zipFile);
             File outputFile = new File(outputFileName);
+            if (outputFile.exists())
+                outputFile.delete();
             outputStream = new PrintWriter(outputFile);
             StringBuilder strBuilder = new StringBuilder();
             Enumeration entries = zf.entries();
