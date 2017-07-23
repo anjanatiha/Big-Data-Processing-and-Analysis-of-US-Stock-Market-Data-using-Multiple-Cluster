@@ -51,36 +51,6 @@ public class FileClass {
         }
         return listOfFiles;
     }
-//    public static void deleteFileOrFolder(String pathStr) throws IOException {
-//        Path path = Paths.get(pathStr);
-//        Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
-//            @Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs){
-//                try {
-//                    Files.delete(file);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                return CONTINUE;
-//            }
-//
-//            @Override public FileVisitResult visitFileFailed(final Path file, final IOException e) {
-//                Path path = Paths.get(pathStr);
-//                return handleException(e);
-//            }
-//
-//            private FileVisitResult handleException(final IOException e) {
-//                e.printStackTrace();
-//                return TERMINATE;
-//            }
-//
-//            @Override public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
-//                    throws IOException {
-//                if(e!=null)return handleException(e);
-//                Files.delete(dir);
-//                return CONTINUE;
-//            }
-//        });
-//    }
     public static void deleteFileOrDir(String path){
         File file = new File(path);
         file.delete();
