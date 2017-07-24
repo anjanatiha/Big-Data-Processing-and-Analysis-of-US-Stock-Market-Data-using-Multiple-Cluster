@@ -19,12 +19,12 @@ import static Misc.Time.printElapsedTime;
 //argument 6= stock symbols
 //argument 7= column lists
 
-public class TAQConverterMain {
+public class TAQConverterMain2 {
     private String fileOrDirectoryName;
     private File fileOrDirectory;
     public static JavaSparkContext sc;
 
-    TAQConverterMain(String[] args, JavaSparkContext sc) {
+    TAQConverterMain2(String[] args, JavaSparkContext sc) {
         fileOrDirectoryName = args[2];
         fileOrDirectory = new File(fileOrDirectoryName);
         this.sc = sc;
@@ -73,7 +73,7 @@ public class TAQConverterMain {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
-        TAQConverterMain DirectoryConverterObject = new TAQConverterMain(args, sc);
+        TAQConverterMain2 DirectoryConverterObject = new TAQConverterMain2(args, sc);
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime, "complete conversion");
         System.gc();

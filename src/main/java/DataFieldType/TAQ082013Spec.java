@@ -40,10 +40,10 @@ public class TAQ082013Spec implements ITAQSpec, Serializable {
                 new TextField(16), new NumericField(11, 4), new NumericField(7),
                 new NumericField(11, 4), new NumericField(7), new TextField(1),
                 new NumericField(4, 'p'), new TextField(1), new TextField(1),
-                new NumericField(16,'p'), new NumericField(1), new NumericField(1), new TextField(1),
-                new TextField(1),new TextField(1),new TextField(1),
-                new TextField(1),new TextField(1),new TextField(1),
-                new TextField(1),new TextField(2)};
+                new NumericField(16, 'p'), new NumericField(1), new NumericField(1), new TextField(1),
+                new TextField(1), new TextField(1), new TextField(1),
+                new TextField(1), new TextField(1), new TextField(1),
+                new TextField(1), new TextField(2)};
         return quoteFileFields;
     }
 
@@ -56,7 +56,7 @@ public class TAQ082013Spec implements ITAQSpec, Serializable {
                 new TextField(1), new TextField(1), new NumericField(11, 4),
                 new NumericField(7), new TextField(4), new TextField(2), new TextField(1),
                 new TextField(1), new NumericField(11, 4), new NumericField(7),
-                new TextField(4), new TextField(2), new TextField(1), new TextField(1),new TextField(1),
+                new TextField(4), new TextField(2), new TextField(1), new TextField(1), new TextField(1),
                 new TextField(2)};
         return NBBOFileFields;
     }

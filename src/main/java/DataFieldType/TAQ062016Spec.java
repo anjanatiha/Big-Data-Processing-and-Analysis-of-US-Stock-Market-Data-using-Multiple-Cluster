@@ -29,9 +29,9 @@ public class TAQ062016Spec implements ITAQSpec, Serializable {
 
     public IFieldType[] getTradeFields() {
         IFieldType[] tradeFileFields = {new TimeField(15), new TextField(1), new TextField(16),
-                new TextField(4),new TextField(4), new NumericField(10), new NumericField(21, 6),
+                new TextField(4), new TextField(4), new NumericField(10), new NumericField(21, 6),
                 new TextField(1), new NumericField(2, 'p'), new NumericField(16, 'p'),
-                new NumericField(20,'p'), new TextField(1), new TextField(1),new TimeField(15), new TimeField(15),
+                new NumericField(20, 'p'), new TextField(1), new TextField(1), new TimeField(15), new TimeField(15),
                 new NumericField(1)};
         return tradeFileFields;
     }
@@ -41,10 +41,10 @@ public class TAQ062016Spec implements ITAQSpec, Serializable {
                 new NumericField(21, 1), new NumericField(10),
                 new NumericField(21, 1), new NumericField(10), new TextField(1),
                 new NumericField(20, 'p'), new NumericField(1), new NumericField(1), new NumericField(1),
-                new TextField(1), new TextField(1),new TextField(1), new TextField(1),
+                new TextField(1), new TextField(1), new TextField(1), new TextField(1),
                 new NumericField(21, 1), new NumericField(10),
-                new TextField(4), new TextField(1),new NumericField(21,1), new NumericField(10), new TextField(4), new TextField(1),
-                new TextField(1), new TextField(1), new TimeField(15),new TimeField(15)};
+                new TextField(4), new TextField(1), new NumericField(21, 1), new NumericField(10), new TextField(4), new TextField(1),
+                new TextField(1), new TextField(1), new TimeField(15), new TimeField(15)};
         return NBBOFileFields;
     }
 
@@ -53,11 +53,11 @@ public class TAQ062016Spec implements ITAQSpec, Serializable {
                 new TextField(16), new NumericField(21, 1), new NumericField(10),
                 new NumericField(21, 1), new NumericField(10), new TextField(1),
                 new TextField(1), new NumericField(20, 'p'), new NumericField(1),
-                new NumericField(1),new NumericField(1), new TextField(1), new TextField(1), new TextField(1),
+                new NumericField(1), new NumericField(1), new TextField(1), new TextField(1), new TextField(1),
                 new TextField(1), new TextField(1),
                 new TextField(1), new TextField(1), new TextField(1),
                 new TextField(1),
-                new TimeField(15), new TimeField(15),new TextField(1)};
+                new TimeField(15), new TimeField(15), new TextField(1)};
         return quoteFileFields;
     }
 }

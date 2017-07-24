@@ -14,6 +14,7 @@ public interface ITAQSpec extends Serializable {
     public int getQuoteFieldsLength();
 
     public int getNBBOFieldsLength();
+
     public IFieldType[] getTradeFields();
 
     public IFieldType[] getNBBOFields();

@@ -11,7 +11,7 @@ import static Misc.Print.print;
 
 public class FileClass {
 
-    public static void printFileLine(String inputFileName, int lineCount){
+    public static void printFileLine(String inputFileName, int lineCount) {
         FileInputStream fstream = null;
         try {
             fstream = new FileInputStream(inputFileName);
@@ -38,7 +38,7 @@ public class FileClass {
 
     }
 
-    public static File[] readDirectory(String directory){
+    public static File[] readDirectory(String directory) {
 
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
@@ -52,35 +52,36 @@ public class FileClass {
         }
         return listOfFiles;
     }
+
     public static void deleteFileorDir(String fileOrDirStr) {
         File fileOrDir = new File(fileOrDirStr);
-        if(fileOrDir.exists()){
-            if (fileOrDirStr.substring(fileOrDirStr.length()-1, fileOrDirStr.length()).equals("/")) {
+        if (fileOrDir.exists()) {
+            if (fileOrDirStr.substring(fileOrDirStr.length() - 1, fileOrDirStr.length()).equals("/")) {
                 File[] files = fileOrDir.listFiles();
                 if (files != null) {
                     for (int i = 0; i < files.length; i++) {
                         if (files[i].isDirectory()) {
                             deleteFileorDir(files[i].getAbsolutePath());
-                            System.out.println("Deleted Directory : "+ files[i].getAbsolutePath());
+                            System.out.println("Deleted Directory : " + files[i].getAbsolutePath());
 
                         } else {
                             files[i].delete();
-                            System.out.println("Deleted File : "+ files[i].getAbsolutePath());
+                            System.out.println("Deleted File : " + files[i].getAbsolutePath());
 
                         }
                     }
                 }
-            }
-            else {
                 fileOrDir.delete();
-                System.out.println("Deleted Single File : "+ fileOrDirStr);
+            } else {
+                fileOrDir.delete();
+                System.out.println("Deleted Single File : " + fileOrDirStr);
             }
         }
     }
 
-    public static String getFirstLineUnzipped(String inputFileName){
+    public static String getFirstLineUnzipped(String inputFileName) {
         FileInputStream fstream = null;
-        String firstLine="";
+        String firstLine = "";
         try {
             fstream = new FileInputStream(inputFileName);
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
@@ -93,7 +94,8 @@ public class FileClass {
         }
         return firstLine;
     }
-    public static String getFirstLineZip(String inputZipFileName){
+
+    public static String getFirstLineZip(String inputZipFileName) {
         String line = "";
         BufferedReader br = null;
         try {
@@ -113,7 +115,7 @@ public class FileClass {
             br.close();
         } catch (IOException e) {
             e.printStackTrace();
-            if(br!=null)
+            if (br != null)
                 try {
                     br.close();
                 } catch (IOException e1) {
@@ -155,7 +157,7 @@ public class FileClass {
                         outputStream.print(stringBuilder);
                         outputStream.flush();
                         stringBuilder.setLength(0);
-                        if (k%bufferSize==0)
+                        if (k % bufferSize == 0)
                             print(k);
                     }
                 }
@@ -173,35 +175,28 @@ public class FileClass {
             e.printStackTrace();
         }
     }
-    public static String getFileType(String directory){
 
-        if ((directory.substring(directory.length()-5, directory.length()-1)).equals("NBBO")){
+    public static String getFileType(String directory) {
+
+        if ((directory.substring(directory.length() - 5, directory.length() - 1)).equals("NBBO")) {
             return "nbbo";
-        }
-
-        else if ((directory.substring(directory.length()-6, directory.length())).equals("Quote")){
+        } else if ((directory.substring(directory.length() - 6, directory.length())).equals("Quote")) {
             return "quote";
-        }
-
-        else if ((directory.substring(directory.length()-6, directory.length())).equals("Trade")){
+        } else if ((directory.substring(directory.length() - 6, directory.length())).equals("Trade")) {
             return "trade";
-        }
-        else return "None";
+        } else return "None";
     }
 
-    public static void mkdir(String dirName)
-    {
+    public static void mkdir(String dirName) {
         File dir = new File(dirName);
         boolean successful = dir.mkdir();
-        if (successful)
-        {
+        if (successful) {
             System.out.println("directory was created successfully");
-        }
-        else
-        {
+        } else {
             System.out.println("failed trying to create the directory");
         }
     }
+
     public static String unZip(String zipFile, String outputFileName) {
         BufferedReader br = null;
         PrintWriter outputStream = null;
@@ -219,7 +214,6 @@ public class FileClass {
                 long size = ze.getSize();
                 sizeStr = readableFileSize(size);
                 if (size > 0) {
-//                    System.out.println("Length is " + size);
                     br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
                     String line;
                     int k = 1;
@@ -253,7 +247,7 @@ public class FileClass {
                 br.close();
                 outputStream.close();
 
-            }catch (IOException e1) {
+            } catch (IOException e1) {
                 e1.printStackTrace();
             }
 
@@ -263,7 +257,7 @@ public class FileClass {
                 br.close();
                 outputStream.close();
 
-            }catch (IOException e1) {
+            } catch (IOException e1) {
                 e1.printStackTrace();
             }
             e.printStackTrace();
@@ -272,9 +266,9 @@ public class FileClass {
     }
 
     public static String readableFileSize(long size) {
-        if(size <= 0) return "0";
-        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
-        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
-        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+        if (size <= 0) return "0";
+        final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

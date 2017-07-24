@@ -8,7 +8,9 @@ public class Print {
         System.out.println(k);
     }
 
-    public static void print(String k) { System.out.println(k); }
+    public static void print(String k) {
+        System.out.println(k);
+    }
 
     public static void print(StringBuilder k) {
         System.out.println(k);

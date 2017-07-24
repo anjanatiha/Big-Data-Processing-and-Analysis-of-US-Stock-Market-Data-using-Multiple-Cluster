@@ -13,27 +13,35 @@ public class Time {
         System.out.println(formattedDate);
     }
 
-    public static void printElapsedTime(long startTime, long endTime) {
+    public static String printElapsedTime(long startTime, long endTime) {
         long totalTime = endTime - startTime;
         int seconds = (int) ((totalTime / 1000) % 60);
         int minutes = (int) ((totalTime / 1000) / 60);
+        String min = String.valueOf(minutes);
+        String sec = String.valueOf(seconds);
+        if (sec.length() == 1)
+            sec = "0" + sec;
+        String strTime = minutes + ":" + seconds;
         System.out.println("\n\nTotal Time: " + minutes + ":" + seconds);
+        return strTime;
     }
+
     public static String printElapsedTime(long startTime, long endTime, String str) {
         long totalTime = endTime - startTime;
         int seconds = (int) ((totalTime / 1000) % 60);
         int minutes = (int) ((totalTime / 1000) / 60);
         String min = String.valueOf(minutes);
         String sec = String.valueOf(seconds);
-        if(sec.length()==1)
-            sec = "0"+sec;
+        if (sec.length() == 1)
+            sec = "0" + sec;
         String strTime = minutes + ":" + seconds;
-        System.out.println("\n\nTotal Time for "+str+ " : " + minutes + ":" + seconds);
+        System.out.println("\n\nTotal Time for " + str + " : " + minutes + ":" + seconds);
         return strTime;
     }
-    public static void decipherTime(String time){
-        String year=time.substring(time.length()-4, time.length());
-        String month=time.substring(time.length()-6, time.length()-4);
+
+    public static void decipherTime(String time) {
+        String year = time.substring(time.length() - 4, time.length());
+        String month = time.substring(time.length() - 6, time.length() - 4);
 
     }
 }
