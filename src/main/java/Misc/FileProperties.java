@@ -20,10 +20,10 @@ public class FileProperties {
         if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
 
             outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
-            print("inputfile: "+ inputFileName+"   out : "+ outputFileName);
+            print("inputfile: " + inputFileName + "   out : " + outputFileName);
         } else {
             outputFileName = inputFileName + "_converted";
-            print("inputfile_con: "+ inputFileName+"   out : "+ outputFileName);
+            print("inputfile_con: " + inputFileName + "   out : " + outputFileName);
         }
         return outputFileName;
     }
@@ -90,23 +90,24 @@ public class FileProperties {
         else
             return "None";
     }
-    public static List<String> wordCollect (JavaSparkContext sc, String inputFileName){
+
+    public static List<String> wordCollect(JavaSparkContext sc, String inputFileName) {
         JavaRDD<String> textFile = sc.textFile(inputFileName);
         List<String[]> wordListArr = textFile.map(e -> e.split("[\\s,;.]+")).collect();
         List<String> wordList = new ArrayList<>();
 
-        for (String[] word: wordListArr) {
-            for (int i=0; i<word.length;i++){
+        for (String[] word : wordListArr) {
+            for (int i = 0; i < word.length; i++) {
                 wordList.add(word[i]);
             }
         }
-        int k=0;
-        for (String word: wordList) {
+        int k = 0;
+        for (String word : wordList) {
             k++;
         }
-        print("Number of Tickers selected : " +k);
+        print("Number of Tickers selected : " + k);
         print("Finding the following Tickers");
-        for (String word: wordList) {
+        for (String word : wordList) {
             System.out.print(word + " ");
 
         }
@@ -114,27 +115,27 @@ public class FileProperties {
         return wordList;
     }
 
-    public static List<Integer> columnSelect(JavaSparkContext sc, String inputFileName){
+    public static List<Integer> columnSelect(JavaSparkContext sc, String inputFileName) {
         JavaRDD<String> textFile = sc.textFile(inputFileName);
         List<String[]> columnListArr = textFile.map(e -> e.split("[\\s,;.]+")).collect();
         List<Integer> columnList = new ArrayList<>();
 
-        for (String[] col: columnListArr) {
-            for (int i=0; i<col.length;i++){
-                try{
+        for (String[] col : columnListArr) {
+            for (int i = 0; i < col.length; i++) {
+                try {
                     columnList.add(Integer.parseInt(col[i]));
-                }catch(Exception e ){
+                } catch (Exception e) {
                     System.out.println(e);
                 }
             }
         }
-        int k=0;
-        for (int column: columnList) {
+        int k = 0;
+        for (int column : columnList) {
             k++;
         }
-        print("Number of columns selected : " +k);
+        print("Number of columns selected : " + k);
         print("Finding the following columns");
-        for (int column: columnList) {
+        for (int column : columnList) {
             System.out.print(column + " ");
 
         }

@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 
 import static Misc.FileClass.deleteFileorDir;
 import static Misc.FileClass.unZip;
@@ -40,8 +39,9 @@ public class TAQConverter implements Serializable {
     private String inputFileType = "";
     private String fileYear;
     private String sizeStr = "";
+    private int partionSize = 0;
 
-    TAQConverter( JavaSparkContext sc, String[] args, String inputFileName) {
+    TAQConverter(JavaSparkContext sc, String[] args, String inputFileName) {
         this.TAQFileType = args[0];
         this.inputFileName = args[2];
         this.fileYear = extractYear(inputFileName);
@@ -49,7 +49,7 @@ public class TAQConverter implements Serializable {
             this.filterTime = true;
             this.startTime = args[3];
             this.endTime = args[4];
-            print("Start Time: "+startTime+ " End Time : " +endTime);
+            print("Start Time: " + startTime + " End Time : " + endTime);
         }
         if (!args[5].equals("n")) {
             this.tickerSymbols = wordCollect(sc, args[5]);
@@ -62,6 +62,7 @@ public class TAQConverter implements Serializable {
         this.inputFileType = getInputFileType(inputFileName);
         this.outputFileName = getOutputFileName(inputFileName);
         this.sc = sc;
+        this.partionSize = Integer.parseInt(args[7]);
 
         print("File Year: " + fileYear);
         switch (fileYear) {
@@ -113,12 +114,11 @@ public class TAQConverter implements Serializable {
     private void convertFile() {
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
-        System.out.println("How many partitions?");
-        Scanner scan = new Scanner(System.in);
-        int pnum = scan.nextInt();
         convertedObject = text_file.map(line -> convertLine(line));
-        convertedObject = convertedObject.filter(line -> !line.equals("\r"));
-        convertedObject =convertedObject.coalesce(pnum);
+        if (this.partionSize == -1)
+            convertedObject = convertedObject.filter(line -> !line.equals("\r"));
+        else
+            convertedObject = convertedObject.filter(line -> !line.equals("\r")).coalesce(this.partionSize);
         Path path = Paths.get(outputFileName);
         if (Files.exists(path)) {
             try {
@@ -136,9 +136,8 @@ public class TAQConverter implements Serializable {
         int time;
         boolean inTime = false;
         boolean inTicker = false;
-        boolean inColumn = false;
         int colMax;
-        if(filterColumns)
+        if (filterColumns)
             colMax = Collections.max(columnList);
         else
             colMax = fieldTypes.length - 1;
@@ -161,15 +160,14 @@ public class TAQConverter implements Serializable {
                         return "\r";
                 }
             }
-            if(!filterColumns){
+            if (!filterColumns) {
                 str = str + tempStr;
                 if (i < fieldTypes.length - 2)
                     str = str + ",";
-            }
-            else if (filterColumns){
-                if (columnList.contains(i+1)){
+            } else if (filterColumns) {
+                if (columnList.contains(i + 1)) {
                     str = str + tempStr;
-                    if (i < colMax-1)
+                    if (i < colMax - 1)
                         str = str + ",";
                 }
             }

@@ -5,19 +5,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import static Misc.Print.print;
+import static Misc.SystemProperties.getMaxMemorySize;
 import static Misc.Time.printElapsedTime;
 
-
-
-//argument 1= filetype (taq file type trade, nbbo or quote)
-//argument 2= type "n"
-//argument 3= file or direcotory location
-//argument 4= start time
-//argument 5= end time
-//argument 6= stock symbols
-//argument 7= column lists
+//argument 1 : filetype (taq file type "trade", "nbbo" or "quote")
+//argument 2 : type "n" (obsolete argument used for specifing year)
+//argument 3 : file or direcotory location of file to convert( /home/user/Downloads/file.zip)
+//argument 4 : start time (please follow number of digits for each file spec for 9 digit 090000000)
+//argument 5 : end time please follow number of digits for each file spec for 9 digit 093000000)
+//argument 6 : file location of file containing stock symbols seperated by space, comma( /home/user/Downloads/stock).
+//argument 7 : type file location containing column index seperated by space, comma(/home/user/Downloads/columns).
+//argument 8 : cluster size(leave with -1 to as cluster size is set automatically based on available worker nodes)
 
 public class TAQConverterMain {
     private String fileOrDirectoryName;
@@ -70,7 +71,17 @@ public class TAQConverterMain {
     }
 
     public static void main(String[] args) throws IOException {
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
+        int memMin = 1;
+        int memMax = getMaxMemorySize();
+        System.out.println("\nPlease specify Memory Size for spark in GB (-1 to ignore):\n(Please consider leaving enough memory space for operating system to function properly which is usually 4-6GB)");
+        Scanner scan = new Scanner(System.in);
+        int memSizeNum = scan.nextInt();
+        String memorySize;
+        if (memSizeNum != -1 && memSizeNum <= memMax)
+            memorySize = String.valueOf(memSizeNum) + "g";
+        else
+            memorySize = "1g";
+        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", memorySize);
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
         TAQConverterMain TAQConverterMainObject = new TAQConverterMain(args, sc);

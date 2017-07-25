@@ -68,10 +68,10 @@ public class FileClass {
     public static void deleteFileorDir(String fileOrDirStr) {
         File fileOrDir = new File(fileOrDirStr);
         if (fileOrDir.exists()) {
-            System.out.println("Do you want to delete file : "+ fileOrDirStr);
+            System.out.println("Do you want to delete file : " + fileOrDirStr);
             Scanner scan = new Scanner(System.in);
             String s = scan.next();
-            if (s.equals("y")){
+            if (s.equals("y")) {
                 if (fileOrDirStr.substring(fileOrDirStr.length() - 1, fileOrDirStr.length()).equals("/")) {
                     File[] files = fileOrDir.listFiles();
                     if (files != null) {
@@ -96,7 +96,7 @@ public class FileClass {
         }
     }
 
-    public static String getFirstLineUnzipped(String inputFileName){
+    public static String getFirstLineUnzipped(String inputFileName) {
         FileInputStream fstream = null;
         String firstLine = "";
         BufferedReader br = null;
@@ -118,7 +118,7 @@ public class FileClass {
         return firstLine;
     }
 
-    public static String getFirstLineZip(String inputZipFileName){
+    public static String getFirstLineZip(String inputZipFileName) {
         String line = "";
         BufferedReader br = null;
         try {
@@ -219,7 +219,7 @@ public class FileClass {
         }
     }
 
-    public static String unZip(String zipFile, String outputFileName){
+    public static String unZip(String zipFile, String outputFileName) {
         BufferedReader br = null;
         PrintWriter outputStream = null;
         String sizeStr = "";
@@ -271,7 +271,7 @@ public class FileClass {
                 }
             }
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
             try {
                 br.close();
