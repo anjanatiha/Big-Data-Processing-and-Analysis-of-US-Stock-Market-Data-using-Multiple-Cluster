@@ -13,7 +13,9 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 import static Misc.FileClass.deleteFileorDir;
 import static Misc.FileClass.unZip;
@@ -100,7 +102,6 @@ public class TAQConverter implements Serializable {
             printElapsedTime(startTime, endTime, " unzipping ");
             this.inputFileName = outputFileName;
             this.outputFileName = getOutputFileName(this.inputFileName);
-            print("inputfilewe: "+ this.inputFileName+"   out : "+ this.outputFileName);
 
         }
 
@@ -112,8 +113,12 @@ public class TAQConverter implements Serializable {
     private void convertFile() {
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
+        System.out.println("How many partitions?");
+        Scanner scan = new Scanner(System.in);
+        int pnum = scan.nextInt();
         convertedObject = text_file.map(line -> convertLine(line));
         convertedObject = convertedObject.filter(line -> !line.equals("\r"));
+        convertedObject =convertedObject.coalesce(pnum);
         Path path = Paths.get(outputFileName);
         if (Files.exists(path)) {
             try {
@@ -132,9 +137,13 @@ public class TAQConverter implements Serializable {
         boolean inTime = false;
         boolean inTicker = false;
         boolean inColumn = false;
-        for (int i = 0; i < fieldTypes.length - 1; i++) {
+        int colMax;
+        if(filterColumns)
+            colMax = Collections.max(columnList);
+        else
+            colMax = fieldTypes.length - 1;
+        for (int i = 0; i < colMax; i++) {
             String tempStr = fieldTypes[i].convertFromBinary(line, start);
-
             if (filterTime) {
                 if (i == 0) {
                     time = Integer.parseInt(tempStr);
@@ -154,16 +163,19 @@ public class TAQConverter implements Serializable {
             }
             if(!filterColumns){
                 str = str + tempStr;
+                if (i < fieldTypes.length - 2)
+                    str = str + ",";
             }
             else if (filterColumns){
                 if (columnList.contains(i+1)){
                     str = str + tempStr;
+                    if (i < colMax-1)
+                        str = str + ",";
                 }
             }
 
             start = start + fieldTypes[i].getLength();
-            if (i < fieldTypes.length - 2)
-                str = str + ",";
+
         }
         str = str + "\n";
         if (!filterTime && !filterTickers) {
