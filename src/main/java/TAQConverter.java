@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
-import static Misc.FileClass.deleteFileorDir;
 import static Misc.FileClass.unZip;
 import static Misc.FileProperties.*;
 import static Misc.Print.print;
@@ -108,7 +107,7 @@ public class TAQConverter implements Serializable {
 
 
         convertFile();
-        deleteFileorDir(outputFileName_unzip);
+//        deleteFileorDir(outputFileName_unzip);
     }
 
     private void convertFile() {
