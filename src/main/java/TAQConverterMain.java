@@ -37,8 +37,11 @@ public class TAQConverterMain {
 
     }
 
-    private void convertDirectory(JavaSparkContext sc, String[] args) {
-        File[] listOfFiles = fileOrDirectory.listFiles();
+    public void convertDirectory(JavaSparkContext sc, String[] args) {
+
+        File directory = new File(fileOrDirectoryName);
+
+        File[] listOfFiles = directory.listFiles();
         List<String> strTimeList = new ArrayList<>();
         int i;
         for (i = 0; i < listOfFiles.length; i++) {

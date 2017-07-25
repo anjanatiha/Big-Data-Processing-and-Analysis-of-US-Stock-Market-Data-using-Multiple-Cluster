@@ -113,6 +113,11 @@ public class FileClass {
             }
             e.printStackTrace();
         } catch (IOException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
         return firstLine;
@@ -252,7 +257,7 @@ public class FileClass {
                     while (line != null) {
                         strBuilder.append(line);
                         strBuilder.append("\r\n");
-                        if (k % 3000000 == 0) {
+                        if (k % 5000000 == 0) {
                             outputStream.print(strBuilder);
                             outputStream.flush();
                             strBuilder.setLength(0);

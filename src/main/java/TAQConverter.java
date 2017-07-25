@@ -127,6 +127,7 @@ public class TAQConverter implements Serializable {
             }
         }
         convertedObject.saveAsTextFile(outputFileName);
+        System.gc();
     }
 
     private String convertLine(String line) {
