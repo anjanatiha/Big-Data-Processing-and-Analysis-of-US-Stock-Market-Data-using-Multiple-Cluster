@@ -3,6 +3,7 @@ package Misc;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
+import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -13,9 +14,10 @@ public class FileClass {
 
     public static void printFileLine(String inputFileName, int lineCount) {
         FileInputStream fstream = null;
+        BufferedReader br = null;
         try {
             fstream = new FileInputStream(inputFileName);
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            br = new BufferedReader(new InputStreamReader(fstream));
             String strLine;
             int k = 0;
             StringBuilder str = new StringBuilder();
@@ -31,8 +33,18 @@ public class FileClass {
             }
             br.close();
         } catch (FileNotFoundException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         } catch (IOException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
 
@@ -56,38 +68,49 @@ public class FileClass {
     public static void deleteFileorDir(String fileOrDirStr) {
         File fileOrDir = new File(fileOrDirStr);
         if (fileOrDir.exists()) {
-            if (fileOrDirStr.substring(fileOrDirStr.length() - 1, fileOrDirStr.length()).equals("/")) {
-                File[] files = fileOrDir.listFiles();
-                if (files != null) {
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i].isDirectory()) {
-                            deleteFileorDir(files[i].getAbsolutePath());
-                            System.out.println("Deleted Directory : " + files[i].getAbsolutePath());
+            System.out.println("Do you want to delete file : "+ fileOrDirStr);
+            Scanner scan = new Scanner(System.in);
+            String s = scan.next();
+            if (s.equals("y")){
+                if (fileOrDirStr.substring(fileOrDirStr.length() - 1, fileOrDirStr.length()).equals("/")) {
+                    File[] files = fileOrDir.listFiles();
+                    if (files != null) {
+                        for (int i = 0; i < files.length; i++) {
+                            if (files[i].isDirectory()) {
+                                deleteFileorDir(files[i].getAbsolutePath());
+                                System.out.println("Deleted Directory : " + files[i].getAbsolutePath());
 
-                        } else {
-                            files[i].delete();
-                            System.out.println("Deleted File : " + files[i].getAbsolutePath());
+                            } else {
+                                files[i].delete();
+                                System.out.println("Deleted File : " + files[i].getAbsolutePath());
 
+                            }
                         }
                     }
+                    fileOrDir.delete();
+                } else {
+                    fileOrDir.delete();
+                    System.out.println("Deleted Single File : " + fileOrDirStr);
                 }
-                fileOrDir.delete();
-            } else {
-                fileOrDir.delete();
-                System.out.println("Deleted Single File : " + fileOrDirStr);
             }
         }
     }
 
-    public static String getFirstLineUnzipped(String inputFileName) {
+    public static String getFirstLineUnzipped(String inputFileName){
         FileInputStream fstream = null;
         String firstLine = "";
+        BufferedReader br = null;
         try {
             fstream = new FileInputStream(inputFileName);
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            br = new BufferedReader(new InputStreamReader(fstream));
             firstLine = br.readLine();
             br.close();
         } catch (FileNotFoundException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,7 +118,7 @@ public class FileClass {
         return firstLine;
     }
 
-    public static String getFirstLineZip(String inputZipFileName) {
+    public static String getFirstLineZip(String inputZipFileName){
         String line = "";
         BufferedReader br = null;
         try {
@@ -114,13 +137,12 @@ public class FileClass {
             }
             br.close();
         } catch (IOException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
-            if (br != null)
-                try {
-                    br.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
 
         }
         return line;
@@ -197,15 +219,22 @@ public class FileClass {
         }
     }
 
-    public static String unZip(String zipFile, String outputFileName) {
+    public static String unZip(String zipFile, String outputFileName){
         BufferedReader br = null;
         PrintWriter outputStream = null;
         String sizeStr = "";
         try {
             ZipFile zf = new ZipFile(zipFile);
             File outputFile = new File(outputFileName);
-            if (outputFile.exists())
-                outputFile.delete();
+            if (outputFile.exists()) {
+                System.out.println("File already unzipped\nDo you want to unzip again?");
+                Scanner scan = new Scanner(System.in);
+                String s = scan.next();
+                if (s.equals("y"))
+                    outputFile.delete();
+                else
+                    return "0";
+            }
             outputStream = new PrintWriter(outputFile);
             StringBuilder strBuilder = new StringBuilder();
             Enumeration entries = zf.entries();
@@ -223,7 +252,7 @@ public class FileClass {
                     while (line != null) {
                         strBuilder.append(line);
                         strBuilder.append("\r\n");
-                        if (k % 10000000 == 0) {
+                        if (k % 3000000 == 0) {
                             outputStream.print(strBuilder);
                             outputStream.flush();
                             strBuilder.setLength(0);
@@ -242,26 +271,17 @@ public class FileClass {
                 }
             }
 
-        } catch (FileNotFoundException e) {
+        }catch(Exception e){
+
             try {
                 br.close();
-                outputStream.close();
-
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-
-            e.printStackTrace();
-        } catch (IOException e) {
-            try {
-                br.close();
-                outputStream.close();
-
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
+            outputStream.close();
+            System.out.println(e);
         }
+
         return sizeStr;
     }
 

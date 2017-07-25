@@ -18,9 +18,12 @@ public class FileProperties {
     public static String getOutputFileName(String inputFileName) {
         String outputFileName;
         if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
-            outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_extracted";
+
+            outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
+            print("inputfile: "+ inputFileName+"   out : "+ outputFileName);
         } else {
             outputFileName = inputFileName + "_converted";
+            print("inputfile_con: "+ inputFileName+"   out : "+ outputFileName);
         }
         return outputFileName;
     }

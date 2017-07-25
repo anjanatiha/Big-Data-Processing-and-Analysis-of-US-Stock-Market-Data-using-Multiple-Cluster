@@ -2,12 +2,10 @@
  * Created by Anjana on 5/29/2017.
  */
 
-import DataFieldType.IFieldType;
+import DataFieldType.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.input.PortableDataStream;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,66 +13,100 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
-import static Misc.Debug.debug;
 import static Misc.FileClass.deleteFileorDir;
-import static Misc.Print.*;
+import static Misc.FileClass.unZip;
+import static Misc.FileProperties.*;
+import static Misc.Print.print;
+import static Misc.Time.printElapsedTime;
 
 public class TAQConverter implements Serializable {
     private String inputFileName;
     private String outputFileName;
-    private IFieldType[] fieldType;
+    private IFieldType[] fieldTypes;
+    private ITAQSpec ITAQSpecObject;
     private String startTime;
     private String endTime;
     private List<String> tickerSymbols;
-    private boolean tickerListExists = false;
-    private boolean timeRange = false;
-    private int startOffset;
-    private int recordLength;
+    private List<Integer> columnList;
+    private boolean filterTickers = false;
+    private boolean filterTime = false;
+    private boolean filterColumns = false;
     private static JavaSparkContext sc;
-    private boolean columnListExists = false;
-    private List<Integer> columnList =new ArrayList<>();
+    private String TAQFileType = "";
+    private String inputFileType = "";
+    private String fileYear;
+    private String sizeStr = "";
 
-    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset, List<Integer> columnSelectList) {
-        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset, columnList);
-        convertFile();
-    }
-
-    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, List<String> tickerSymbols, int startOffset, List<Integer> columnSelectList) {
-        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset,  columnList);
-        this.tickerSymbols = tickerSymbols;
-        this.tickerListExists = true;
-        convertFile();
-    }
-
-    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, int startOffset, List<Integer> columnSelectList) {
-        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset, columnList);
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.timeRange = true;
-        convertFile();
-    }
-
-    TAQConverter(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, String startTime, String endTime, List<String> tickerSymbols, int startOffset, List<Integer> columnSelectList) {
-        setMainObjects(sc, inputFileName, outputFileName, fieldType, startOffset,  columnList);
-        this.timeRange = true;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.tickerListExists = true;
-        this.tickerSymbols = tickerSymbols;
-        convertFile();
-    }
-
-    private void setMainObjects(JavaSparkContext sc, String inputFileName, String outputFileName, IFieldType[] fieldType, int startOffset, List<Integer> columnList) {
-        this.inputFileName = inputFileName;
-        this.outputFileName = outputFileName;
-        this.fieldType = fieldType;
-        this.startOffset = startOffset;
-        this.recordLength = getlength();
-        this.columnList = columnList;
+    TAQConverter( JavaSparkContext sc, String[] args, String inputFileName) {
+        this.TAQFileType = args[0];
+        this.inputFileName = args[2];
+        this.fileYear = extractYear(inputFileName);
+        if (!args[3].equals("n")) {
+            this.filterTime = true;
+            this.startTime = args[3];
+            this.endTime = args[4];
+            print("Start Time: "+startTime+ " End Time : " +endTime);
+        }
+        if (!args[5].equals("n")) {
+            this.tickerSymbols = wordCollect(sc, args[5]);
+            this.filterTickers = true;
+        }
+        if (!args[6].equals("n")) {
+            this.columnList = columnSelect(sc, args[6]);
+            this.filterColumns = true;
+        }
+        this.inputFileType = getInputFileType(inputFileName);
+        this.outputFileName = getOutputFileName(inputFileName);
         this.sc = sc;
+
+        print("File Year: " + fileYear);
+        switch (fileYear) {
+            case "2010":
+                ITAQSpecObject = new TAQ102010Spec();
+                break;
+            case "2012":
+                ITAQSpecObject = new TAQ072012Spec();
+                break;
+            case "2013":
+                ITAQSpecObject = new TAQ082013Spec();
+                break;
+            case "2015":
+                ITAQSpecObject = new TAQ062015Spec();
+                break;
+            case "2016":
+                ITAQSpecObject = new TAQ062016Spec();
+                break;
+        }
+        switch (TAQFileType) {
+            case "trade":
+                fieldTypes = ITAQSpecObject.getTradeFields();
+                break;
+            case "nbbo":
+                fieldTypes = ITAQSpecObject.getNBBOFields();
+                break;
+            case "quote":
+                fieldTypes = ITAQSpecObject.getQuoteFields();
+                break;
+        }
+        String outputFileName_unzip = outputFileName;
+        if (inputFileType.equals("zip")) {
+            print("Unzipping Started for + " + inputFileName);
+            long startTime = System.currentTimeMillis();
+            this.sizeStr = unZip(inputFileName, outputFileName);
+            print("Unzipping Completed for + " + inputFileName);
+            long endTime = System.currentTimeMillis();
+            printElapsedTime(startTime, endTime, " unzipping ");
+            this.inputFileName = outputFileName;
+            this.outputFileName = getOutputFileName(this.inputFileName);
+            print("inputfilewe: "+ this.inputFileName+"   out : "+ this.outputFileName);
+
+        }
+
+
+        convertFile();
+        deleteFileorDir(outputFileName_unzip);
     }
 
     private void convertFile() {
@@ -99,11 +131,11 @@ public class TAQConverter implements Serializable {
         int time;
         boolean inTime = false;
         boolean inTicker = false;
-        if (line.trim().length() < 15)
-            return "\r";
-        for (int i = 0; i < fieldType.length - 1; i++) {
-            String tempStr = fieldType[i].convertFromBinary(line, start);
-            if (timeRange == true) {
+        boolean inColumn = false;
+        for (int i = 0; i < fieldTypes.length - 1; i++) {
+            String tempStr = fieldTypes[i].convertFromBinary(line, start);
+
+            if (filterTime) {
                 if (i == 0) {
                     time = Integer.parseInt(tempStr);
                     if ((time >= Integer.parseInt(startTime)) && (time <= Integer.parseInt(endTime))) {
@@ -112,7 +144,7 @@ public class TAQConverter implements Serializable {
                         return "\r";
                 }
             }
-            if (tickerListExists == true) {
+            if (filterTickers) {
                 if (i == 2) {
                     if (tickerSymbols.contains(tempStr)) {
                         inTicker = true;
@@ -120,35 +152,33 @@ public class TAQConverter implements Serializable {
                         return "\r";
                 }
             }
-            if(columnList.isEmpty()){
+            if(!filterColumns){
                 str = str + tempStr;
             }
-            else if (!columnList.isEmpty()){
-                print("aewr");
+            else if (filterColumns){
                 if (columnList.contains(i+1)){
                     str = str + tempStr;
                 }
             }
 
-
-            start = start + fieldType[i].getLength();
-            if (i < fieldType.length - 2)
+            start = start + fieldTypes[i].getLength();
+            if (i < fieldTypes.length - 2)
                 str = str + ",";
         }
         str = str + "\n";
-        if (!timeRange && !tickerListExists) {
+        if (!filterTime && !filterTickers) {
             return str;
         } else {
 
-            if (timeRange && tickerListExists) {
+            if (filterTime && filterTickers) {
                 if (inTime && inTicker) {
                     return str;
                 }
 
-            } else if (timeRange && !tickerListExists) {
+            } else if (filterTime && !filterTickers) {
                 if (inTime)
                     return str;
-            } else if (!timeRange && tickerListExists) {
+            } else if (!filterTime && filterTickers) {
                 if (inTicker)
                     return str;
             }
@@ -158,37 +188,10 @@ public class TAQConverter implements Serializable {
 
     public int getlength() {
         int recordLength = 0;
-        for (int i = 0; i < fieldType.length; i++) {
-            recordLength += fieldType[i].getLength();
+        for (int i = 0; i < fieldTypes.length; i++) {
+            recordLength += fieldTypes[i].getLength();
         }
         return recordLength;
     }
 
-    //work on
-    private void convertFileZip() {
-        JavaPairRDD<String, PortableDataStream> text_file = sc.binaryFiles(inputFileName);
-        JavaRDD<String> convertedObject = text_file.map(line -> convertLineZip(String.valueOf(line), fieldType));
-        if (new File(outputFileName).exists())
-            deleteFileorDir(outputFileName);
-        convertedObject.saveAsTextFile(outputFileName);
-
-    }
-
-    //work on
-    private String convertLineZip(String line, IFieldType[] fieldType) {
-        String str = "";
-        int start = 0;
-        debug(line);
-        if (line.trim().length() < 15)
-            return "";
-        for (int i = 0; i < fieldType.length - 1; i++) {
-            String tempStr = fieldType[i].convertFromBinary(line, start);
-            str = str + tempStr;
-            start = start + fieldType[i].getLength();
-            if (i < fieldType.length - 2)
-                str = str + ",";
-        }
-        str = str + "\n";
-        return str;
-    }
 }

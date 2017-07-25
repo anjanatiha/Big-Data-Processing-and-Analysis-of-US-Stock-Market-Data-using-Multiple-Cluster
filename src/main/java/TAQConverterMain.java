@@ -36,7 +36,7 @@ public class TAQConverterMain {
 
     }
 
-    public void convertDirectory(JavaSparkContext sc, String[] args) {
+    private void convertDirectory(JavaSparkContext sc, String[] args) {
         File[] listOfFiles = fileOrDirectory.listFiles();
         List<String> strTimeList = new ArrayList<>();
         int i;
@@ -45,12 +45,12 @@ public class TAQConverterMain {
                 long startTime = System.currentTimeMillis();
                 System.out.println("Converting File : " + listOfFiles[i].getName());
                 String inputFileName = fileOrDirectoryName + listOfFiles[i].getName();
-                TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
+                TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName);
                 long endTime = System.currentTimeMillis();
                 print("Conversion completed for file : " + inputFileName);
                 String tempStr = printElapsedTime(startTime, endTime, "converting single file");
-                tempStr = "Total Size is : " + TAQConverterSingleObject.getSize() + "\nConvertion Time : " + tempStr;
-                strTimeList.add(tempStr);
+//                tempStr = "Total Size is : " + TAQConverterSingleObject.getSize() + "\nConvertion Time : " + tempStr;
+//                strTimeList.add(tempStr);
 
             }
         }
@@ -58,28 +58,25 @@ public class TAQConverterMain {
             System.out.println(p);
     }
 
-    public void convertSingleFile(JavaSparkContext sc, String[] args) {
+    private void convertSingleFile(JavaSparkContext sc, String[] args) {
         String inputFileName = args[2];
         long startTime = System.currentTimeMillis();
-        TAQConverterSingle TAQConverterSingleObject = new TAQConverterSingle(sc, args, inputFileName);
+        TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName);
         long endTime = System.currentTimeMillis();
         print("Conversion completed for file : " + inputFileName);
         String tempStr = printElapsedTime(startTime, endTime, "converting single file");
-        tempStr = "Total Size is : " + TAQConverterSingleObject.getSize() + "\nConvertsion Time : " + tempStr;
-        print(tempStr);
+//        tempStr = "Total Size is : " + TAQConverterObject.getSize() + "\nConvertsion Time : " + tempStr;
+//        print(tempStr);
     }
 
     public static void main(String[] args) throws IOException {
         SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "1g");
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
-        TAQConverterMain DirectoryConverterObject = new TAQConverterMain(args, sc);
+        TAQConverterMain TAQConverterMainObject = new TAQConverterMain(args, sc);
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime, "complete conversion");
         System.gc();
-
-
-        
     }
 
 }
