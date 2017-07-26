@@ -169,7 +169,7 @@ public class TAQAnalyzer implements Serializable {
                 if (i < fieldTypes.length - 2)
                     str = str + ",";
             } else if (filterColumns) {
-                if (columnList.contains(i + 1)) {
+                if (columnList.contains(i)) {
                     str = str + tempStr;
                     if (i < colMax - 1)
                         str = str + ",";
@@ -200,13 +200,6 @@ public class TAQAnalyzer implements Serializable {
         return "\r";
     }
 
-    public int getlength() {
-        int recordLength = 0;
-        for (int i = 0; i < fieldTypes.length; i++) {
-            recordLength += fieldTypes[i].getLength();
-        }
-        return recordLength;
-    }
     private String spread(String line) {
         if (line.trim().length()<40)
             return "\r";
@@ -265,7 +258,7 @@ public class TAQAnalyzer implements Serializable {
                         str = str + ",";
                 }
             }
-            spread = (bestBid - bestAsk) / ((bestBid + bestAsk) / 2);
+            spread = (bestAsk - bestBid) / ((bestAsk + bestBid) / 2);
             start = start + fieldTypes[i].getLength();
         }
         str = str +" , "+ spread+"\n";
@@ -288,13 +281,84 @@ public class TAQAnalyzer implements Serializable {
         return "\r";
     }
     public void setTime(){
-        int timeLen= fieldTypes[0].getLength();
-        if (this.startTime.length()<timeLen)
-            for (int i = 0; i < timeLen - this.startTime.length(); i++)
+        int timeLen= this.fieldTypes[0].getLength();
+        int s=(this.startTime).length();
+        int e=(this.endTime).length();
+        if ((this.startTime).length()<timeLen){
+            for (int i = 0; i < timeLen - s; i++) {
                 this.startTime = this.startTime + "0";
-        if (endTime.length()<timeLen)
-            for (int i = 0; i < timeLen-this.endTime.length(); i++)
+            }
+        }
+        if ((this.endTime).length()<timeLen) {
+            for (int i = 0; i < timeLen - e; i++) {
                 this.endTime = this.endTime + "0";
+            }
+        }
+
+    }
+    public int getlength() {
+        int recordLength = 0;
+        for (int i = 0; i < fieldTypes.length; i++) {
+            recordLength += fieldTypes[i].getLength();
+        }
+        return recordLength;
+    }
+    private String volatlity(String line) {
+        if ((line.trim()).length()<37)
+            return "\r";
+        String str = "";
+        int start = 0;
+        int time;
+        int priceI = 5;
+        boolean inTime = false;
+        boolean inTicker = false;
+        int colMax;
+        if (filterColumns)
+            colMax = Collections.max(columnList);
+        else
+            colMax = fieldTypes.length - 1;
+        for (int i = 0; i < colMax; i++) {
+            String tempStr = fieldTypes[i].convertFromBinary(line, start);
+            if (filterTime) {
+                if (i == 0) {
+                    time = Integer.parseInt(tempStr);
+                    if ((time >= Integer.parseInt(startTime)) && (time <= Integer.parseInt(endTime))) {
+                        inTime = true;
+                    } else
+                        return "\r";
+                }
+            }
+            if (filterTickers) {
+                if (i == 2) {
+                    if (tickerSymbols.contains(tempStr)) {
+                        inTicker = true;
+                    } else
+                        return "\r";
+                }
+            }
+            if (i==priceI){
+                str = tempStr;
+            }
+            start = start + fieldTypes[i].getLength();
+        }
+        if (!filterTime && !filterTickers) {
+            return str;
+        } else {
+
+            if (filterTime && filterTickers) {
+                if (inTime && inTicker) {
+                    return str;
+                }
+
+            } else if (filterTime && !filterTickers) {
+                if (inTime)
+                    return str;
+            } else if (!filterTime && filterTickers) {
+                if (inTicker)
+                    return str;
+            }
+        }
+        return "\r";
     }
 
 }

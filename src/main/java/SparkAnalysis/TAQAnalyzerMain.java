@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import static Misc.Print.print;
 import static Misc.SystemProperties.getMaxMemorySize;
@@ -77,15 +78,15 @@ public class TAQAnalyzerMain {
     public static void main(String[] args) throws IOException {
         int memMin = 1;
         int memMax = getMaxMemorySize();
-//        System.out.println("\nPlease specify Memory Size for spark in GB (-1 to ignore):\n(Please consider leaving enough memory space for operating system to function properly which is usually 4-6GB)");
-//        Scanner scan = new Scanner(System.in);
-//        int memSizeNum = scan.nextInt();
-//        String memorySize;
-//        if (memSizeNum != -1 && memSizeNum <= memMax)
-//            memorySize = String.valueOf(memSizeNum) + "g";
-//        else
-//            memorySize = "1g";
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", "8g");
+        System.out.println("\nPlease specify Memory Size for spark in GB (-1 to ignore):\n(Please consider leaving enough memory space for operating system to function properly which is usually 4-6GB)");
+        Scanner scan = new Scanner(System.in);
+        int memSizeNum = scan.nextInt();
+        String memorySize;
+        if (memSizeNum != -1 && memSizeNum <= memMax)
+            memorySize = String.valueOf(memSizeNum) + "g";
+        else
+            memorySize = "1g";
+        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", memorySize);
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
         TAQAnalyzerMain TAQConverterMainObject = new TAQAnalyzerMain(args, sc);
