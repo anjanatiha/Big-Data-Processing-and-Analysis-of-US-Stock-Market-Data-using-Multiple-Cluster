@@ -3,9 +3,7 @@ package Misc;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -18,12 +16,19 @@ public class FileProperties {
     public static String getOutputFileName(String inputFileName) {
         String outputFileName;
         if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
-
             outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
-            print("inputfile: " + inputFileName + "   out : " + outputFileName);
         } else {
             outputFileName = inputFileName + "_converted";
-            print("inputfile_con: " + inputFileName + "   out : " + outputFileName);
+       }
+        return outputFileName;
+    }
+    public static String getOutputFileName(String inputFileName, String subStr) {
+        String outputFileName;
+        if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
+
+            outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
+        } else {
+            outputFileName = inputFileName + "_subStr";
         }
         return outputFileName;
     }
@@ -34,18 +39,45 @@ public class FileProperties {
         } else
             return "txt";
     }
+    public static String getDateUnzip(String inputFileName) {
+        FileInputStream fstream = null;
+        String date = "";
+        BufferedReader br = null;
+        try {
+            fstream = new FileInputStream(inputFileName);
+            br = new BufferedReader(new InputStreamReader(fstream));
+            String line = br.readLine();
+            date = line.substring(2, 10);
+            br.close();
+        } catch (FileNotFoundException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        } catch (IOException e) {
+            try {
+                br.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        print(date);
+        return date;
 
+    }
     public static String getDate(String inputZipFileName) {
         String date = "";
         BufferedReader br = null;
         try {
-
             ZipFile zf = new ZipFile(inputZipFileName);
-
             Enumeration entries = zf.entries();
 
             while (entries.hasMoreElements()) {
                 ZipEntry ze = (ZipEntry) entries.nextElement();
+                print(ze.getName());
                 long size = ze.getSize();
                 if (size > 0) {
                     System.out.println("Length is " + size);
@@ -69,7 +101,11 @@ public class FileProperties {
     }
 
     public static String extractYear(String inputFileName) {
-        String date = getDate(inputFileName);
+        String date="";
+        if (getInputFileType(inputFileName).equals("zip"))
+            date = getDate(inputFileName);
+        else
+            date = getDateUnzip(inputFileName);
         String year = date.substring(4, 8);
         String month = date.substring(2, 4);
         int dateNumber = Integer.parseInt(year + month);
@@ -142,4 +178,7 @@ public class FileProperties {
         print("\n");
         return columnList;
     }
+//    public static void main(String[] args){
+//        extractYear("/home/anjana/Downloads/DATA/taqnbbo20150824");
+//    }
 }

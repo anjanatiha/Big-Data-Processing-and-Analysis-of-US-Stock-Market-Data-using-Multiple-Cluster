@@ -1,4 +1,4 @@
-/**
+package SparkAnalysis; /**
  * Created by Anjana on 5/29/2017.
  */
 
@@ -22,7 +22,7 @@ import static Misc.FileProperties.*;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 
-public class TAQConverter implements Serializable {
+public class TAQAnalyzer implements Serializable {
     private String inputFileName;
     private String outputFileName;
     private IFieldType[] fieldTypes;
@@ -41,7 +41,7 @@ public class TAQConverter implements Serializable {
     private String sizeStr = "";
     private int partionSize = 0;
 
-    TAQConverter(JavaSparkContext sc, String[] args, String inputFileName) {
+    TAQAnalyzer(JavaSparkContext sc, String[] args, String inputFileName) {
         this.TAQFileType = args[0];
         this.inputFileName = args[2];
         this.fileYear = extractYear(inputFileName);
@@ -60,7 +60,7 @@ public class TAQConverter implements Serializable {
             this.filterColumns = true;
         }
         this.inputFileType = getInputFileType(inputFileName);
-        this.outputFileName = getOutputFileName(inputFileName);
+        this.outputFileName = getOutputFileName(inputFileName, "Spread");
         this.sc = sc;
         this.partionSize = Integer.parseInt(args[7]);
 
@@ -93,6 +93,7 @@ public class TAQConverter implements Serializable {
                 fieldTypes = ITAQSpecObject.getQuoteFields();
                 break;
         }
+
         String outputFileName_unzip = outputFileName;
         if (inputFileType.equals("zip")) {
             print("Unzipping Started for + " + inputFileName);
@@ -102,13 +103,11 @@ public class TAQConverter implements Serializable {
             long endTime = System.currentTimeMillis();
             printElapsedTime(startTime, endTime, " unzipping ");
             this.inputFileName = outputFileName;
-            this.outputFileName = getOutputFileName(this.inputFileName);
+            this.outputFileName = getOutputFileName(this.inputFileName, "Spread");
 
         }
 
         setTime();
-        print("startTime :"+this.startTime);
-        print("endTime :"+this.endTime);
         convertFile();
 //        deleteFileorDir(outputFileName_unzip);
     }
@@ -116,7 +115,7 @@ public class TAQConverter implements Serializable {
     private void convertFile() {
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
-        convertedObject = text_file.map(line -> convertLine(line));
+        convertedObject = text_file.map(line -> spread(line));
         if (this.partionSize == -1)
             convertedObject = convertedObject.filter(line -> !line.equals("\r"));
         else
@@ -134,9 +133,11 @@ public class TAQConverter implements Serializable {
     }
 
     private String convertLine(String line) {
+        if ((line.trim()).length()<37)
+            return "\r";
         String str = "";
         int start = 0;
-        BigInteger time;
+        int time;
         boolean inTime = false;
         boolean inTicker = false;
         int colMax;
@@ -148,10 +149,8 @@ public class TAQConverter implements Serializable {
             String tempStr = fieldTypes[i].convertFromBinary(line, start);
             if (filterTime) {
                 if (i == 0) {
-                    time = new BigInteger(tempStr);
-                    int c1 = time.compareTo(new BigInteger(startTime));
-                    int c2 = time.compareTo(new BigInteger(endTime));
-                    if (((c1==1)||(c2==0)) && ((c2==-1)||(c2==0))) {
+                    time = Integer.parseInt(tempStr);
+                    if ((time >= Integer.parseInt(startTime)) && (time <= Integer.parseInt(endTime))) {
                         inTime = true;
                     } else
                         return "\r";
@@ -208,21 +207,94 @@ public class TAQConverter implements Serializable {
         }
         return recordLength;
     }
-    public void setTime(){
-        int timeLen= this.fieldTypes[0].getLength();
-        int s=(this.startTime).length();
-        int e=(this.endTime).length();
-        if ((this.startTime).length()<timeLen){
-            for (int i = 0; i < timeLen - s; i++) {
-                this.startTime = this.startTime + "0";
-            }
+    private String spread(String line) {
+        if (line.trim().length()<40)
+            return "\r";
+        String str = "";
+        int start = 0;
+        BigInteger time = BigInteger.ZERO;
+        double bestBid = 0;
+        double bestAsk = 0;
+        double spread = 0;
+        int bestBidI = 3;
+        int bestAskI = 5;
+        boolean inTime = false;
+        boolean inTicker = false;
+        int colMax;
+        if (filterColumns) {
+            colMax = Collections.max(columnList);
         }
-        if ((this.endTime).length()<timeLen) {
-            for (int i = 0; i < timeLen - e; i++) {
-                this.endTime = this.endTime + "0";
+        else
+            colMax = fieldTypes.length - 1;
+        for (int i = 0; i <= colMax; i++) {
+            String tempStr = fieldTypes[i].convertFromBinary(line, start);
+            if (i==bestBidI) {
+                bestBid = Double.parseDouble(tempStr);
             }
-        }
+            if (i==bestAskI) {
+                bestAsk = Double.parseDouble(tempStr);
+            }
 
+            if (filterTime) {
+                if (i == 0) {
+                    time = new BigInteger(tempStr);
+                    int c1 = time.compareTo(new BigInteger(startTime));
+                    int c2 = time.compareTo(new BigInteger(endTime));
+                    if (((c1==1)||(c1==0)) && ((c2==-1)||(c2==0))) {
+                        inTime = true;
+                    } else
+                        return "\r";
+                }
+            }
+            if (filterTickers) {
+                if (i == 2) {
+                    if (tickerSymbols.contains(tempStr)) {
+                        inTicker = true;
+                    } else
+                        return "\r";
+                }
+            }
+            if (!filterColumns) {
+                str = str + tempStr;
+                    if (i < fieldTypes.length - 2)
+                    str = str + ",";
+            } else if (filterColumns) {
+                if (columnList.contains(i)) {
+                    str = str + tempStr;
+                    if (i < colMax - 1)
+                        str = str + ",";
+                }
+            }
+            spread = (bestBid - bestAsk) / ((bestBid + bestAsk) / 2);
+            start = start + fieldTypes[i].getLength();
+        }
+        str = str +" , "+ spread+"\n";
+        if (!filterTime && !filterTickers) {
+            return str;
+        } else {
+            if (filterTime && filterTickers) {
+                if (inTime && inTicker) {
+                    return str;
+                }
+
+            } else if (filterTime && !filterTickers) {
+                if (inTime)
+                    return str;
+            } else if (!filterTime && filterTickers) {
+                if (inTicker)
+                    return str;
+            }
+        }
+        return "\r";
+    }
+    public void setTime(){
+        int timeLen= fieldTypes[0].getLength();
+        if (this.startTime.length()<timeLen)
+            for (int i = 0; i < timeLen - this.startTime.length(); i++)
+                this.startTime = this.startTime + "0";
+        if (endTime.length()<timeLen)
+            for (int i = 0; i < timeLen-this.endTime.length(); i++)
+                this.endTime = this.endTime + "0";
     }
 
 }
