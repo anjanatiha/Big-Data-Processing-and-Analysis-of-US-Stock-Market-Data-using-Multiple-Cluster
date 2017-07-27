@@ -18,14 +18,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import static Misc.FileClass.deleteFileorDir;
-import static Misc.FileClass.getFileType;
-import static Misc.FileClass.unZip;
+import static Misc.FileClass.*;
 import static Misc.FileProperties.*;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 
-public class TAQConverter implements Serializable {
+public class TAQConverter2 implements Serializable {
     private String inputFileName;
     private String outputFileName;
     public IFieldType[] fieldTypes;
@@ -43,12 +41,13 @@ public class TAQConverter implements Serializable {
     private String fileYear;
     private String sizeStr = "";
     private int partionSize = -1;
+    FileAttributes fileAttributesObject=null;
 
-    TAQConverter(JavaSparkContext sc, String[] args, String inputFileName) {
+    TAQConverter2(JavaSparkContext sc, String[] args, String inputFileName, FileAttributes fileAttributesObject) {
         this.TAQFileType = getFileType(inputFileName);
         this.inputFileName = args[0];
         this.fileYear = extractYear(inputFileName);
-        setConversionAttribute();
+        this.fileAttributesObject = fileAttributesObject;
         this.inputFileType = getInputFileType(inputFileName);
         this.outputFileName = getOutputFileName(inputFileName);
         this.sc = sc;

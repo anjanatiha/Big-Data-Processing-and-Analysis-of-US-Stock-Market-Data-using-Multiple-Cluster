@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static DataFieldType.StockExchanges.getExchangesMap;
+
 public class QuoteNBBOPerStock {
     private String inputFileName;
     private String outputFileName;
@@ -110,7 +112,7 @@ public class QuoteNBBOPerStock {
             Enumeration entries = zf.entries();
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             StockExchanges exchangesObj = new StockExchanges();
-            HashMap<String, Integer> exchanges = exchangesObj.getExchanges_map();
+            HashMap<String, Integer> exchanges = getExchangesMap();
             HashMap<String, BigDecimal[][]> QuoteNBBOPerStockObject = new HashMap<>();
 
             while (entries.hasMoreElements()) {

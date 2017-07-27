@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static DataFieldType.StockExchanges.getExchangesMap;
+
 public class TradeAnalysis {
     private ZipFile zf;
     private PrintStream outputStream;
@@ -140,7 +142,7 @@ public class TradeAnalysis {
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             StockExchanges exchangesObj = new StockExchanges();
 
-            HashMap<String, Integer> exchanges = exchangesObj.getExchanges_map();
+            HashMap<String, Integer> exchanges = getExchangesMap();
             while (entries.hasMoreElements()) {
                 ZipEntry ze = (ZipEntry) entries.nextElement();
                 long size = ze.getSize();

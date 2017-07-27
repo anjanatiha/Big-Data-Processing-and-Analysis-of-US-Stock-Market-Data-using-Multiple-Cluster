@@ -204,14 +204,13 @@ public class FileClass {
     }
 
     public static String getFileType(String directory) {
-
-        if ((directory.substring(directory.length() - 5, directory.length() - 1)).equals("NBBO")) {
+        if (directory.toLowerCase().contains("nbbo"))
             return "nbbo";
-        } else if ((directory.substring(directory.length() - 6, directory.length())).equals("Quote")) {
+        else if (directory.toLowerCase().contains("quote"))
             return "quote";
-        } else if ((directory.substring(directory.length() - 6, directory.length())).equals("Trade")) {
+        else if (directory.toLowerCase().contains("trade"))
             return "trade";
-        } else return "None";
+        else return "None";
     }
 
     public static void mkdir(String dirName) {

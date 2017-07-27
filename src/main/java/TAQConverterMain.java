@@ -11,14 +11,12 @@ import static Misc.Print.print;
 import static Misc.SystemProperties.getMaxMemorySize;
 import static Misc.Time.printElapsedTime;
 
-//argument 1 : filetype (taq file type "trade", "nbbo" or "quote")
-//argument 2 : type "n" (obsolete argument used for specifing year)
-//argument 3 : file or direcotory location of file to convert( /home/user/Downloads/file.zip)
-//argument 4 : start time (please follow number of digits for each file spec for 9 digit 090000000)
-//argument 5 : end time please follow number of digits for each file spec for 9 digit 093000000)
-//argument 6 : file location of file containing stock symbols seperated by space, comma( /home/user/Downloads/stock).
-//argument 7 : type file location containing column index seperated by space, comma(/home/user/Downloads/columns).
-//argument 8 : cluster size(leave with -1 to as cluster size is set automatically based on available worker nodes)
+//argument 1 : file or direcotory location of file to convert( /home/user/Downloads/file.zip)
+//argument 2 : start time (please follow number of digits for each file spec for 9 digit 090000000)
+//argument 3 : end time please follow number of digits for each file spec for 9 digit 093000000)
+//argument 4 : file location of file containing stock symbols seperated by space, comma( /home/user/Downloads/stock).
+//argument 5 : type file location containing column index seperated by space, comma(/home/user/Downloads/columns).
+//argument 6 : cluster size(leave with -1 to as cluster size is set automatically based on available worker nodes)
 
 public class TAQConverterMain {
     private String fileOrDirectoryName;
@@ -26,7 +24,7 @@ public class TAQConverterMain {
     public static JavaSparkContext sc;
 
     TAQConverterMain(String[] args, JavaSparkContext sc) {
-        fileOrDirectoryName = args[2];
+        fileOrDirectoryName = args[0];
         fileOrDirectory = new File(fileOrDirectoryName);
         this.sc = sc;
         int fileOrDirectoryNameLengh = fileOrDirectoryName.length();
@@ -63,7 +61,7 @@ public class TAQConverterMain {
     }
 
     private void convertSingleFile(JavaSparkContext sc, String[] args) {
-        String inputFileName = args[2];
+        String inputFileName = args[0];
         long startTime = System.currentTimeMillis();
         TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName);
         long endTime = System.currentTimeMillis();

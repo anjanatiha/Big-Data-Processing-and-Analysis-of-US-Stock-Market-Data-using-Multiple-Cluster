@@ -14,7 +14,7 @@ public class StockExchanges implements Serializable {
             "Consolidated Tape(S)", "NASDAQ(Q)", "CBOE(W)", "NASDAQ OMX PSX(X)",
             "BATS Y(Y)", "BATS Z(Z)"};
 
-    public StockExchanges() {
+    public static void setStockExchanges() {
         exchanges_map.put("A", 1);
         exchanges_map.put("B", 2);
         exchanges_map.put("C", 3);
@@ -46,7 +46,8 @@ public class StockExchanges implements Serializable {
 //                'X' : "NASDAQ OMX PSX Stock Exchange(X)", 'Y' : "BATS Y-Exchange(Y)", 'Z' : "BATS Exchange(Z)"}
     }
 
-    public HashMap<String, Integer> getExchanges_map() {
+    public static HashMap<String, Integer> getExchangesMap() {
+        setStockExchanges();
         return exchanges_map;
     }
 

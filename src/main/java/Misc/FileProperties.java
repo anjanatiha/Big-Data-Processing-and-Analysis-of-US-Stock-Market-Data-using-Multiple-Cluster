@@ -28,12 +28,13 @@ public class FileProperties {
 
             outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
         } else {
-            outputFileName = inputFileName + "_subStr";
+            outputFileName = inputFileName + "_"+subStr;
         }
         return outputFileName;
     }
 
     public static String getInputFileType(String inputFileName) {
+        print(inputFileName);
         if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
             return "zip";
         } else

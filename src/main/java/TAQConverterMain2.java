@@ -1,5 +1,3 @@
-package SparkAnalysis;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 
@@ -7,10 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import static Misc.Print.print;
-import static Misc.SystemProperties.getMaxMemorySize;
 import static Misc.Time.printElapsedTime;
 
 //argument 1 : file or direcotory location of file to convert( /home/user/Downloads/file.zip)
@@ -20,17 +16,20 @@ import static Misc.Time.printElapsedTime;
 //argument 5 : type file location containing column index seperated by space, comma(/home/user/Downloads/columns).
 //argument 6 : cluster size(leave with -1 to as cluster size is set automatically based on available worker nodes)
 
-public class TAQAnalyzerMain {
+public class TAQConverterMain2 {
     private String fileOrDirectoryName;
     private File fileOrDirectory;
     public static JavaSparkContext sc;
+    private FileAttributes fileAttributesObject;
 
-    TAQAnalyzerMain(String[] args, JavaSparkContext sc) {
+    TAQConverterMain2(String[] args, JavaSparkContext sc, FileAttributes fileAttributesObject) {
         fileOrDirectoryName = args[0];
         fileOrDirectory = new File(fileOrDirectoryName);
         this.sc = sc;
-        int fileOrDirectoryNameLengh = fileOrDirectoryName.length();
-        if (fileOrDirectoryName.substring(fileOrDirectoryNameLengh - 1, fileOrDirectoryNameLengh).equals("/"))
+        int fileOrDirectoryNameLength = fileOrDirectoryName.length();
+        this.fileAttributesObject = fileAttributesObject;
+
+        if (fileOrDirectoryName.substring(fileOrDirectoryNameLength - 1, fileOrDirectoryNameLength).equals("/"))
             convertDirectory(sc, args);
         else
             convertSingleFile(sc, args);
@@ -49,7 +48,7 @@ public class TAQAnalyzerMain {
                 long startTime = System.currentTimeMillis();
                 System.out.println("Converting File : " + listOfFiles[i].getName());
                 String inputFileName = fileOrDirectoryName + listOfFiles[i].getName();
-                TAQAnalyzer TAQConverterObject = new TAQAnalyzer(sc, args, inputFileName);
+                TAQConverter2 TAQConverterObject = new TAQConverter2(sc, args, inputFileName, fileAttributesObject);
                 long endTime = System.currentTimeMillis();
                 print("Conversion completed for file : " + inputFileName);
                 String tempStr = printElapsedTime(startTime, endTime, "converting single file");
@@ -65,7 +64,7 @@ public class TAQAnalyzerMain {
     private void convertSingleFile(JavaSparkContext sc, String[] args) {
         String inputFileName = args[0];
         long startTime = System.currentTimeMillis();
-        TAQAnalyzer TAQConverterObject = new TAQAnalyzer(sc, args, inputFileName);
+        TAQConverter2 TAQConverterObject = new TAQConverter2(sc, args, inputFileName, fileAttributesObject);
         long endTime = System.currentTimeMillis();
         print("Conversion completed for file : " + inputFileName);
         String tempStr = printElapsedTime(startTime, endTime, "converting single file");
@@ -74,20 +73,11 @@ public class TAQAnalyzerMain {
     }
 
     public static void main(String[] args) throws IOException {
-        int memMin = 1;
-        int memMax = getMaxMemorySize();
-        System.out.println("\nPlease specify Memory Size for spark in GB (-1 to ignore):\n(Please consider leaving enough memory space for operating system to function properly which is usually 4-6GB)");
-        Scanner scan = new Scanner(System.in);
-        int memSizeNum = scan.nextInt();
-        String memorySize;
-        if (memSizeNum != -1 && memSizeNum <= memMax)
-            memorySize = String.valueOf(memSizeNum) + "g";
-        else
-            memorySize = "1g";
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", memorySize);
+        FileAttributes fileAttributesObject = new FileAttributes();
+        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", fileAttributesObject.getMemorySize());
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
-        TAQAnalyzerMain TAQConverterMainObject = new TAQAnalyzerMain(args, sc);
+        TAQConverterMain2 TAQConverterMainObject = new TAQConverterMain2(args, sc, fileAttributesObject);
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime, "complete conversion");
         System.gc();
