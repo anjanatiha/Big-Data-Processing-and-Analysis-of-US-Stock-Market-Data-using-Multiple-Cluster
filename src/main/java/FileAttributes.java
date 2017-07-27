@@ -26,7 +26,6 @@ public class FileAttributes implements Serializable {
     private int selectColumn=-1;
     private String memorySize= "1g";
 
-
     FileAttributes() {
         setMemory();
         setConversionAttribute();
@@ -67,7 +66,7 @@ public class FileAttributes implements Serializable {
         int memSizeNum = scan.nextInt();
         String memorySize;
         if (memSizeNum != -1 && memSizeNum <= memMax)
-            memorySize = String.valueOf(memSizeNum) + "g";
+            this.memorySize = String.valueOf(memSizeNum) + "g";
         else
             memorySize = "1g";
     }

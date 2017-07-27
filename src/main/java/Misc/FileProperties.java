@@ -23,6 +23,17 @@ public class FileProperties {
        }
         return outputFileName;
     }
+    public static String getOutputFileName(String inputFileName, int level) {
+        String outputFileName;
+        if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
+            outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
+        } else {
+            outputFileName = inputFileName + "_converted";
+        }
+        return outputFileName;
+    }
+
+
     public static String getOutputFileName(String inputFileName, String subStr) {
         String outputFileName;
         if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
@@ -207,21 +218,21 @@ public class FileProperties {
         print("\n");
         return columnList;
     }
-    public boolean isFile(String str){
+    public static boolean isFile(String str){
         File file = new File(str);
         boolean isFile =      file.isFile();
         if (isFile)
             return true;
         else return false;
     }
-    public boolean isDirectory(String str){
+    public static boolean isDirectory(String str){
         File file = new File(str);
         boolean isDirectory = file.isDirectory();
         if (isDirectory)
             return true;
         else return false;
     }
-    public boolean FileorDirExists(String str){
+    public static boolean FileorDirExists(String str){
         File file = new File(str);
         boolean exists =      file.exists();
         if (exists)

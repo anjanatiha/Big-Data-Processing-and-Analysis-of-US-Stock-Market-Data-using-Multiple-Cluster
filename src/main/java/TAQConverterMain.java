@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import static Misc.Print.print;
-import static Misc.SystemProperties.getMaxMemorySize;
 import static Misc.Time.printElapsedTime;
 
 //argument 1 : file or direcotory location of file to convert( /home/user/Downloads/file.zip)
@@ -22,13 +20,16 @@ public class TAQConverterMain {
     private String fileOrDirectoryName;
     private File fileOrDirectory;
     public static JavaSparkContext sc;
+    private FileAttributes fileAttributesObject;
 
-    TAQConverterMain(String[] args, JavaSparkContext sc) {
+    TAQConverterMain(String[] args, JavaSparkContext sc, FileAttributes fileAttributesObject) {
         fileOrDirectoryName = args[0];
         fileOrDirectory = new File(fileOrDirectoryName);
         this.sc = sc;
-        int fileOrDirectoryNameLengh = fileOrDirectoryName.length();
-        if (fileOrDirectoryName.substring(fileOrDirectoryNameLengh - 1, fileOrDirectoryNameLengh).equals("/"))
+        int fileOrDirectoryNameLength = fileOrDirectoryName.length();
+        this.fileAttributesObject = fileAttributesObject;
+
+        if (fileOrDirectoryName.substring(fileOrDirectoryNameLength - 1, fileOrDirectoryNameLength).equals("/"))
             convertDirectory(sc, args);
         else
             convertSingleFile(sc, args);
@@ -47,7 +48,7 @@ public class TAQConverterMain {
                 long startTime = System.currentTimeMillis();
                 System.out.println("Converting File : " + listOfFiles[i].getName());
                 String inputFileName = fileOrDirectoryName + listOfFiles[i].getName();
-                TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName);
+                TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName, fileAttributesObject);
                 long endTime = System.currentTimeMillis();
                 print("Conversion completed for file : " + inputFileName);
                 String tempStr = printElapsedTime(startTime, endTime, "converting single file");
@@ -63,7 +64,7 @@ public class TAQConverterMain {
     private void convertSingleFile(JavaSparkContext sc, String[] args) {
         String inputFileName = args[0];
         long startTime = System.currentTimeMillis();
-        TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName);
+        TAQConverter TAQConverterObject = new TAQConverter(sc, args, inputFileName, fileAttributesObject);
         long endTime = System.currentTimeMillis();
         print("Conversion completed for file : " + inputFileName);
         String tempStr = printElapsedTime(startTime, endTime, "converting single file");
@@ -72,20 +73,11 @@ public class TAQConverterMain {
     }
 
     public static void main(String[] args) throws IOException {
-        int memMin = 1;
-        int memMax = getMaxMemorySize();
-        System.out.println("\nPlease specify Memory Size for spark in GB (-1 to ignore):\n(Please consider leaving enough memory space for operating system to function properly which is usually 4-6GB)");
-        Scanner scan = new Scanner(System.in);
-        int memSizeNum = scan.nextInt();
-        String memorySize;
-        if (memSizeNum != -1 && memSizeNum <= memMax)
-            memorySize = String.valueOf(memSizeNum) + "g";
-        else
-            memorySize = "1g";
-        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", memorySize);
+        FileAttributes fileAttributesObject = new FileAttributes();
+        SparkConf conf = new SparkConf().setAppName("Financial Data Processor").setMaster("local[2]").set("spark.executor.memory", fileAttributesObject.getMemorySize());
         JavaSparkContext sc = new JavaSparkContext(conf);
         long startTime = System.currentTimeMillis();
-        TAQConverterMain TAQConverterMainObject = new TAQConverterMain(args, sc);
+        TAQConverterMain TAQConverterMainObject = new TAQConverterMain(args, sc, fileAttributesObject);
         long endTime = System.currentTimeMillis();
         printElapsedTime(startTime, endTime, "complete conversion");
         System.gc();

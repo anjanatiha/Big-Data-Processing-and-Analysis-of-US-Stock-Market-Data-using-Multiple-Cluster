@@ -212,9 +212,44 @@ public class FileClass {
             return "trade";
         else return "None";
     }
-
+    public static String getParentDir(String inputFileName) {
+        File file = new File(inputFileName);
+        File parentDir = file.getParentFile(); // to get the parent dir
+        String parentDirName = file.getParent();
+        return parentDirName;
+    }
+    public static String getParentDir(String inputFileName, int level) {
+        File file = new File(inputFileName);
+        File parentDir=null;
+        for(int i = 0; i<level; i++){
+            parentDir = file.getParentFile(); // to get the parent dir
+            file = new File(String.valueOf(parentDir));
+        }
+        String parentDirName = file.getParent();
+        return parentDirName;
+    }
     public static void mkdir(String dirName) {
         File dir = new File(dirName);
+        boolean successful = dir.mkdir();
+        if (successful) {
+            System.out.println("directory was created successfully");
+        } else {
+            System.out.println("failed trying to create the directory");
+        }
+    }
+    public static void mkdir(String inputFileName, String dirName) {
+        String dirLoc = getParentDir(inputFileName, 1);
+        File dir = new File(dirLoc + "/"+dirName);
+        boolean successful = dir.mkdir();
+        if (successful) {
+            System.out.println("directory was created successfully");
+        } else {
+            System.out.println("failed trying to create the directory");
+        }
+    }
+    public static void mkdir(String inputFileName, String dirName, int level) {
+        String dirLoc = getParentDir(inputFileName, level);
+        File dir = new File(dirLoc + "/"+dirName);
         boolean successful = dir.mkdir();
         if (successful) {
             System.out.println("directory was created successfully");
@@ -250,7 +285,6 @@ public class FileClass {
                     br = new BufferedReader(new InputStreamReader(zf.getInputStream(ze)));
                     String line;
                     int k = 1;
-                    br.readLine();
                     line = br.readLine();
                     print("Extracting zip file...");
                     while (line != null) {
@@ -294,5 +328,10 @@ public class FileClass {
         final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+    public static void main(String[] args){
+        String dirName = "Temp";
+        mkdir("/home/anjana/Downloads/DATA/bulk/EQY_US_ALL_TRADE_20100506.zip", "aa");
+
     }
 }
