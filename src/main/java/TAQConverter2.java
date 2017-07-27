@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+import static Misc.Debug.debug;
 import static Misc.FileClass.*;
 import static Misc.FileProperties.*;
 import static Misc.Print.print;
@@ -40,14 +41,16 @@ public class TAQConverter2 implements Serializable {
     private String inputFileType = "";
     private String fileYear;
     private String sizeStr = "";
-    private int partionSize = -1;
+    private int clusterSize = -1;
     FileAttributes fileAttributesObject=null;
 
     TAQConverter2(JavaSparkContext sc, String[] args, String inputFileName, FileAttributes fileAttributesObject) {
         this.TAQFileType = getFileType(inputFileName);
         this.inputFileName = args[0];
         this.fileYear = extractYear(inputFileName);
+        print("this.fileYear " + this.fileYear);
         this.fileAttributesObject = fileAttributesObject;
+        setTAQConverterObject();
         this.inputFileType = getInputFileType(inputFileName);
         this.outputFileName = getOutputFileName(inputFileName);
         this.sc = sc;
@@ -62,7 +65,6 @@ public class TAQConverter2 implements Serializable {
             printElapsedTime(startTime, endTime, " unzipping ");
             this.inputFileName = outputFileName;
             this.outputFileName = getOutputFileName(this.inputFileName);
-
         }
 
         if (filterTime)
@@ -73,66 +75,32 @@ public class TAQConverter2 implements Serializable {
         print("endTime :" + this.endTime);
         convertFile();
         Scanner scan = new Scanner(System.in);
-        print("Dou you want to delete unzipped file : " + outputFileName_unzip);
+        print("Dou you want to delete unzipped file : " + outputFileName_unzip +"??");
         String dStr = scan.next();
         if (dStr.equals("y"))
             deleteFileorDir(outputFileName_unzip);
 
     }
-//    TAQConverter(JavaSparkContext sc, String[] args, String inputFileName) {
-//        this.TAQFileType = getFileType(inputFileName);
-//        this.inputFileName = args[0];
-//        this.fileYear = extractYear(inputFileName);
-////        if (!args[1].equals("n")) {
-////            this.filterTime = true;
-////            this.startTime = args[1];
-////            this.endTime = args[2];
-////            print("Start Time: " + startTime + " End Time : " + endTime);
-////        }
-////        if (!args[3].equals("n")) {
-////            this.tickerSymbols = wordCollect(sc, args[3]);
-////            this.filterTickers = true;
-////        }
-////        if (!args[4].equals("n")) {
-////            this.columnList = columnSelect(sc, args[4]);
-////            this.filterColumns = true;
-////        }
-////        this.partionSize = Integer.parseInt(args[5]);
-//        setConversionAttribute();
-//        this.inputFileType = getInputFileType(inputFileName);
-//        this.outputFileName = getOutputFileName(inputFileName);
-//        this.sc = sc;
-//        print("File Year: " + fileYear);
-//        setFieldTypes();
-//        String outputFileName_unzip = outputFileName;
-//        if (inputFileType.equals("zip")) {
-//            print("Unzipping Started for + " + inputFileName);
-//            long startTime = System.currentTimeMillis();
-//            this.sizeStr = unZip(inputFileName, outputFileName);
-//            print("Unzipping Completed for + " + inputFileName);
-//            long endTime = System.currentTimeMillis();
-//            printElapsedTime(startTime, endTime, " unzipping ");
-//            this.inputFileName = outputFileName;
-//            this.outputFileName = getOutputFileName(this.inputFileName);
-//
-//        }
-//
-//        if (filterTime)
-//            setTime();
-//        print("startTime :"+this.startTime);
-//        print("endTime :"+this.endTime);
-//        convertFile();
-////        deleteFileorDir(outputFileName_unzip);
-//    }
+    public void setTAQConverterObject(){
+        this.startTime = fileAttributesObject.getStartTime();
+        this.endTime = fileAttributesObject.getEndTime();
+        this.filterTime = fileAttributesObject.getfilterTime();
+        this.tickerSymbols = fileAttributesObject.getTickerSymbols();
+        this.columnList = fileAttributesObject.getColumnList();
+        this.filterTickers = fileAttributesObject.getFilterTickers();
+        this.filterColumns = fileAttributesObject.getFilterColumn();
+        this.clusterSize = fileAttributesObject.getClusterSize();
+
+    }
 
     private void convertFile() {
         JavaRDD<String> text_file = sc.textFile(inputFileName);
         JavaRDD<String> convertedObject;
         convertedObject = text_file.map(line -> convertLine(line));
-        if (this.partionSize == -1)
+        if (this.clusterSize == -1)
             convertedObject = convertedObject.filter(line -> !line.equals("\r"));
         else
-            convertedObject = convertedObject.filter(line -> !line.equals("\r")).coalesce(this.partionSize);
+            convertedObject = convertedObject.filter(line -> !line.equals("\r")).coalesce(this.clusterSize);
         Path path = Paths.get(outputFileName);
         if (Files.exists(path)) {
             try {
@@ -212,34 +180,6 @@ public class TAQConverter2 implements Serializable {
         }
         return "\r";
     }
-    public void setConversionAttribute(){
-        Scanner scan = new Scanner(System.in);
-//        print("Enter file or directory name with loaction");
-//        this.inputFileName = scan.next();
-        print("Enter start time in HHMM format");
-        this.startTime = scan.next();
-        if (!this.startTime.equals("n")) {
-            this.filterTime = true;
-            print("Enter end time in HHMM format");
-            this.endTime = scan.next();
-        }
-        print("Enter file containing stock symbols");
-        String stockFile = scan.next();
-        if (!stockFile.equals("n")) {
-            this.tickerSymbols = wordCollect(sc, stockFile);
-            this.filterTickers = true;
-        }
-        print("Enter file containing selected columns");
-        String columnFile = scan.next();
-        if (!columnFile.equals("n")) {
-            this.columnList = columnSelect(sc, columnFile);
-            this.filterColumns = true;
-        }
-        print("Select partition size(-1 for default or any other positive number)");
-        int partionSize = scan.nextInt();
-        if (partionSize!=-1)
-        this.partionSize = partionSize;
-    }
 
     public void setFieldTypes(){
         switch (this.fileYear) {
@@ -253,10 +193,14 @@ public class TAQConverter2 implements Serializable {
                 this.ITAQSpecObject = new TAQ082013Spec();
                 break;
             case "2015":
+                debug("2015");
                 this.ITAQSpecObject = new TAQ062015Spec();
                 break;
             case "2016":
                 this.ITAQSpecObject = new TAQ062016Spec();
+                break;
+            default:
+                print("No year found");
                 break;
         }
         switch (this.TAQFileType) {
@@ -268,6 +212,9 @@ public class TAQConverter2 implements Serializable {
                 break;
             case "quote":
                 this.fieldTypes = ITAQSpecObject.getQuoteFields();
+                break;
+            default:
+                print("No matiching TAQ file type found");
                 break;
         }
     }

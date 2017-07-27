@@ -5,6 +5,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -179,7 +180,52 @@ public class FileProperties {
         print("\n");
         return columnList;
     }
-//    public static void main(String[] args){
-//        extractYear("/home/anjana/Downloads/DATA/taqnbbo20150824");
-//    }
+    public static List<String> wordCollect(String wordListStr) {
+        List<String> wordList = new ArrayList<>(Arrays.asList(wordListStr.split("[\\s,;.]+")));
+        print("Number of Tickers selected : " + wordList.size());
+        print("Finding the following Tickers");
+        for (String word : wordList) {
+            System.out.print(word + " ");
+
+        }
+        print("\n");
+        return wordList;
+    }
+    public static List<Integer> columnSelect(String columns) {
+        List<String> columnListStr = new ArrayList<>(Arrays.asList(columns.split("[\\s,;.]+")));
+        List<Integer> columnList = new ArrayList<>();
+
+        for (String column : columnListStr) {
+            columnList.add(Integer.valueOf(column));
+        }
+        print("Number of columns selected : " + columnList.size());
+        print("Finding the following columns");
+        for (int column : columnList) {
+            System.out.print(column + " ");
+
+        }
+        print("\n");
+        return columnList;
+    }
+    public boolean isFile(String str){
+        File file = new File(str);
+        boolean isFile =      file.isFile();
+        if (isFile)
+            return true;
+        else return false;
+    }
+    public boolean isDirectory(String str){
+        File file = new File(str);
+        boolean isDirectory = file.isDirectory();
+        if (isDirectory)
+            return true;
+        else return false;
+    }
+    public boolean FileorDirExists(String str){
+        File file = new File(str);
+        boolean exists =      file.exists();
+        if (exists)
+            return true;
+        else return false;
+    }
 }

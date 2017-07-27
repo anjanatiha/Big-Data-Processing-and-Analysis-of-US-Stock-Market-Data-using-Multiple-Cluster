@@ -1,5 +1,6 @@
 import org.apache.spark.api.java.JavaSparkContext;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -9,7 +10,7 @@ import static Misc.FileProperties.wordCollect;
 import static Misc.Print.print;
 import static Misc.SystemProperties.getMaxMemorySize;
 
-public class FileAttributes {
+public class FileAttributes implements Serializable {
     private String startTime;
     private String endTime;
     private List<String> tickerSymbols;
@@ -18,7 +19,7 @@ public class FileAttributes {
     private boolean filterTime = false;
     private boolean filterColumns = false;
     private static JavaSparkContext sc;
-    private int partionSize = -1;
+    private int clusterSize = -1;
     private String calcType = "";
     private Integer calcTypeInt = -1;
     private HashMap<String, Integer> exchageMap;
@@ -52,9 +53,9 @@ public class FileAttributes {
             this.filterColumns = true;
         }
         print("Select partition size(-1 for default or any other positive number)");
-        int partionSize = scan.nextInt();
-        if (partionSize!=-1)
-            this.partionSize = partionSize;
+        int clusterSize = scan.nextInt();
+        if (clusterSize!=-1)
+            this.clusterSize = clusterSize;
         this.exchageMap = getExchageMap();
     }
 
@@ -91,7 +92,7 @@ public class FileAttributes {
     public boolean getFilterTickers(){
         return filterTickers;
     }
-    public boolean getFilterColumnFilter(){
+    public boolean getFilterColumn(){
         return filterColumns;
     }
     public String getCalcType(){ return calcType; }
@@ -102,4 +103,5 @@ public class FileAttributes {
         return selectColumn;
     }
     public HashMap<String, Integer> getExchageMap() {return exchageMap; }
+    public int getClusterSize() {return clusterSize; }
 }
