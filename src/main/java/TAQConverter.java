@@ -278,7 +278,8 @@ public class TAQConverter implements Serializable {
                 this.ITAQSpecObject = new TAQ062015SpecNew();
                 break;
             case "2016":
-                this.ITAQSpecObject = new TAQ062016Spec();
+//                this.ITAQSpecObject = new TAQ062016Spec();
+                this.ITAQSpecObject = new TAQ062016SpecNew();
                 break;
             default:
                 print("No year found");

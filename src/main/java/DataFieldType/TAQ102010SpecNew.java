@@ -59,7 +59,6 @@ public class TAQ102010SpecNew implements ITAQSpec, Serializable {
     private IFieldType BestAskMMDeskLocation;
 
 
-
     public TAQ102010SpecNew() {
     }
 

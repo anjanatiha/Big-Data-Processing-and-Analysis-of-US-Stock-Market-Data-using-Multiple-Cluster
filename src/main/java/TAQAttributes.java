@@ -122,9 +122,13 @@ public class TAQAttributes implements Serializable {
         return endTime;
     }
 
-    public boolean getfilterTime() {return filterTime; }
+    public boolean getfilterTime() {
+        return filterTime;
+    }
 
-    public List<String> getTickerSymbols() { return tickerSymbols; }
+    public List<String> getTickerSymbols() {
+        return tickerSymbols;
+    }
 
     public List<Integer> getColumnList() {
         return columnList;
