@@ -5,12 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-import static Misc.FileProperties.columnSelect;
-import static Misc.FileProperties.wordCollect;
+import static FilePackage.FileClass.*;
+import static FilePackage.FileName.getInputFileName;
 import static Misc.Print.print;
 import static Misc.SystemProperties.getMaxMemorySize;
 
-public class FileAttributes implements Serializable {
+public class TAQAttributes implements Serializable {
+    private static JavaSparkContext sc;
+    private String inputFileName;
+    private String inputFileAbsolutePath;
+    private String inputDirectoryPath;
+    private String unzipDirectoryAbsolutePath;
+    private String outputDirectoryAbsolutePath;
+    private boolean batchConversion = false;
     private String startTime;
     private String endTime;
     private List<String> tickerSymbols;
@@ -18,17 +25,32 @@ public class FileAttributes implements Serializable {
     private boolean filterTickers = false;
     private boolean filterTime = false;
     private boolean filterColumns = false;
-    private static JavaSparkContext sc;
-    private int clusterSize = -1;
+    private int selectColumn=-1;
+    private HashMap<String, Integer> exchageMap;
     private String calcType = "";
     private Integer calcTypeInt = -1;
-    private HashMap<String, Integer> exchageMap;
-    private int selectColumn=-1;
+    private int clusterSize = -1;
     private String memorySize= "1g";
 
-    FileAttributes() {
+
+    TAQAttributes(String[] args) {
+        String inputFileorDirName = args[0];
+        setFileDirAttributes(inputFileorDirName);
         setMemory();
         setConversionAttribute();
+    }
+    public void setFileDirAttributes(String inputFileorDirName){
+        if (isFile(inputFileorDirName)) {
+            this.inputFileAbsolutePath = inputFileorDirName;
+            this.inputFileName = getInputFileName(inputFileAbsolutePath);
+            this.inputDirectoryPath = getParentDir(inputFileAbsolutePath);
+        }
+        else if (isDirectory(inputFileorDirName)){
+            this.inputDirectoryPath = inputFileorDirName;
+            this.unzipDirectoryAbsolutePath = mkdir(inputDirectoryPath, "UnzipDirectory");
+            this.outputDirectoryAbsolutePath = mkdir(inputDirectoryPath, "OutputDirectory");
+            this.batchConversion = true;
+        }
     }
     public void setConversionAttribute(){
         Scanner scan = new Scanner(System.in);
@@ -68,7 +90,7 @@ public class FileAttributes implements Serializable {
         if (memSizeNum != -1 && memSizeNum <= memMax)
             this.memorySize = String.valueOf(memSizeNum) + "g";
         else
-            memorySize = "1g";
+            this.memorySize = "1g";
     }
     public String getMemorySize(){
         return memorySize;
@@ -101,6 +123,12 @@ public class FileAttributes implements Serializable {
     public int getSelectColumn(){
         return selectColumn;
     }
+    public int getClusterSize(){return clusterSize;}
     public HashMap<String, Integer> getExchageMap() {return exchageMap; }
-    public int getClusterSize() {return clusterSize; }
+    public String getLocalInputFileName() {return inputFileName; }
+    public String getInputFileAbsolutePath() {return inputFileAbsolutePath; }
+    public String getInputDirectoryPath() {return inputDirectoryPath; }
+    public boolean getBatchConversion() {return this.batchConversion; }
+    public String getUnzipDirectoryAbsolutePath() {return unzipDirectoryAbsolutePath; }
+    public String getOutputDirectoryAbsolutePath() {return outputDirectoryAbsolutePath; }
 }

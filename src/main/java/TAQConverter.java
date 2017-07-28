@@ -13,17 +13,37 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 
+import static DataFieldType.TAQFileInfo.extractYear;
+import static DataFieldType.TAQFileInfo.getFileType;
+import static FilePackage.FileClass.getParentDir;
+import static FilePackage.FileClass.isDirectory;
+import static FilePackage.FileName.*;
+import static FilePackage.ZipExtract.unZip;
 import static Misc.Debug.debug;
-import static Misc.FileClass.*;
-import static Misc.FileProperties.*;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 
+
+
 public class TAQConverter implements Serializable {
+    private static JavaSparkContext sc;
     private String inputFileName;
+    private String inputFileAbsolutePath;
+    private String inputFileType = "";
+    private String inputFileNameUnzipped;
+    private String inputFileUnzippedAbsolutePath;
+    private String OutputFileAbsolutePath;
     private String outputFileName;
+    private String inputDirectoryName;
+    private String inputDirectoryAbsolutePath;
+    private String finalInputFileAbsolutePath;
+    private boolean batchConversion = false;
+    private String outputDirectoryName;
+    private String outputDirectoryAbsolutePath;
+    private String unzipDirectoryName;
+    private String unzipDirectoryAbsolutePath;
+    private TAQAttributes TAQAttributesObject=null;
     public IFieldType[] fieldTypes;
     public ITAQSpec ITAQSpecObject;
     private String startTime;
@@ -33,37 +53,31 @@ public class TAQConverter implements Serializable {
     private boolean filterTickers = false;
     private boolean filterTime = false;
     private boolean filterColumns = false;
-    private static JavaSparkContext sc;
     private String TAQFileType = "";
-    private String inputFileType = "";
     private String fileYear;
-    private String sizeStr = "";
     private int clusterSize = -1;
-    FileAttributes fileAttributesObject=null;
+    private String sizeStr = "";
 
-    TAQConverter(JavaSparkContext sc, String[] args, String inputFileName, FileAttributes fileAttributesObject) {
-        this.TAQFileType = getFileType(inputFileName);
-        this.inputFileName = args[0];
-        print("inputFileName : "+inputFileName);
-        this.fileYear = extractYear(inputFileName);
-        print("this.fileYear " + this.fileYear);
-        this.fileAttributesObject = fileAttributesObject;
-        setTAQConverterObject();
-        this.inputFileType = getInputFileType(inputFileName);
-        this.outputFileName = getOutputFileName(inputFileName);
+    TAQConverter(JavaSparkContext sc, String[] args, String inputFileName, TAQAttributes TAQAttributesObject) {
         this.sc = sc;
-        setFieldTypes();
-        String outputFileName_unzip = outputFileName;
+        this.inputFileAbsolutePath = inputFileName;
+        this.TAQAttributesObject = TAQAttributesObject;
+        this.finalInputFileAbsolutePath = inputFileName;
+        setFileProperty();
+        setTAQConverterObject();
         if (inputFileType.equals("zip")) {
-            print("Unzipping Started for + " + inputFileName);
+            print("Unzipping  file : " + this.inputFileName);
             long startTime = System.currentTimeMillis();
-            this.sizeStr = unZip(inputFileName, outputFileName);
-            print("Unzipping Completed for + " + inputFileName);
+            this.inputFileNameUnzipped = getUnzippedFileName(this.inputFileName);
+            this.inputFileUnzippedAbsolutePath = unzipDirectoryName+"/"+inputFileNameUnzipped;
+            this.sizeStr = unZip(inputFileAbsolutePath, inputFileUnzippedAbsolutePath);
+            print("Unzipping Completed for + " + inputFileName + " Size : " +this.sizeStr);
             long endTime = System.currentTimeMillis();
             printElapsedTime(startTime, endTime, " unzipping ");
-            this.inputFileName = outputFileName;
-            this.outputFileName = getOutputFileName(this.inputFileName);
+            this.finalInputFileAbsolutePath = inputFileUnzippedAbsolutePath;
+
         }
+        setFieldTypes();
 
         if (filterTime)
             setTime();
@@ -72,42 +86,72 @@ public class TAQConverter implements Serializable {
         print("startTime :" + this.startTime);
         print("endTime :" + this.endTime);
         convertFile();
-        Scanner scan = new Scanner(System.in);
-        print("Dou you want to delete unzipped file : " + outputFileName_unzip +"??");
-        String dStr = scan.next();
-        if (dStr.equals("y"))
-            deleteFileorDir(outputFileName_unzip);
+//        Scanner scan = new Scanner(System.in);
+//        print("Dou you want to delete unzipped file : " + outputFileName_unzip +"??");
+//        String dStr = scan.next();
+//        if (dStr.equals("y"))
+//            deleteFileorDir(outputFileName_unzip);
 
     }
+    public void setFileProperty(){
+        this.inputFileName = getInputFileName(inputFileAbsolutePath);
+//        print(" this.inputFileName: "+ this.inputFileName);
+        this.inputFileType = getInputFileType(inputFileName);
+//        print(" this.inputFileType: "+ this.inputFileType);
+        this.inputDirectoryName = getParentDir(inputFileAbsolutePath);
+//        print(" this.inputDirectoryName: "+ this.inputDirectoryName);
+        this.TAQFileType = getFileType(inputFileAbsolutePath);
+//        print(" this.TAQFileType: "+ this.TAQFileType);
+        this.fileYear = extractYear(inputFileAbsolutePath);
+//        print(" this.fileYear: "+ this.fileYear);
+        this.unzipDirectoryAbsolutePath = TAQAttributesObject.getUnzipDirectoryAbsolutePath();
+//        print(" this.unzipDirectoryAbsolutePath: "+ this.unzipDirectoryAbsolutePath);
+        this.batchConversion = TAQAttributesObject.getBatchConversion();
+//        print(" this.batchConversion: "+ this.batchConversion);
+        this.outputDirectoryName = TAQAttributesObject.getOutputDirectoryAbsolutePath();
+//        print(" this.outputDirectoryName: "+ this.outputDirectoryName);
+        this.unzipDirectoryName = TAQAttributesObject.getUnzipDirectoryAbsolutePath();
+//        print(" this.unzipDirectoryName: "+ this.unzipDirectoryName);
+        this.outputFileName = getConvertedFileName(inputFileName);
+//        print(" this.outputFileName: "+ this.outputFileName);
+        this.OutputFileAbsolutePath = this.outputDirectoryName+"/"+outputFileName;
+//        print(" this.OutputFileAbsolutePath: "+ this.OutputFileAbsolutePath);
+    }
     public void setTAQConverterObject(){
-        this.startTime = fileAttributesObject.getStartTime();
-        this.endTime = fileAttributesObject.getEndTime();
-        this.filterTime = fileAttributesObject.getfilterTime();
-        this.tickerSymbols = fileAttributesObject.getTickerSymbols();
-        this.columnList = fileAttributesObject.getColumnList();
-        this.filterTickers = fileAttributesObject.getFilterTickers();
-        this.filterColumns = fileAttributesObject.getFilterColumn();
-        this.clusterSize = fileAttributesObject.getClusterSize();
+        this.startTime = TAQAttributesObject.getStartTime();
+        this.endTime = TAQAttributesObject.getEndTime();
+        this.filterTime = TAQAttributesObject.getfilterTime();
+        this.tickerSymbols = TAQAttributesObject.getTickerSymbols();
+        this.columnList = TAQAttributesObject.getColumnList();
+        this.filterTickers = TAQAttributesObject.getFilterTickers();
+        this.filterColumns = TAQAttributesObject.getFilterColumn();
+        this.clusterSize = TAQAttributesObject.getClusterSize();
 
     }
 
     private void convertFile() {
-        JavaRDD<String> text_file = sc.textFile(inputFileName);
+
+        JavaRDD<String> text_file = sc.textFile(finalInputFileAbsolutePath);
         JavaRDD<String> convertedObject;
+
         convertedObject = text_file.map(line -> convertLine(line));
+
         if (this.clusterSize == -1)
             convertedObject = convertedObject.filter(line -> !line.equals("\r"));
         else
             convertedObject = convertedObject.filter(line -> !line.equals("\r")).coalesce(this.clusterSize);
-//        Path path = Paths.get(outputFileName);
-        if (isDirectory(outputFileName)) {
+
+        if (isDirectory(OutputFileAbsolutePath)) {
             try {
-                FileUtils.deleteDirectory(new File((outputFileName + "/")));
+                FileUtils.deleteDirectory(new File((OutputFileAbsolutePath)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        convertedObject.saveAsTextFile(outputFileName);
+        print("OutputFileAbsolutePath :"+OutputFileAbsolutePath);
+
+        convertedObject.saveAsTextFile(OutputFileAbsolutePath);
+
         System.gc();
     }
 
@@ -118,17 +162,15 @@ public class TAQConverter implements Serializable {
         boolean inTime = false;
         boolean inTicker = false;
         int colMax;
-        if (filterColumns)
+        if (filterColumns) {
             colMax = Collections.max(columnList);
+        }
         else
             colMax = fieldTypes.length - 1;
         for (int i = 0; i < colMax; i++) {
             String tempStr = fieldTypes[i].convertFromBinary(line, start);
-            if(tempStr.trim().length()<getlength()/4)
-                return "\r";
             if (filterTime) {
                 if (i == 0) {
-                    print("wrw : "+tempStr);
                     time = new BigInteger(tempStr);
                     int c1 = time.compareTo(new BigInteger(startTime));
                     int c2 = time.compareTo(new BigInteger(endTime));
@@ -162,6 +204,8 @@ public class TAQConverter implements Serializable {
 
         }
         str = str + "\n";
+        if(str.trim().length()<getlength()/5)
+            return "\r";
         if (!filterTime && !filterTickers) {
             return str;
         } else {
