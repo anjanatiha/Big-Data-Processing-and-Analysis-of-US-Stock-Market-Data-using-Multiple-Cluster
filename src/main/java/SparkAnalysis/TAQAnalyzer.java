@@ -21,7 +21,6 @@ import static DataFieldType.StockExchanges.getExchangesMap;
 import static DataFieldType.TAQFileInfo.extractYear;
 import static DataFieldType.TAQFileInfo.getFileType;
 import static FilePackage.FileName.getInputFileType;
-
 import static FilePackage.FileName.getOutputFileName;
 import static FilePackage.ZipExtract.unZip;
 import static Misc.Print.print;
