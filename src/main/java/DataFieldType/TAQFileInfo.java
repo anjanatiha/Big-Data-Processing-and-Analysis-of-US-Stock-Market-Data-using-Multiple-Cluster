@@ -38,6 +38,7 @@ public class TAQFileInfo {
         return date;
 
     }
+
     public static String getDate(String inputZipFileName) {
         String date = "";
         BufferedReader br = null;
@@ -71,7 +72,7 @@ public class TAQFileInfo {
     }
 
     public static String extractYear(String inputFileName) {
-        String date="";
+        String date = "";
         if (getInputFileType(inputFileName).equals("zip"))
             date = getDate(inputFileName);
         else
@@ -96,6 +97,7 @@ public class TAQFileInfo {
         else
             return "None";
     }
+
     public static String getFileType(String directory) {
         if (directory.toLowerCase().contains("nbbo"))
             return "nbbo";

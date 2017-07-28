@@ -43,6 +43,7 @@ public class FilePrintWriteLine {
         }
 
     }
+
     public static void FileSampleWrite(String inputFileName, String count) {
         FileInputStream inputStream;
         String outputFileName;

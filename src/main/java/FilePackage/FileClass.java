@@ -57,20 +57,20 @@ public class FileClass {
 
     public static String getParentDir(String inputFileName) {
         File file = new File(inputFileName);
-//        File parentDir = file.getParentFile(); // to get the parent dir
-        String parentDirName = file.getParent();
-        return parentDirName;
+        return file.getParent();
     }
+
     public static String getParentDir(String inputFileName, int level) {
         File file = new File(inputFileName);
-        File parentDir=null;
-        for(int i = 0; i<level; i++){
+        File parentDir = null;
+        for (int i = 0; i < level; i++) {
             parentDir = file.getParentFile(); // to get the parent dir
             file = new File(String.valueOf(parentDir));
         }
-        String parentDirName = file.getParent();
-        return parentDirName;
+        return file.getParent();
+
     }
+
     public static String mkdir(String dirName) {
         File dir = new File(dirName);
         boolean successful = dir.mkdir();
@@ -78,34 +78,36 @@ public class FileClass {
             System.out.println("directory was created successfully");
         } else {
             System.out.println("failed trying to create the directory\nFile might already exists ");
-            if(isDirectory(dirName))
+            if (isDirectory(dirName))
                 print(dirName + " already exits");
         }
         return dir.getAbsolutePath();
     }
+
     public static String mkdir(String inputFileName, String dirName) {
-        String dirLoc="";
+        String dirLoc = "";
         if (isFile(inputFileName)) {
             dirLoc = getParentDir(inputFileName, 2);
         }
         if (isDirectory(inputFileName)) {
             dirLoc = getParentDir(inputFileName);
         }
-        File dir = new File(dirLoc + "/"+dirName);
+        File dir = new File(dirLoc + "/" + dirName);
         boolean successful = dir.mkdir();
         if (successful) {
             System.out.println("Directory was created successfully");
         } else {
             System.out.println("Failed trying to create the directory");
-            if(isDirectory(dirLoc + "/"+dirName))
-                print(dirLoc + "/"+dirName + " already exits");
+            if (isDirectory(dirLoc + "/" + dirName))
+                print(dirLoc + "/" + dirName + " already exits");
 
         }
         return dir.getAbsolutePath();
     }
+
     public static String mkdir(String inputFileName, String dirName, int level) {
         String dirLoc = getParentDir(inputFileName, level);
-        File dir = new File(dirLoc + "/"+dirName);
+        File dir = new File(dirLoc + "/" + dirName);
         boolean successful = dir.mkdir();
         if (successful) {
             System.out.println("directory was created successfully");
@@ -123,23 +125,25 @@ public class FileClass {
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
-    public static boolean isFile(String str){
+    public static boolean isFile(String str) {
         File file = new File(str);
-        boolean isFile =      file.isFile();
+        boolean isFile = file.isFile();
         if (isFile)
             return true;
         else return false;
     }
-    public static boolean isDirectory(String str){
+
+    public static boolean isDirectory(String str) {
         File file = new File(str);
         boolean isDirectory = file.isDirectory();
         if (isDirectory)
             return true;
         else return false;
     }
-    public static boolean FileorDirExists(String str){
+
+    public static boolean FileorDirExists(String str) {
         File file = new File(str);
-        boolean exists =      file.exists();
+        boolean exists = file.exists();
         if (exists)
             return true;
         else return false;

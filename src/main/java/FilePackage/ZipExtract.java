@@ -11,7 +11,7 @@ import static Misc.Print.print;
 
 public class ZipExtract {
     public static String unZip(String zipFile, String outputFileName) {
-        print("zipFile : "+ zipFile);
+        print("zipFile : " + zipFile);
         String sizeStr = "";
         try {
             ZipFile zf = new ZipFile(zipFile);

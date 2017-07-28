@@ -46,10 +46,10 @@ public class TAQAnalyzer implements Serializable {
     private String fileYear;
     private String sizeStr = "";
     private int partionSize = 0;
-    private String calcType="";
-    private Integer calcTypeInt=-1;
+    private String calcType = "";
+    private Integer calcTypeInt = -1;
     private HashMap<String, Integer> exchageMap;
-    private int selectColumn=-1;
+    private int selectColumn = -1;
 
     TAQAnalyzer(JavaSparkContext sc, String[] args, String inputFileName) {
         this.TAQFileType = getFileType(inputFileName);
@@ -74,7 +74,7 @@ public class TAQAnalyzer implements Serializable {
         print("Type Calculation type: (convert:1, spread:2, volatility:3, exchangesComp:4)");
         Scanner scan = new Scanner(System.in);
         this.calcType = scan.next();
-        if(calcType.equals("4") || calcType.equals("exchangesComp")){
+        if (calcType.equals("4") || calcType.equals("exchangesComp")) {
             print("Select single column to compare across exchanges: ");
             this.selectColumn = scan.nextInt();
         }
@@ -104,7 +104,7 @@ public class TAQAnalyzer implements Serializable {
     }
 
 
-    public void setFieldTypes(){
+    private void setFieldTypes() {
         switch (this.fileYear) {
             case "2010":
                 this.ITAQSpecObject = new TAQ102010Spec();
@@ -184,7 +184,7 @@ public class TAQAnalyzer implements Serializable {
     }
 
     private String convertLine(String line) {
-        if ((line.trim()).length()<getTotalRecordLength()/4)
+        if ((line.trim()).length() < getTotalRecordLength() / 4)
             return "\r";
         String str = "";
         int start = 0;
@@ -252,7 +252,7 @@ public class TAQAnalyzer implements Serializable {
     }
 
     private String spread(String line) {
-        if (line.trim().length()<getTotalRecordLength()/4)
+        if (line.trim().length() < getTotalRecordLength() / 4)
             return "\r";
         String str = "";
         int start = 0;
@@ -267,15 +267,14 @@ public class TAQAnalyzer implements Serializable {
         int colMax;
         if (filterColumns) {
             colMax = Collections.max(columnList);
-        }
-        else
+        } else
             colMax = fieldTypes.length - 1;
         for (int i = 0; i <= colMax; i++) {
             String tempStr = fieldTypes[i].convertFromBinary(line, start);
-            if (i==bestBidI) {
+            if (i == bestBidI) {
                 bestBid = Double.parseDouble(tempStr);
             }
-            if (i==bestAskI) {
+            if (i == bestAskI) {
                 bestAsk = Double.parseDouble(tempStr);
             }
 
@@ -284,7 +283,7 @@ public class TAQAnalyzer implements Serializable {
                     time = new BigInteger(tempStr);
                     int c1 = time.compareTo(new BigInteger(startTime));
                     int c2 = time.compareTo(new BigInteger(endTime));
-                    if (((c1==1)||(c1==0)) && ((c2==-1)||(c2==0))) {
+                    if (((c1 == 1) || (c1 == 0)) && ((c2 == -1) || (c2 == 0))) {
                         inTime = true;
                     } else
                         return "\r";
@@ -300,7 +299,7 @@ public class TAQAnalyzer implements Serializable {
             }
             if (!filterColumns) {
                 str = str + tempStr;
-                    if (i < fieldTypes.length - 2)
+                if (i < fieldTypes.length - 2)
                     str = str + ",";
             } else if (filterColumns) {
                 if (columnList.contains(i)) {
@@ -313,7 +312,7 @@ public class TAQAnalyzer implements Serializable {
             start = start + fieldTypes[i].getLength();
         }
         spread = (bestAsk - bestBid) / ((bestAsk + bestBid) / 2);
-        str = str +" , "+ spread+"\n";
+        str = str + " , " + spread + "\n";
         if (!filterTime && !filterTickers) {
             return str;
         } else {
@@ -334,7 +333,7 @@ public class TAQAnalyzer implements Serializable {
     }
 
     private String volatlity(String line) {
-        if ((line.trim()).length()<getTotalRecordLength()/4)
+        if ((line.trim()).length() < getTotalRecordLength() / 4)
             return "\r";
         String str = "";
         int start = 0;
@@ -357,19 +356,19 @@ public class TAQAnalyzer implements Serializable {
                     time = new BigInteger(tempStr);
                     int c1 = time.compareTo(new BigInteger(startTime));
                     int c2 = time.compareTo(new BigInteger(endTime));
-                    if (((c1==1)||(c1==0)) && ((c2==-1)||(c2==0))) {
+                    if (((c1 == 1) || (c1 == 0)) && ((c2 == -1) || (c2 == 0))) {
                         inTime = true;
                     } else
                         return "\r";
                 }
             }
-            if (i==0)
+            if (i == 0)
                 time = new BigInteger(tempStr);
-            else if (i==1)
+            else if (i == 1)
                 exchange = tempStr;
-            else if (i==2)
-                stock= tempStr;
-            else if (i==priceI)
+            else if (i == 2)
+                stock = tempStr;
+            else if (i == priceI)
                 price = Double.parseDouble(tempStr);
 
             if (filterTickers) {
@@ -383,7 +382,7 @@ public class TAQAnalyzer implements Serializable {
 
             start = start + fieldTypes[i].getLength();
         }
-        str = time + ", "+ exchange + ", " + stock + ", "+price;
+        str = time + ", " + exchange + ", " + stock + ", " + price;
         if (!filterTime && !filterTickers) {
             return str;
         } else {
@@ -403,19 +402,20 @@ public class TAQAnalyzer implements Serializable {
         }
         return "\r";
     }
+
     private String exchangeComp(String line, int colI) {
-        if ((line.trim()).length()<getTotalRecordLength()/4)
+        if ((line.trim()).length() < getTotalRecordLength() / 4)
             return "\r";
         String str = "";
         int start = 0;
         int time;
         String timeStr = "";
-        String stock="";
+        String stock = "";
         boolean inTime = false;
         boolean inTicker = false;
         int colMax;
-        String exchange="";
-        String colVal="";
+        String exchange = "";
+        String colVal = "";
         if (filterColumns)
             colMax = Collections.max(columnList);
         else
@@ -440,21 +440,21 @@ public class TAQAnalyzer implements Serializable {
                 }
             }
 
-            if (i==0)
+            if (i == 0)
                 timeStr = tempStr;
-            if (i==1){
+            if (i == 1) {
                 exchange = tempStr;
             }
-            if (i==2)
-                stock=tempStr;
-            if (i==colI)
-                colVal =tempStr;
+            if (i == 2)
+                stock = tempStr;
+            if (i == colI)
+                colVal = tempStr;
             start = start + fieldTypes[i].getLength();
         }
 
         int exchangeIndex = exchageMap.get(exchange);
 
-        str = str+stock+","+timeStr;
+        str = str + stock + "," + timeStr;
 
         if (!filterTime && !filterTickers) {
             return str;
@@ -484,34 +484,35 @@ public class TAQAnalyzer implements Serializable {
         return "\r";
     }
 
-    public String stockCompLine(String str, String colVal, int exchangeIndex){
-        for(int i =0; i<getExchangesMap().size();i++){
-            if (i==exchangeIndex)
+    private String stockCompLine(String str, String colVal, int exchangeIndex) {
+        for (int i = 0; i < getExchangesMap().size(); i++) {
+            if (i == exchangeIndex)
                 str = str + colVal;
-            else if (i<getExchangesMap().size()-1)
-                str = str+",";
+            else if (i < getExchangesMap().size() - 1)
+                str = str + ",";
         }
         return str;
 
     }
 
-    public void setTime(){
-        int timeLen= this.fieldTypes[0].getLength();
-        int s=(this.startTime).length();
-        int e=(this.endTime).length();
-        if ((this.startTime).length()<timeLen){
+    private void setTime() {
+        int timeLen = this.fieldTypes[0].getLength();
+        int s = (this.startTime).length();
+        int e = (this.endTime).length();
+        if ((this.startTime).length() < timeLen) {
             for (int i = 0; i < timeLen - s; i++) {
                 this.startTime = this.startTime + "0";
             }
         }
-        if ((this.endTime).length()<timeLen) {
+        if ((this.endTime).length() < timeLen) {
             for (int i = 0; i < timeLen - e; i++) {
                 this.endTime = this.endTime + "0";
             }
         }
 
     }
-    public int getTotalRecordLength() {
+
+    private int getTotalRecordLength() {
         int recordLength = 0;
         for (int i = 0; i < fieldTypes.length; i++) {
             recordLength += fieldTypes[i].getLength();

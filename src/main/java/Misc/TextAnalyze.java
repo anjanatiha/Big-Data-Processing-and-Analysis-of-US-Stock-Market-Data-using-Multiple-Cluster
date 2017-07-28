@@ -62,6 +62,7 @@ public class TextAnalyze {
         print("\n");
         return columnList;
     }
+
     public static List<String> wordCollect(String wordListStr) {
         wordListStr = wordListStr.toUpperCase();
         List<String> wordList = new ArrayList<>(Arrays.asList(wordListStr.split("[\\s,;.]+")));
@@ -74,6 +75,7 @@ public class TextAnalyze {
         print("\n");
         return wordList;
     }
+
     public static List<Integer> columnSelect(String columns) {
         print(columns);
         List<String> columnListStr = new ArrayList<>(Arrays.asList(columns.split("[\\s,;.]+")));
@@ -91,8 +93,9 @@ public class TextAnalyze {
         print("\n");
         return columnList;
     }
-    public static void main(String[] args){
-        boolean a =isDirectory("/home/anjana/Downloads/DATA/bulk/");
+
+    public static void main(String[] args) {
+        boolean a = isDirectory("/home/anjana/Downloads/DATA/bulk/");
         print(String.valueOf(a));
     }
 

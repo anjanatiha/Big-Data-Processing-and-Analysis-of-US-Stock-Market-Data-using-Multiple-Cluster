@@ -29,7 +29,6 @@ import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 
 
-
 public class TAQConverter implements Serializable {
     private static JavaSparkContext sc;
     private String inputFileName;
@@ -47,9 +46,9 @@ public class TAQConverter implements Serializable {
     private String outputDirectoryAbsolutePath;
     private String unzipDirectoryName;
     private String unzipDirectoryAbsolutePath;
-    private TAQAttributes TAQAttributesObject=null;
-    public IFieldType[] fieldTypes;
-    public ITAQSpec ITAQSpecObject;
+    private TAQAttributes TAQAttributesObject = null;
+    private IFieldType[] fieldTypes;
+    private ITAQSpec ITAQSpecObject;
     private String startTime;
     private String endTime;
     private List<String> tickerSymbols;
@@ -76,9 +75,9 @@ public class TAQConverter implements Serializable {
             print("Unzipping  file : " + this.inputFileName);
             long startTime = System.currentTimeMillis();
             this.inputFileNameUnzipped = getUnzippedFileName(this.inputFileName);
-            this.inputFileUnzippedAbsolutePath = unzipDirectoryName+"/"+inputFileNameUnzipped;
+            this.inputFileUnzippedAbsolutePath = unzipDirectoryName + "/" + inputFileNameUnzipped;
             this.sizeStr = unZip(inputFileAbsolutePath, inputFileUnzippedAbsolutePath);
-            print("Unzipping Completed for + " + inputFileName + " Size : " +this.sizeStr);
+            print("Unzipping Completed for + " + inputFileName + " Size : " + this.sizeStr);
             long endTime = System.currentTimeMillis();
             printElapsedTime(startTime, endTime, " unzipping ");
             this.finalInputFileAbsolutePath = inputFileUnzippedAbsolutePath;
@@ -100,7 +99,8 @@ public class TAQConverter implements Serializable {
 //            deleteFileorDir(outputFileName_unzip);
 
     }
-    public void setFileProperty(){
+
+    private void setFileProperty() {
         this.inputFileName = getInputFileName(inputFileAbsolutePath);
         this.inputFileType = getInputFileType(inputFileName);
         this.inputDirectoryName = getParentDir(inputFileAbsolutePath);
@@ -111,10 +111,11 @@ public class TAQConverter implements Serializable {
         this.outputDirectoryName = TAQAttributesObject.getOutputDirectoryAbsolutePath();
         this.unzipDirectoryName = TAQAttributesObject.getUnzipDirectoryAbsolutePath();
         this.outputFileName = getConvertedFileName(inputFileName);
-        this.OutputFileAbsolutePath = this.outputDirectoryName+"/"+outputFileName;
+        this.OutputFileAbsolutePath = this.outputDirectoryName + "/" + outputFileName;
 
     }
-    public void setTAQConverterObject(){
+
+    private void setTAQConverterObject() {
         this.startTime = TAQAttributesObject.getStartTime();
         this.endTime = TAQAttributesObject.getEndTime();
         this.filterTime = TAQAttributesObject.getfilterTime();
@@ -259,7 +260,7 @@ public class TAQConverter implements Serializable {
         return "\r";
     }
 
-    public void setFieldTypes() {
+    private void setFieldTypes() {
         switch (this.fileYear) {
             case "2010":
                 this.ITAQSpecObject = new TAQ102010Spec();
@@ -305,7 +306,7 @@ public class TAQConverter implements Serializable {
         return recordLength;
     }
 
-    public void setTime() {
+    private void setTime() {
         int timeLen = this.fieldTypes[0].getLength();
         int s = (this.startTime).length();
         int e = (this.endTime).length();
@@ -321,7 +322,8 @@ public class TAQConverter implements Serializable {
         }
 
     }
-//
+
+    //
 //
 //
 //
@@ -552,7 +554,7 @@ public class TAQConverter implements Serializable {
         return "\r";
     }
 
-    public String stockCompLine(String str, String colVal, int exchangeIndex) {
+    private String stockCompLine(String str, String colVal, int exchangeIndex) {
         for (int i = 0; i < getExchangesMap().size(); i++) {
             if (i == exchangeIndex)
                 str = str + colVal;
