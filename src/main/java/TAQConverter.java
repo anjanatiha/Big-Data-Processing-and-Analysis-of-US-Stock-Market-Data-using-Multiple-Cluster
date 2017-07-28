@@ -24,7 +24,6 @@ import static FilePackage.FileClass.getParentDir;
 import static FilePackage.FileClass.isDirectory;
 import static FilePackage.FileName.*;
 import static FilePackage.ZipExtract.unZip;
-import static Misc.Debug.debug;
 import static Misc.Print.print;
 import static Misc.Time.printElapsedTime;
 
@@ -263,7 +262,6 @@ public class TAQConverter implements Serializable {
     private void setFieldTypes() {
         switch (this.fileYear) {
             case "2010":
-//                this.ITAQSpecObject = new TAQ102010Spec();
                 this.ITAQSpecObject = new TAQ102010SpecNew();
                 break;
             case "2012":
@@ -273,12 +271,9 @@ public class TAQConverter implements Serializable {
                 this.ITAQSpecObject = new TAQ082013Spec();
                 break;
             case "2015":
-                debug("2015");
-//                this.ITAQSpecObject = new TAQ062015Spec();
                 this.ITAQSpecObject = new TAQ062015SpecNew();
                 break;
             case "2016":
-//                this.ITAQSpecObject = new TAQ062016Spec();
                 this.ITAQSpecObject = new TAQ062016SpecNew();
                 break;
             default:

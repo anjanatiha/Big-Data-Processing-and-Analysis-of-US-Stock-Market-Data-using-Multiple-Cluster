@@ -1,6 +1,9 @@
 package SparkAnalysis;
 
-import DataFieldType.*;
+import DataFieldType.IFieldType;
+import DataFieldType.ITAQSpec;
+import DataFieldType.TAQ072012Spec;
+import DataFieldType.TAQ082013Spec;
 import Obsolete.TAQ062015Spec;
 import Obsolete.TAQ062016Spec;
 import Obsolete.TAQ102010Spec;
