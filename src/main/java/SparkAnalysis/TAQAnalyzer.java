@@ -20,12 +20,13 @@ import java.util.Scanner;
 import static DataFieldType.StockExchanges.getExchangesMap;
 import static DataFieldType.TAQFileInfo.extractYear;
 import static DataFieldType.TAQFileInfo.getFileType;
-import static FilePackage.FileClass.columnSelect;
-import static FilePackage.FileClass.wordCollect;
 import static FilePackage.FileName.getInputFileType;
+
 import static FilePackage.FileName.getOutputFileName;
 import static FilePackage.ZipExtract.unZip;
 import static Misc.Print.print;
+import static Misc.TextAnalyze.columnSelect;
+import static Misc.TextAnalyze.wordCollect;
 import static Misc.Time.printElapsedTime;
 
 public class TAQAnalyzer implements Serializable {

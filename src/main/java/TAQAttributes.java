@@ -9,6 +9,8 @@ import static FilePackage.FileClass.*;
 import static FilePackage.FileName.getInputFileName;
 import static Misc.Print.print;
 import static Misc.SystemProperties.getMaxMemorySize;
+import static Misc.TextAnalyze.columnSelect;
+import static Misc.TextAnalyze.wordCollect;
 
 public class TAQAttributes implements Serializable {
     private static JavaSparkContext sc;
@@ -27,8 +29,7 @@ public class TAQAttributes implements Serializable {
     private boolean filterColumns = false;
     private int selectColumn = -1;
     private HashMap<String, Integer> exchageMap;
-    private String calcType = "";
-    private Integer calcTypeInt = -1;
+    private Integer function = -1;
     private int clusterSize = -1;
     private String memorySize= "1g";
 
@@ -63,17 +64,24 @@ public class TAQAttributes implements Serializable {
         }
         print("Enter file containing stock symbols");
         String stockFile = scan.next();
-        if (!stockFile.equals("n")) {
+        if(isFile(stockFile)){
             this.tickerSymbols = wordCollect(sc, stockFile);
             this.filterTickers = true;
         }
         print("Enter file containing selected columns");
         String columnFile = scan.next();
-        if (!columnFile.equals("n")) {
+        if(isFile(columnFile)){
             this.columnList = columnSelect(sc, columnFile);
             this.filterColumns = true;
         }
-        print("Select partition size(-1 for default or any other positive number)");
+        print("Enter function:\n1:convert\n2:spread\n3:volatility\n4:compareExchange ");
+        this.function = scan.nextInt();
+        if(function==4){
+            print("Enter column to compare");
+            this.selectColumn = scan.nextInt();
+        }
+
+        print("Select partition size(-1 for default/auto cluster size or any other positive number)");
         int clusterSize = scan.nextInt();
         if (clusterSize!=-1)
             this.clusterSize = clusterSize;
@@ -116,10 +124,7 @@ public class TAQAttributes implements Serializable {
     public boolean getFilterColumn(){
         return filterColumns;
     }
-    public String getCalcType(){ return calcType; }
-    public int getCalcTypeInt(){
-        return calcTypeInt;
-    }
+    public int getFunction(){ return function; }
     public int getSelectColumn(){
         return selectColumn;
     }

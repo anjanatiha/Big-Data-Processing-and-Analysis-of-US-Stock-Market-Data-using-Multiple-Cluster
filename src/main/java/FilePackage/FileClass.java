@@ -1,13 +1,7 @@
 package FilePackage;
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 import static Misc.Print.print;
@@ -63,7 +57,7 @@ public class FileClass {
 
     public static String getParentDir(String inputFileName) {
         File file = new File(inputFileName);
-        File parentDir = file.getParentFile(); // to get the parent dir
+//        File parentDir = file.getParentFile(); // to get the parent dir
         String parentDirName = file.getParent();
         return parentDirName;
     }
@@ -83,7 +77,9 @@ public class FileClass {
         if (successful) {
             System.out.println("directory was created successfully");
         } else {
-            System.out.println("failed trying to create the directory");
+            System.out.println("failed trying to create the directory\nFile might already exists ");
+            if(isDirectory(dirName))
+                print(dirName + " already exits");
         }
         return dir.getAbsolutePath();
     }
@@ -98,9 +94,12 @@ public class FileClass {
         File dir = new File(dirLoc + "/"+dirName);
         boolean successful = dir.mkdir();
         if (successful) {
-            System.out.println("directory was created successfully");
+            System.out.println("Directory was created successfully");
         } else {
-            System.out.println("failed trying to create the directory");
+            System.out.println("Failed trying to create the directory");
+            if(isDirectory(dirLoc + "/"+dirName))
+                print(dirLoc + "/"+dirName + " already exits");
+
         }
         return dir.getAbsolutePath();
     }
@@ -146,88 +145,6 @@ public class FileClass {
         else return false;
     }
 
-    public static List<String> wordCollect(JavaSparkContext sc, String inputFileName) {
-        JavaRDD<String> textFile = sc.textFile(inputFileName);
-        List<String[]> wordListArr = textFile.map(e -> e.split("[\\s,;.]+")).collect();
-        List<String> wordList = new ArrayList<>();
-
-        for (String[] word : wordListArr) {
-            for (int i = 0; i < word.length; i++) {
-                wordList.add(word[i]);
-            }
-        }
-        int k = 0;
-        for (String word : wordList) {
-            k++;
-        }
-        print("Number of Tickers selected : " + k);
-        print("Finding the following Tickers");
-        for (String word : wordList) {
-            System.out.print(word + " ");
-
-        }
-        print("\n");
-        return wordList;
-    }
-
-    public static List<Integer> columnSelect(JavaSparkContext sc, String inputFileName) {
-        JavaRDD<String> textFile = sc.textFile(inputFileName);
-        List<String[]> columnListArr = textFile.map(e -> e.split("[\\s,;.]+")).collect();
-        List<Integer> columnList = new ArrayList<>();
-
-        for (String[] col : columnListArr) {
-            for (int i = 0; i < col.length; i++) {
-                try {
-                    columnList.add(Integer.parseInt(col[i]));
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-        }
-        int k = 0;
-        for (int column : columnList) {
-            k++;
-        }
-        print("Number of columns selected : " + k);
-        print("Finding the following columns");
-        for (int column : columnList) {
-            System.out.print(column + " ");
-
-        }
-        print("\n");
-        return columnList;
-    }
-    public static List<String> wordCollect(String wordListStr) {
-        List<String> wordList = new ArrayList<>(Arrays.asList(wordListStr.split("[\\s,;.]+")));
-        print("Number of Tickers selected : " + wordList.size());
-        print("Finding the following Tickers");
-        for (String word : wordList) {
-            System.out.print(word + " ");
-
-        }
-        print("\n");
-        return wordList;
-    }
-    public static List<Integer> columnSelect(String columns) {
-        List<String> columnListStr = new ArrayList<>(Arrays.asList(columns.split("[\\s,;.]+")));
-        List<Integer> columnList = new ArrayList<>();
-
-        for (String column : columnListStr) {
-            columnList.add(Integer.valueOf(column));
-        }
-        print("Number of columns selected : " + columnList.size());
-        print("Finding the following columns");
-        for (int column : columnList) {
-            System.out.print(column + " ");
-
-        }
-        print("\n");
-        return columnList;
-    }
-    public static void main(String[] args){
-        boolean a =isDirectory("/home/anjana/Downloads/DATA/bulk/");
-        print(String.valueOf(a));
-    }
 
 }
 

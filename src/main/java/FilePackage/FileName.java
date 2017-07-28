@@ -14,15 +14,6 @@ public class FileName {
         String inputFileNameOnly = inputFileName.substring(0,inputFileName.length()-4);
         return inputFileNameOnly;
     }
-    public static String getOutputFileName(String inputFileName) {
-        String outputFileName;
-        if (getInputFileType(inputFileName).equals("zip"))
-            outputFileName = getFileTypeRemved(inputFileName)+"_Unzipped";
-        else
-            outputFileName = inputFileName + "_Converted";
-        return outputFileName;
-
-    }
     public static String getUnzippedFileName(String inputFileName) {
         String unzippedFileName="";
         if (getInputFileType(inputFileName).equals("zip"))
@@ -40,17 +31,11 @@ public class FileName {
         return outputFileName;
 
     }
-    public static String getFolder(String inputFileName, String subStr) {
-        File file = new File(inputFileName);
-        File parentDir = file.getParentFile(); // to get the parent dir
-        String parentDirName = file.getParent();
-        return parentDirName;
-    }
     public static String getOutputFileName(String inputFileName, String subStr) {
         String outputFileName;
-        if (inputFileName.substring(inputFileName.length() - 3, inputFileName.length()).equals("zip")) {
+        if (getInputFileType(inputFileName).equals("zip")) {
 
-            outputFileName = inputFileName.substring(0, inputFileName.length() - 4) + "_unzipped";
+            outputFileName = getInputFileName(inputFileName) + "_unzipped";
         } else {
             outputFileName = inputFileName + "_"+subStr;
         }
