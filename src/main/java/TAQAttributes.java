@@ -54,7 +54,7 @@ public class TAQAttributes implements Serializable {
         }
     }
     public void setConversionAttribute(){
-        Scanner scan = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in).useDelimiter("\\n");;
         print("Enter start time in HHMM format");
         this.startTime = scan.next();
         if (!this.startTime.equals("n")) {
@@ -68,13 +68,21 @@ public class TAQAttributes implements Serializable {
             this.tickerSymbols = wordCollect(sc, stockFile);
             this.filterTickers = true;
         }
+        if(!stockFile.equals("n")){
+            this.tickerSymbols = wordCollect(stockFile);
+            this.filterTickers = true;
+        }
         print("Enter file containing selected columns");
         String columnFile = scan.next();
         if(isFile(columnFile)){
             this.columnList = columnSelect(sc, columnFile);
             this.filterColumns = true;
         }
-        print("Enter function:\n1:convert\n2:spread\n3:volatility\n4:compareExchange ");
+        if(!columnFile.equals("n")){
+            this.columnList = columnSelect(columnFile);
+            this.filterColumns = true;
+        }
+        print("Enter Function(1-4):\n1: Convert File\n2: Calculate Spread\n3: Calculate Volatility\n4: Compare One Column in All Exchange ");
         this.function = scan.nextInt();
         if(function==4){
             print("Enter column to compare");

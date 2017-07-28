@@ -63,6 +63,7 @@ public class TextAnalyze {
         return columnList;
     }
     public static List<String> wordCollect(String wordListStr) {
+        wordListStr = wordListStr.toUpperCase();
         List<String> wordList = new ArrayList<>(Arrays.asList(wordListStr.split("[\\s,;.]+")));
         print("Number of Tickers selected : " + wordList.size());
         print("Finding the following Tickers");
@@ -74,6 +75,7 @@ public class TextAnalyze {
         return wordList;
     }
     public static List<Integer> columnSelect(String columns) {
+        print(columns);
         List<String> columnListStr = new ArrayList<>(Arrays.asList(columns.split("[\\s,;.]+")));
         List<Integer> columnList = new ArrayList<>();
 
