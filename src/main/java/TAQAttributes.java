@@ -25,7 +25,7 @@ public class TAQAttributes implements Serializable {
     private boolean filterTickers = false;
     private boolean filterTime = false;
     private boolean filterColumns = false;
-    private int selectColumn=-1;
+    private int selectColumn = -1;
     private HashMap<String, Integer> exchageMap;
     private String calcType = "";
     private Integer calcTypeInt = -1;
