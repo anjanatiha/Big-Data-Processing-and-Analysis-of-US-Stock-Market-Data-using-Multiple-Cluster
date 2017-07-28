@@ -2,16 +2,21 @@ package DataFieldType;
 
 import java.io.Serializable;
 
-public class TAQ062015SpecNew implements ITAQSpec, Serializable {
-    private int tradeFileEntryLength = 108;
-    private int QuoteFileEntryLength = 133;
-    private int NBBOFileEntryLength = 182;
-    private String activeStartDate = "01062015";
-    private String activeEndDate = "None";
+/**
+ * Created by Anjana on 6/21/2017.
+ */
+public class TAQ102010SpecNew implements ITAQSpec, Serializable {
+    private int tradeFileEntryLength = 73;
+    private int QuoteFileEntryLength = 91;
+    private int NBBOFileEntryLength = 144;
+    private String activeStartDate = "02102006";
+    private String activeEndDate = "31072012";
+    private String Version = "1.0";
 
     private IFieldType[] tradeFileFields;
     private IFieldType[] NBBOFileFields;
     private IFieldType[] quoteFileFields;
+
 
     private IFieldType Time;
     private IFieldType Exchange;
@@ -24,9 +29,6 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
     private IFieldType TradeSequenceNumber;
     private IFieldType SourceOfTrade;
     private IFieldType TradeReportingFacility;
-    private IFieldType ParticipantTimestamp;
-    private IFieldType RegionalReferenceNumber;
-    private IFieldType TradeReportingFacilitTimestamp;
     private IFieldType LineChange;
 
     private IFieldType BidPrice;
@@ -49,30 +51,20 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
     private IFieldType BestBidMarketMaker;
     private IFieldType BestBidMMLocation;
     private IFieldType BestBidMMDeskLocation;
-    private IFieldType BestOfferExchange;
-    private IFieldType BestOfferPrice;
-    private IFieldType BestOfferSize;
-    private IFieldType BestOfferMarketMaker;
-    private IFieldType BestOfferMMLocation;
-    private IFieldType BestOfferMMDeskLocation;
+    private IFieldType BestAskExchange;
+    private IFieldType BestAskPrice;
+    private IFieldType BestAskSize;
+    private IFieldType BestAskMarketMaker;
+    private IFieldType BestAskMMLocation;
+    private IFieldType BestAskMMDeskLocation;
 
-    private IFieldType LULDIndicator;
-    private IFieldType LULDNBBOIndicator;
-    private IFieldType RetailInterestIndicator;
-    private IFieldType ShortSaleRestrictionIndicator;
-    private IFieldType LULDBBOIndicatorCQS;
-    private IFieldType LULDBBOIndicatorUTP;
-    private IFieldType FINRAADFMPIDIndicator;
-    private IFieldType NationalBBOLULDIndicator;
-    private IFieldType SIPGeneratedMessageIdentifier;
 
-    public TAQ062015SpecNew() {
 
+    public TAQ102010SpecNew() {
     }
 
-
     private void setTradeFileSpec() {
-        this.Time = new TimeField(12);
+        this.Time = new TimeField(9);
         this.Exchange = new TextField(1);
         this.Symbol = new TextField(16);
         this.SaleCondition = new TextField(4);
@@ -83,14 +75,11 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
         this.TradeSequenceNumber = new NumericField(16, 'p');
         this.SourceOfTrade = new TextField(1);
         this.TradeReportingFacility = new TextField(1);
-        this.ParticipantTimestamp = new TextField(12);
-        this.RegionalReferenceNumber = new TextField(8);
-        this.TradeReportingFacilitTimestamp = new TimeField(12);
         this.LineChange = new TextField(2);
     }
 
     private void setNBBOFileSpec() {
-        this.Time = new TimeField(12);
+        this.Time = new TimeField(9);
         this.Exchange = new TextField(1);
         this.Symbol = new TextField(16);
         this.BidPrice = new NumericField(11, 4);
@@ -113,24 +102,18 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
         this.BestBidMarketMaker = new TextField(4);
         this.BestBidMMLocation = new TextField(2);
         this.BestBidMMDeskLocation = new TextField(1);
-        this.BestOfferExchange = new TextField(1);
-        this.BestOfferPrice = new NumericField(11, 4);
-        this.BestOfferSize = new NumericField(7);
-        this.BestOfferMarketMaker = new TextField(4);
-        this.BestOfferMMLocation = new TextField(2);
-        this.BestOfferMMDeskLocation = new TextField(1);
-        this.LULDIndicator = new TextField(1);
-        this.LULDNBBOIndicator = new TextField(1);
-        this.SIPGeneratedMessageIdentifier = new TextField(1);
-        this.ParticipantTimestamp = new TimeField(12);
-        this.RegionalReferenceNumber = new TextField(8);
-        this.TradeReportingFacilitTimestamp = new TimeField(12);
+        this.BestAskExchange = new TextField(1);
+        this.BestAskPrice = new NumericField(11, 4);
+        this.BestAskSize = new NumericField(7);
+        this.BestAskMarketMaker = new TextField(4);
+        this.BestAskMMLocation = new TextField(2);
+        this.BestAskMMDeskLocation = new TextField(1);
         this.LineChange = new TextField(2);
 
     }
 
     private void setQuoteFileSpec() {
-        this.Time = new TimeField(12);
+        this.Time = new TimeField(9);
         this.Exchange = new TextField(1);
         this.Symbol = new TextField(16);
         this.BidPrice = new NumericField(11, 4);
@@ -146,15 +129,6 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
         this.NASDAQBBOInd = new NumericField(1);
         this.QuoteCancelCorrection = new TextField(1);
         this.SourceOfQuote = new TextField(1);
-        this.RetailInterestIndicator = new TextField(1);
-        this.ShortSaleRestrictionIndicator = new TextField(1);
-        this.LULDBBOIndicatorCQS = new TextField(1);
-        this.LULDBBOIndicatorUTP = new TextField(1);
-        this.FINRAADFMPIDIndicator = new TextField(1);
-        this.SIPGeneratedMessageIdentifier = new TextField(1);
-        this.NationalBBOLULDIndicator = new TextField(1);
-        this.RegionalReferenceNumber = new TextField(8);
-        this.TradeReportingFacilitTimestamp = new TimeField(12);
         this.LineChange = new TextField(2);
 
     }
@@ -163,17 +137,14 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
         setTradeFileSpec();
         this.tradeFileFields = new IFieldType[]{Time, Exchange, Symbol, SaleCondition, TradeVolume, TradePrice,
                 TradeStopStockIndicator, TradeCorrectionIndicator, TradeSequenceNumber,
-                SourceOfTrade, TradeReportingFacility, ParticipantTimestamp, RegionalReferenceNumber
-                , TradeReportingFacilitTimestamp, LineChange};
+                SourceOfTrade, TradeReportingFacility, LineChange};
         return this.tradeFileFields;
     }
 
     public IFieldType[] getQuoteFields() {
         setQuoteFileSpec();
         this.quoteFileFields = new IFieldType[]{Time, Exchange, Symbol, BidPrice, BidSize, AskPrice, AskSize, QuoteCondition, MarketMaker,
-                BidExchange, AskExchange, SequenceNumber, NationalBBOInd, NASDAQBBOInd, QuoteCancelCorrection, SourceOfQuote, RetailInterestIndicator,
-                ShortSaleRestrictionIndicator, LULDBBOIndicatorCQS, LULDBBOIndicatorUTP, FINRAADFMPIDIndicator, SIPGeneratedMessageIdentifier, NationalBBOLULDIndicator, ParticipantTimestamp,
-                RegionalReferenceNumber, TradeReportingFacilitTimestamp, LineChange};
+                BidExchange, AskExchange, SequenceNumber, NationalBBOInd, NASDAQBBOInd, QuoteCancelCorrection, SourceOfQuote, LineChange};
         return this.quoteFileFields;
     }
 
@@ -181,9 +152,8 @@ public class TAQ062015SpecNew implements ITAQSpec, Serializable {
         setNBBOFileSpec();
         this.NBBOFileFields = new IFieldType[]{Time, Exchange, Symbol, BidPrice, BidSize, AskPrice, AskSize, QuoteCondition, MarketMaker,
                 BidExchange, AskExchange, SequenceNumber, NationalBBOInd, NASDAQBBOInd, QuoteCancelCorrection, SourceOfQuote, NBBOQuoteCondition,
-                BestBidExchange, BestBidPrice, BestBidSize, BestBidMarketMaker, BestBidMMLocation, BestBidMMDeskLocation, BestOfferExchange,
-                BestOfferPrice, BestOfferSize, BestOfferMarketMaker, BestOfferMMLocation, BestOfferMMDeskLocation, LULDIndicator, LULDNBBOIndicator,
-                SIPGeneratedMessageIdentifier, ParticipantTimestamp, RegionalReferenceNumber, TradeReportingFacilitTimestamp, LineChange};
+                BestBidExchange, BestBidPrice, BestBidSize, BestBidMarketMaker, BestBidMMLocation, BestBidMMDeskLocation, BestAskExchange,
+                BestAskPrice, BestAskSize, BestAskMarketMaker, BestAskMMLocation, BestAskMMDeskLocation, LineChange};
         return this.NBBOFileFields;
     }
 

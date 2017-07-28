@@ -263,7 +263,8 @@ public class TAQConverter implements Serializable {
     private void setFieldTypes() {
         switch (this.fileYear) {
             case "2010":
-                this.ITAQSpecObject = new TAQ102010Spec();
+//                this.ITAQSpecObject = new TAQ102010Spec();
+                this.ITAQSpecObject = new TAQ102010SpecNew();
                 break;
             case "2012":
                 this.ITAQSpecObject = new TAQ072012Spec();
@@ -273,7 +274,8 @@ public class TAQConverter implements Serializable {
                 break;
             case "2015":
                 debug("2015");
-                this.ITAQSpecObject = new TAQ062015Spec();
+//                this.ITAQSpecObject = new TAQ062015Spec();
+                this.ITAQSpecObject = new TAQ062015SpecNew();
                 break;
             case "2016":
                 this.ITAQSpecObject = new TAQ062016Spec();
