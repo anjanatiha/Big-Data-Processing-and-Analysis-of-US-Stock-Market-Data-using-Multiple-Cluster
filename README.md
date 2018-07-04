@@ -1,2 +1,3 @@
-# TAQConverterSpark
-TAQ Stock Binary File Converter, Extractor and Analyzer without Spark Java Maven -Xms4g -Xmx4g -Xmn3g
+# Big Data Processing and Analysis of US Stock Market Data [JAVA, Apache Spark, Git, Linux] 
+-	Developed tools for preprocessing, analysis and anomaly detection of US stock market data on multiple clusters using Apache Spark and reduced processing and analysis time.
+-	7 years of stock market data in binary format with nanosecond granularity was around 50 terabytes. 
