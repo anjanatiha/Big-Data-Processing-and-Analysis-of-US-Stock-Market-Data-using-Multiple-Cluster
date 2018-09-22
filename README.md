@@ -1,8 +1,8 @@
 # Big Data Processing and Analysis of US Stock Market Data
 
-### Technology : JAVA, Apache Spark, Git, Maven, Linux
+#### Technology : JAVA, Apache Spark, Git, Maven, Linux
 
-### Duration   : May - Jul 17 
+#### Duration   : May - Jul 17 
 
 ### Description
 
