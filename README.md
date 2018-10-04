@@ -7,7 +7,7 @@
 ### Description
 
 1. Developed architecture for preprocessing (extracting data bit by bit from compressed binary files using fields length specifications for older datasets) and analysis of US stock market data on multiple clusters using Apache Spark for reduced time complexity for 7 years of heterogenous formatted with nanosecond granularity and was 50 TB (Terabytes).
-2. Conducted stock market data analysis (multi market analysis for market dominance) and anomaly detection (Flash crash day).
+2. Conducted stock market data analysis (multi market analysis for market dominance) and anomaly detection (Flash crash day - May 6, 2010 and August 24, 2015).
 
 #### Tools Requirement: IntelliJ Idea, JAVA, JAVA SDK/ JDK, JAVA JRE 
 
