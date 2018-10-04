@@ -6,8 +6,8 @@
 
 ### Description
 
-1. Developed application and tools for preprocessing, analysis and anomaly detection of US stock market data on multiple clusters using Apache Spark and reduced processing and analysis time.
-2. 7 years of stock market data in binary format with nanosecond granularity was around 50 TB (Terabytes). 
+1. Developed architecture for preprocessing (extracting data bit by bit from compressed binary files using fields length specifications for older datasets) and analysis of US stock market data on multiple clusters using Apache Spark for reduced time complexity for 7 years of heterogenous formatted with nanosecond granularity and was 50 TB (Terabytes).
+2. Conducted stock market data analysis (multi market analysis for market dominance) and anomaly detection (Flash crash day).
 
 #### Tools Requirement: IntelliJ Idea, JAVA, JAVA SDK/ JDK, JAVA JRE 
 
