@@ -1,8 +1,9 @@
 # Big Data Processing and Analysis of US Stock Market Data
 
-##### Domain             : Big Data, Data Analytics, Distributed Computing, Financial Data Analytics, Finance
-##### Sub-Domain         : Distributed Big Data Analysis, Distributed Big Data Analytics, Multi-market Analysis, Anomaly Detection 
-##### Techniques         : Distributed Computing, Anomaly Detection
+##### Domain             : Big Data, Data Analytics, Distributed Computing, Financial Data Analytics, Finance.
+##### Sub-Domain         : Distributed Big Data Analysis, Distributed Big Data Analytics, Multi-market Analysis, Anomaly Detection.
+##### Techniques         : Distributed Computing, Anomaly Detection.
+##### Task               : Preprocessinng Financial Data, Multi-market Analysis, Anomaly Detection.
 
 ### Description
 1. Developed architecture for preprocessing and analysis of 7 years of historical US stock market data (50 TB).
