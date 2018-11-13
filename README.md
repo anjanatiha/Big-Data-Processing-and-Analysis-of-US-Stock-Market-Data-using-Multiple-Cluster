@@ -16,7 +16,7 @@
 ##### Tools/IDE   : IntelliJ Idea, JAVA SDK/ JDK, JAVA JRE, Git, Maven, Linux
 ##### Libraries   : Apache Spark, PySpark
 
-##### Duration   : May - July 2018
+##### Duration   : May - July 2017
 
 Current Version  : v1.0.0.0
 
